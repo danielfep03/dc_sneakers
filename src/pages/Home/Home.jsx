@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import brandLogo from '../../../../../../.gemini/antigravity/brain/9cf0a029-5ac1-4f5f-9ad6-74053783364a/.user_uploaded/media_1790036437257.png'
+import brandLogo from '/icon.jpeg'
 import styles from './Home.module.css'
 
 // High-quality sneaker database
@@ -471,9 +471,9 @@ function Home () {
 
         {filteredProducts.length > 0
           ? (
-  <section className={styles.productsGrid}>
-            {filteredProducts.map((product) => (
-              <div
+            <section className={styles.productsGrid}>
+              {filteredProducts.map((product) => (
+      <div
                 key={product.id}
                 className={styles.productCard}
                 onClick={() => handleProductClick(product)}
@@ -514,21 +514,21 @@ function Home () {
                   <span>VER DETALLES Y TALLAS EU</span>
                 </div>
               </div>
-            ))}
-          </section>
+    ))}
+            </section>
             )
           : (
-  <div className={styles.noResults}>
-            <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
-              <circle cx='11' cy='11' r='8' />
-              <line x1='21' y1='21' x2='16.65' y2='16.65' />
-            </svg>
-            <h3>No se encontraron tenis</h3>
-            <p>Intenta ajustar tu búsqueda o busca otra categoría.</p>
-            <button className={styles.resetBtn} onClick={() => { setSearchQuery(''); setSelectedCategory('ALL') }}>
-              Ver todos los tenis
+            <div className={styles.noResults}>
+              <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
+      <circle cx='11' cy='11' r='8' />
+      <line x1='21' y1='21' x2='16.65' y2='16.65' />
+    </svg>
+              <h3>No se encontraron tenis</h3>
+              <p>Intenta ajustar tu búsqueda o busca otra categoría.</p>
+              <button className={styles.resetBtn} onClick={() => { setSearchQuery(''); setSelectedCategory('ALL') }}>
+      Ver todos los tenis
             </button>
-          </div>
+            </div>
             )}
       </main>
 
@@ -698,8 +698,8 @@ function Home () {
               {ordersList.length > 0
                 ? (
                     ordersList.map(order => (
-                  <div key={order.id} className={styles.orderCard}>
-                    <div className={styles.orderCardHeader}>
+                      <div key={order.id} className={styles.orderCard}>
+                        <div className={styles.orderCardHeader}>
                       <div>
                         <span className={styles.orderIdText}>{order.id}</span>
                         <span className={styles.orderDateText}> • {order.date}</span>
@@ -712,7 +712,7 @@ function Home () {
                       </span>
                     </div>
 
-                    <div className={styles.orderItemsList}>
+                        <div className={styles.orderItemsList}>
                       {order.items.map((item, idx) => (
                         <div key={idx} className={styles.orderItemRow}>
                           <img src={item.image} alt={item.name} className={styles.orderItemThumb} />
@@ -725,7 +725,7 @@ function Home () {
                       ))}
                     </div>
 
-                    <div className={styles.orderCardFooter}>
+                        <div className={styles.orderCardFooter}>
                       <div>
                         <div className={styles.orderPaymentMeta}>💳 Método: <strong>{order.paymentMethod}</strong></div>
                         <div className={styles.orderShippingMeta}>📍 Destino: <strong>{order.city}</strong></div>
@@ -736,7 +736,7 @@ function Home () {
                       </div>
                     </div>
 
-                    <a
+                        <a
                       href={`https://wa.me/573008625143?text=Hola%20DC%20SNEAKERS,%20deseo%20consultar%20el%20estado%20de%20mi%20pedido%20${order.id}`}
                       target='_blank'
                       rel='noopener noreferrer'
@@ -747,13 +747,13 @@ function Home () {
                       </svg>
                       Rastrear Pedido en WhatsApp (300 862 5143)
                     </a>
-                  </div>
+                      </div>
                     ))
                   )
                 : (
-  <div className={styles.emptyOrders}>
-                  <p>No tienes órdenes recientes.</p>
-                </div>
+                  <div className={styles.emptyOrders}>
+                    <p>No tienes órdenes recientes.</p>
+                  </div>
                   )}
             </div>
           </div>
@@ -777,10 +777,10 @@ function Home () {
               {cart.length > 0
                 ? (
                     cart.map((item, index) => (
-                  <div key={`${item.product.id}-${item.size}-${item.color.name}`} className={styles.cartItem}>
-                    <img src={item.product.image} alt={item.product.name} className={styles.cartItemImg} />
+                      <div key={`${item.product.id}-${item.size}-${item.color.name}`} className={styles.cartItem}>
+                        <img src={item.product.image} alt={item.product.name} className={styles.cartItemImg} />
 
-                    <div className={styles.cartItemDetails}>
+                        <div className={styles.cartItemDetails}>
                       <h4>{item.product.name}</h4>
                       <span className={styles.cartItemMeta}>
                         Talla EU: {item.size} | Color: {item.color.name}
@@ -797,21 +797,21 @@ function Home () {
                         </div>
                       </div>
                     </div>
-                  </div>
+                      </div>
                     ))
                   )
                 : (
-  <div className={styles.emptyCart}>
-                  <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
-                    <circle cx='9' cy='21' r='1' />
-                    <circle cx='20' cy='21' r='1' />
-                    <path d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6' />
-                  </svg>
-                  <p>Aún no has agregado tenis a tu bolsa.</p>
-                  <button className={styles.startShoppingBtn} onClick={() => setIsCartOpen(false)}>
-                    Empezar a comprar
+                  <div className={styles.emptyCart}>
+                    <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
+      <circle cx='9' cy='21' r='1' />
+      <circle cx='20' cy='21' r='1' />
+      <path d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6' />
+    </svg>
+                    <p>Aún no has agregado tenis a tu bolsa.</p>
+                    <button className={styles.startShoppingBtn} onClick={() => setIsCartOpen(false)}>
+      Empezar a comprar
                   </button>
-                </div>
+                  </div>
                   )}
             </div>
 
@@ -928,22 +928,22 @@ function Home () {
                 >
                   {isAddedToCart
                     ? (
-  <>
-                      <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='3' strokeLinecap='round' strokeLinejoin='round'>
-                        <polyline points='20 6 9 17 4 12' />
-                      </svg>
-                      <span>¡AGREGADO A LA BOLSA!</span>
-                    </>
+                      <>
+                        <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='3' strokeLinecap='round' strokeLinejoin='round'>
+      <polyline points='20 6 9 17 4 12' />
+    </svg>
+                        <span>¡AGREGADO A LA BOLSA!</span>
+                      </>
                       )
                     : (
-  <>
-                      <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-                        <path d='M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z' />
-                        <line x1='3' y1='6' x2='21' y2='6' />
-                        <path d='M16 10a4 4 0 0 1-8 0' />
-                      </svg>
-                      <span>AÑADIR A LA BOLSA</span>
-                    </>
+                      <>
+                        <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+      <path d='M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z' />
+      <line x1='3' y1='6' x2='21' y2='6' />
+      <path d='M16 10a4 4 0 0 1-8 0' />
+    </svg>
+                        <span>AÑADIR A LA BOLSA</span>
+                      </>
                       )}
                 </button>
               </div>
