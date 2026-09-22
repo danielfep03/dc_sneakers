@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import brandLogo from "../../../../../../.gemini/antigravity/brain/9cf0a029-5ac1-4f5f-9ad6-74053783364a/.user_uploaded/media_1790036437257.png"
+import brandLogo from '../../../../../../.gemini/antigravity/brain/9cf0a029-5ac1-4f5f-9ad6-74053783364a/.user_uploaded/media_1790036437257.png'
 import styles from './Home.module.css'
 
 // High-quality sneaker database
@@ -470,8 +470,8 @@ function Home () {
         </div>
 
         {filteredProducts.length > 0
-? (
-          <section className={styles.productsGrid}>
+          ? (
+  <section className={styles.productsGrid}>
             {filteredProducts.map((product) => (
               <div
                 key={product.id}
@@ -516,9 +516,9 @@ function Home () {
               </div>
             ))}
           </section>
-        )
-: (
-          <div className={styles.noResults}>
+            )
+          : (
+  <div className={styles.noResults}>
             <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
               <circle cx='11' cy='11' r='8' />
               <line x1='21' y1='21' x2='16.65' y2='16.65' />
@@ -529,7 +529,7 @@ function Home () {
               Ver todos los tenis
             </button>
           </div>
-        )}
+            )}
       </main>
 
       <a
@@ -696,8 +696,8 @@ function Home () {
 
             <div className={styles.ordersListBody}>
               {ordersList.length > 0
-? (
-                ordersList.map(order => (
+                ? (
+                    ordersList.map(order => (
                   <div key={order.id} className={styles.orderCard}>
                     <div className={styles.orderCardHeader}>
                       <div>
@@ -748,13 +748,13 @@ function Home () {
                       Rastrear Pedido en WhatsApp (300 862 5143)
                     </a>
                   </div>
-                ))
-              )
-: (
-                <div className={styles.emptyOrders}>
+                    ))
+                  )
+                : (
+  <div className={styles.emptyOrders}>
                   <p>No tienes órdenes recientes.</p>
                 </div>
-              )}
+                  )}
             </div>
           </div>
         </div>
@@ -775,8 +775,8 @@ function Home () {
 
             <div className={styles.cartItemsWrapper}>
               {cart.length > 0
-? (
-                cart.map((item, index) => (
+                ? (
+                    cart.map((item, index) => (
                   <div key={`${item.product.id}-${item.size}-${item.color.name}`} className={styles.cartItem}>
                     <img src={item.product.image} alt={item.product.name} className={styles.cartItemImg} />
 
@@ -798,10 +798,10 @@ function Home () {
                       </div>
                     </div>
                   </div>
-                ))
-              )
-: (
-                <div className={styles.emptyCart}>
+                    ))
+                  )
+                : (
+  <div className={styles.emptyCart}>
                   <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
                     <circle cx='9' cy='21' r='1' />
                     <circle cx='20' cy='21' r='1' />
@@ -812,7 +812,7 @@ function Home () {
                     Empezar a comprar
                   </button>
                 </div>
-              )}
+                  )}
             </div>
 
             {cart.length > 0 && (
@@ -927,16 +927,16 @@ function Home () {
                   disabled={isAddedToCart}
                 >
                   {isAddedToCart
-? (
-                    <>
+                    ? (
+  <>
                       <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='3' strokeLinecap='round' strokeLinejoin='round'>
                         <polyline points='20 6 9 17 4 12' />
                       </svg>
                       <span>¡AGREGADO A LA BOLSA!</span>
                     </>
-                  )
-: (
-                    <>
+                      )
+                    : (
+  <>
                       <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
                         <path d='M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z' />
                         <line x1='3' y1='6' x2='21' y2='6' />
@@ -944,7 +944,7 @@ function Home () {
                       </svg>
                       <span>AÑADIR A LA BOLSA</span>
                     </>
-                  )}
+                      )}
                 </button>
               </div>
             </div>
