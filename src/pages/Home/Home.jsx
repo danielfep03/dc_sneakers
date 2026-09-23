@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
-import brandLogo from '/icon.jpeg'
+import { useEffect, useMemo, useState } from 'react'
 import styles from './Home.module.css'
+import brandLogo from '/icon.jpeg'
 
 // High-quality sneaker database
 const SNEAKERS_DATA = [
@@ -104,6 +104,8 @@ const SNEAKERS_DATA = [
 const CATEGORIES = ['ALL', 'BASKETBALL', 'VOLEIBOL', 'CASUAL']
 
 function Home () {
+  const [isDarkMode, setIsDarkMode] = useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState('ALL')
   const [favorites, setFavorites] = useState(new Set([1, 4]))
   const [selectedProduct, setSelectedProduct] = useState(null)
@@ -159,6 +161,19 @@ function Home () {
   })
   const [completedOrder, setCompletedOrder] = useState(null)
 
+  // Bloquear scroll del background cuando el carrito o un modal está abierto
+  useEffect(() => {
+    const isAnyModalOpen = isCartOpen || isCheckoutOpen || showPromoModal || showSizeGuide || showOrdersModal || !!completedOrder || isMobileMenuOpen
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = 'unset'
+    }
+    return () => {
+      document.body.style.overflow = 'unset'
+    }
+  }, [isCartOpen, isCheckoutOpen, showPromoModal, showSizeGuide, showOrdersModal, completedOrder, isMobileMenuOpen])
+
   const handleInputChange = (e) => {
     const { name, value } = e.target
     setCheckoutForm(prev => ({ ...prev, [name]: value }))
@@ -204,6 +219,8 @@ function Home () {
     cart.forEach(item => {
       waMessage += `• ${item.product.name} (Talla EU: ${item.size}, Color: ${item.color.name}) x${item.quantity} - $${(item.product.price * item.quantity).toFixed(2)} USD%0A`
     })
+    waMessage += '-----------------------------------%0A'
+    waMessage += '🎁 *REGALOS INCLUIDOS:* Par de medias deportivas de regalo 🧦%0A'
     waMessage += '-----------------------------------%0A'
     waMessage += '💰 *DESGLOSE TRANSPARENTE:*%0A'
     waMessage += `• Subtotal: $${cartTotal.toFixed(2)} USD%0A`
@@ -267,14 +284,18 @@ function Home () {
     })
   }
 
+  // Navegar a la Vista Dedicada de Producto
   const handleProductClick = (product) => {
     setSelectedProduct(product)
-    setDetailSize(product.sizes[2])
+    setDetailSize(product.sizes[2] || product.sizes[0])
     setDetailColor(0)
     setIsAddedToCart(false)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   const handleAddToCart = () => {
+    if (!selectedProduct) return
+
     const existingIndex = cart.findIndex(
       item => item.product.id === selectedProduct.id &&
               item.size === detailSize &&
@@ -300,9 +321,8 @@ function Home () {
     setIsAddedToCart(true)
     setTimeout(() => {
       setIsAddedToCart(false)
-      setSelectedProduct(null)
-      setIsCartOpen(true)
-    }, 1000)
+      setIsCartOpen(true) // Abrir sidebar del carrito
+    }, 800)
   }
 
   const updateCartQuantity = (index, delta) => {
@@ -323,14 +343,47 @@ function Home () {
   }, [cart])
 
   return (
-    <div className={styles.ecommerceWrapper}>
+    <div className={`${styles.ecommerceWrapper} ${isDarkMode ? styles.darkTheme : ''}`}>
+      {/* Top Banner Ticker */}
       <div className={styles.topTicker}>
-        <span>ENVÍOS GRATIS A TODA COLOMBIA 🇨🇴 | <span className={styles.topTickerHighlight}>DC SNEAKERS</span> | HASTA 30 DÍAS DE GARANTÍA</span>
+        <span>ENVÍOS CONTRAENTREGA A TODA COLOMBIA 🇨🇴 | <span className={styles.topTickerHighlight}>DC SNEAKERS</span> | HASTA 30 DÍAS DE GARANTÍA</span>
       </div>
 
+      {/* Main Premium Navbar */}
       <header className={styles.navbar}>
+        {/* Burger Button (visible en mobile) */}
+        <button
+          className={styles.mobileBurgerBtn}
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          title='Menú de Categorías'
+          aria-label='Abrir Menú'
+        >
+          {isMobileMenuOpen
+? (
+            <svg viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
+              <line x1='18' y1='6' x2='6' y2='18' />
+              <line x1='6' y1='6' x2='18' y2='18' />
+            </svg>
+          )
+: (
+            <svg viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
+              <line x1='3' y1='6' x2='21' y2='6' />
+              <line x1='3' y1='12' x2='21' y2='12' />
+              <line x1='3' y1='18' x2='21' y2='18' />
+            </svg>
+          )}
+        </button>
+
         <div className={styles.navLeft}>
-          <a href='#' className={styles.logoContainer}>
+          <a
+            href='#'
+            className={styles.logoContainer}
+            onClick={(e) => {
+              e.preventDefault()
+              setSelectedProduct(null)
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }}
+          >
             <img src={brandLogo} alt='DC SNEAKERS' className={styles.logoImg} />
             <div className={styles.logoTextWrapper}>
               <span className={styles.logoTextMain}>DC</span>
@@ -338,7 +391,16 @@ function Home () {
             </div>
           </a>
           <nav className={styles.navLinks}>
-            <a href='#' className={`${styles.navLink} ${styles.activeLink}`}>Inicio</a>
+            <a
+              href='#'
+              className={`${styles.navLink} ${!selectedProduct ? styles.activeLink : ''}`}
+              onClick={(e) => {
+                e.preventDefault()
+                setSelectedProduct(null)
+              }}
+            >
+              Inicio
+            </a>
             <a href='#' className={styles.navLink}>Colecciones</a>
             <a href='#' className={styles.navLink}>Hombre</a>
             <a href='#' className={styles.navLink}>Mujer</a>
@@ -371,6 +433,34 @@ function Home () {
         </div>
 
         <div className={styles.navRight}>
+          {/* Dark Mode Toggle Button */}
+          <button
+            className={styles.navActionBtn}
+            onClick={() => setIsDarkMode(!isDarkMode)}
+            title={isDarkMode ? 'Cambiar a Modo Claro ☀️' : 'Cambiar a Modo Oscuro 🌙'}
+          >
+            {isDarkMode
+              ? (
+  <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='#f59e0b' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                <circle cx='12' cy='12' r='5' />
+                <line x1='12' y1='1' x2='12' y2='3' />
+                <line x1='12' y1='21' x2='12' y2='23' />
+                <line x1='4.22' y1='4.22' x2='5.64' y2='5.64' />
+                <line x1='18.36' y1='18.36' x2='19.78' y2='19.78' />
+                <line x1='1' y1='12' x2='3' y2='12' />
+                <line x1='21' y1='12' x2='23' y2='12' />
+                <line x1='4.22' y1='19.78' x2='5.64' y2='18.36' />
+                <line x1='18.36' y1='5.64' x2='19.78' y2='4.22' />
+              </svg>
+                )
+              : (
+  <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                <path d='M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z' />
+              </svg>
+                )}
+          </button>
+
+          {/* User Profile & Orders Modal Trigger */}
           <div
             className={styles.userInfo}
             onClick={() => setShowOrdersModal(true)}
@@ -391,6 +481,7 @@ function Home () {
             </div>
           </div>
 
+          {/* Notifications */}
           <button
             className={styles.navActionBtn}
             onClick={() => setNotificationsActive(!notificationsActive)}
@@ -403,6 +494,7 @@ function Home () {
             {notificationsActive && <span className={styles.notificationBadge} />}
           </button>
 
+          {/* Shopping Cart Button */}
           <button
             className={styles.navActionBtn}
             onClick={() => setIsCartOpen(true)}
@@ -418,120 +510,474 @@ function Home () {
         </div>
       </header>
 
-      <main className={styles.mainContainer}>
-        <section className={styles.heroBanner}>
-          <div className={styles.heroContent}>
-            <span className={styles.heroSubtitle}>DC SNEAKERS • SNEAKERS & STREETWEAR</span>
-            <h1 className={styles.heroTitle}>
-              EL TEMPLO DEL <br />
-              <span className={styles.heroHighlight}>SNEAKERHEAD</span>
-            </h1>
-            <p className={styles.heroDesc}>
-              Descubre las siluetas más icónicas y exclusivas de tenis en Colombia. Cultura urbana combinada con diseños legendarios listos para marcar tu estilo.
-            </p>
-            <button
-              className={styles.heroCTA}
-              onClick={() => setShowPromoModal(true)}
-            >
-              ACTIVAR CUPÓN DC SNEAKERS
-            </button>
-          </div>
-
-          <div className={styles.heroImageSection}>
-            <div className={styles.heroGlow} />
-            <img
-              src='https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80'
-              alt='Air Jordan 1 DC SNEAKERS'
-              className={styles.heroShoe}
-            />
-            <div className={styles.badgeSale}>30% OFF</div>
-          </div>
-        </section>
-
-        <div className={styles.catalogControls}>
-          <div className={styles.categoriesBar}>
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                className={`${styles.categoryTab} ${selectedCategory === cat ? styles.activeTab : ''}`}
-                onClick={() => setSelectedCategory(cat)}
-              >
-                {cat === 'ALL' ? 'TODOS' : cat}
+      {/* Mobile Drawer Menu (Burguer Categories) */}
+      {isMobileMenuOpen && (
+        <div className={styles.mobileMenuOverlay} onClick={() => setIsMobileMenuOpen(false)}>
+          <div className={styles.mobileMenuDrawer} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.mobileMenuHeader}>
+              <div className={styles.logoContainer}>
+                <img src={brandLogo} alt='DC SNEAKERS' className={styles.logoImg} style={{ height: '36px' }} />
+                <div className={styles.logoTextWrapper}>
+                  <span className={styles.logoTextMain} style={{ fontSize: '18px' }}>DC</span>
+                  <span className={styles.logoTextSub}>SNEAKERS</span>
+                </div>
+              </div>
+              <button className={styles.closeCartBtn} onClick={() => setIsMobileMenuOpen(false)}>
+                <svg viewBox='0 0 24 24' width='24' height='24' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
+                  <line x1='18' y1='6' x2='6' y2='18' />
+                  <line x1='6' y1='6' x2='18' y2='18' />
+                </svg>
               </button>
-            ))}
-          </div>
+            </div>
 
-          <div className={styles.gridInfo}>
-            <h3 className={styles.sectionHeading}>PRODUCTOS POPULARES</h3>
-            <span className={styles.productCount}>
-              Mostrando {filteredProducts.length} productos
-            </span>
-          </div>
-        </div>
+            {/* Search inside Mobile Menu */}
+            <div className={styles.mobileSearchWrapper}>
+              <svg className={styles.searchIcon} viewBox='0 0 24 24' width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2.5'>
+                <circle cx='11' cy='11' r='8' />
+                <line x1='21' y1='21' x2='16.65' y2='16.65' />
+              </svg>
+              <input
+                type='text'
+                placeholder='Buscar tenis, marcas...'
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className={styles.searchInput}
+              />
+            </div>
 
-        {filteredProducts.length > 0
-          ? (
-            <section className={styles.productsGrid}>
-              {filteredProducts.map((product) => (
-      <div
-                key={product.id}
-                className={styles.productCard}
-                onClick={() => handleProductClick(product)}
-              >
-                <div className={styles.cardTop}>
-                  <span className={styles.cardBrand}>{product.brand}</span>
+            {/* Categories List */}
+            <div className={styles.mobileCategoriesSection}>
+              <h4>CATEGORÍAS DE PRODUCTOS</h4>
+              <div className={styles.mobileCategoryList}>
+                {CATEGORIES.map(cat => (
                   <button
-                    className={`${styles.favoriteBtn} ${favorites.has(product.id) ? styles.isFavorite : ''}`}
-                    onClick={(e) => toggleFavorite(product.id, e)}
-                    aria-label='Agregar a favoritos'
+                    key={cat}
+                    className={`${styles.mobileCategoryBtn} ${selectedCategory === cat ? styles.activeMobileCat : ''}`}
+                    onClick={() => {
+                      setSelectedCategory(cat)
+                      setSelectedProduct(null)
+                      setIsMobileMenuOpen(false)
+                    }}
                   >
-                    <svg viewBox='0 0 24 24' width='18' height='18' fill={favorites.has(product.id) ? 'currentColor' : 'none'} stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-                      <path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
+                    <span>{cat === 'ALL' ? '👟 TODOS LOS PRODUCTOS' : cat === 'BASKETBALL' ? '🏀 BASKETBALL' : cat === 'VOLEIBOL' ? '🏐 VOLEIBOL' : '👟 CASUAL & STREETWEAR'}</span>
+                    <svg viewBox='0 0 24 24' width='16' height='16' fill='none' stroke='currentColor' strokeWidth='2.5'>
+                      <polyline points='9 18 15 12 9 6' />
                     </svg>
                   </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Quick Actions Footer inside Drawer */}
+            <div className={styles.mobileMenuFooter}>
+              <button
+                className={styles.mobileOrdersBtn}
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  setShowOrdersModal(true)
+                }}
+              >
+                📋 Mis Pedidos ({ordersList.length})
+              </button>
+              <a
+                href='https://wa.me/573008625143'
+                target='_blank'
+                rel='noreferrer'
+                className={styles.mobileWaBtn}
+              >
+                💬 Atención WhatsApp (300 862 5143)
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Container */}
+      <main className={styles.mainContainer}>
+        {selectedProduct ? (
+          /* ==================== VISTA DEDICADA DE PRODUCTO ==================== */
+          <div className={styles.productDetailPage}>
+            <button
+              className={styles.backToCatalogBtn}
+              onClick={() => setSelectedProduct(null)}
+            >
+              <svg viewBox='0 0 24 24' width='18' height='18' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
+                <line x1='19' y1='12' x2='5' y2='12' />
+                <polyline points='12 19 5 12 12 5' />
+              </svg>
+              Volver al Catálogo
+            </button>
+
+            <div className={styles.productDetailViewGrid}>
+              {/* Columna Izquierda: Galería e Imagen Principal */}
+              <div className={styles.productViewGallery}>
+                <div className={styles.productViewMainImageWrapper}>
+                  <img src={selectedProduct.image} alt={selectedProduct.name} className={styles.productViewMainImg} />
                 </div>
 
-                <div className={styles.cardImageWrapper}>
-                  <div className={styles.cardGlow} />
-                  <img src={product.image} alt={product.name} className={styles.cardImg} />
+                <div className={styles.guaranteeBadgesRow}>
+                  <div className={styles.guaranteeCard}>
+                    <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#16a34a' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                      <rect x='1' y='3' width='15' height='13' />
+                      <polygon points='16 8 20 8 23 11 23 16 16 16 16 8' />
+                      <circle cx='5.5' cy='18.5' r='2.5' />
+                      <circle cx='18.5' cy='18.5' r='2.5' />
+                    </svg>
+                    <span>Envío Gratis 🇨🇴</span>
+                  </div>
+                  <div className={styles.guaranteeCard}>
+                    <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#0284c7' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                      <path d='M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z' />
+                    </svg>
+                    <span>30 Días Garantía</span>
+                  </div>
+                  <div className={styles.guaranteeCard}>
+                    <svg viewBox='0 0 24 24' width='22' height='22' fill='none' stroke='#e5383b' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                      <circle cx='12' cy='12' r='10' />
+                      <polyline points='12 6 12 12 16 14' />
+                    </svg>
+                    <span>100% Originales</span>
+                  </div>
                 </div>
+              </div>
 
-                <div className={styles.cardInfo}>
-                  <h4 className={styles.cardName}>{product.name}</h4>
+              {/* Columna Derecha: Información del Producto */}
+              <div className={styles.productViewInfo}>
+                <span className={styles.productViewCategoryBadge}>{selectedProduct.category} • {selectedProduct.brand}</span>
 
-                  <div className={styles.cardFooter}>
-                    <span className={styles.cardPrice}>${product.price.toFixed(2)}</span>
-                    <div className={styles.ratingBadge}>
-                      <svg viewBox='0 0 24 24' width='12' height='12' fill='currentColor' className={styles.starIcon}>
-                        <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2' />
-                      </svg>
-                      <span>{product.rating.toFixed(1)}</span>
-                    </div>
+                <h1 className={styles.productViewTitle}>{selectedProduct.name}</h1>
+
+                <div className={styles.productViewPriceRow}>
+                  <span className={styles.productViewPrice}>${selectedProduct.price.toFixed(2)} USD</span>
+                  <div className={styles.productViewRating}>
+                    <svg viewBox='0 0 24 24' width='14' height='14' fill='currentColor'>
+                      <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2' />
+                    </svg>
+                    <span>{selectedProduct.rating.toFixed(1)} / 5.0</span>
                   </div>
                 </div>
 
-                <div className={styles.quickAddOverlay}>
-                  <span>VER DETALLES Y TALLAS EU</span>
+                {/* Prueba Social: Espectadores en tiempo real */}
+                <div className={styles.liveViewersBadge}>
+                  <span className={styles.livePulseDot} />
+                  <span>🔥 <strong>{((selectedProduct.id * 7) % 15) + 9} personas</strong> están viendo este modelo en este momento</span>
                 </div>
+
+                <p className={styles.detailDesc}>{selectedProduct.description}</p>
+
+                {/* Selector de Tallas EU + Modal de Guía */}
+                <div className={styles.selectorSection}>
+                  <div className={styles.sizeHeaderRow}>
+                    <span className={styles.selectorTitle}>Seleccionar Talla (EU)</span>
+                    <button
+                      className={styles.sizeGuideLinkBtn}
+                      onClick={() => setShowSizeGuide(true)}
+                    >
+                      📏 Guía de Tallas
+                    </button>
+                  </div>
+                  <div className={styles.sizesRow}>
+                    {selectedProduct.sizes.map((size) => (
+                      <button
+                        key={size}
+                        className={`${styles.sizeBtn} ${detailSize === size ? styles.activeSize : ''}`}
+                        onClick={() => setDetailSize(size)}
+                      >
+                        EU {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Selector de Color */}
+                <div className={styles.selectorSection}>
+                  <span className={styles.selectorTitle}>Seleccionar Color</span>
+                  <div className={styles.colorsRow}>
+                    {selectedProduct.colors.map((color, index) => (
+                      <button
+                        key={color.name}
+                        className={`${styles.colorBtn} ${detailColor === index ? styles.activeColor : ''}`}
+                        style={{ '--color-hex': color.hex }}
+                        onClick={() => setDetailColor(index)}
+                        title={color.name}
+                      >
+                        <span className={styles.colorCircle} />
+                      </button>
+                    ))}
+                    <span className={styles.colorTextLabel}>
+                      {selectedProduct.colors[detailColor]?.name}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Acciones Principales de Compra */}
+                <button
+                  className={`${styles.addToCartBtn} ${isAddedToCart ? styles.added : ''}`}
+                  onClick={handleAddToCart}
+                  disabled={isAddedToCart}
+                >
+                  {isAddedToCart
+                    ? (
+                      <>
+                        <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='3' strokeLinecap='round' strokeLinejoin='round'>
+                          <polyline points='20 6 9 17 4 12' />
+                        </svg>
+                        <span>¡AGREGADO A LA BOLSA!</span>
+                      </>
+                      )
+                    : (
+                      <>
+                        <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                          <path d='M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z' />
+                          <line x1='3' y1='6' x2='21' y2='6' />
+                          <path d='M16 10a4 4 0 0 1-8 0' />
+                        </svg>
+                        <span>AÑADIR A LA BOLSA</span>
+                      </>
+                      )}
+                </button>
+
+                <button
+                  className={styles.directBuyBtn}
+                  onClick={() => {
+                    handleAddToCart()
+                    handleOpenCheckout()
+                  }}
+                >
+                  <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
+                    <path d='M22 11.08V12a10 10 0 1 1-5.93-9.14' />
+                    <polyline points='22 4 12 14.01 9 11.01' />
+                  </svg>
+                  COMPRAR AHORA (CONTRAENTREGA / NEQUI)
+                </button>
               </div>
-    ))}
-            </section>
-            )
-          : (
-            <div className={styles.noResults}>
-              <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
-      <circle cx='11' cy='11' r='8' />
-      <line x1='21' y1='21' x2='16.65' y2='16.65' />
-    </svg>
-              <h3>No se encontraron tenis</h3>
-              <p>Intenta ajustar tu búsqueda o busca otra categoría.</p>
-              <button className={styles.resetBtn} onClick={() => { setSearchQuery(''); setSelectedCategory('ALL') }}>
-      Ver todos los tenis
-            </button>
             </div>
-            )}
+
+            {/* SECCIÓN DE CARACTERÍSTICAS / GARANTÍAS (ESTILO IMAGEN) */}
+            <section className={styles.featureCardsSection}>
+              <div className={styles.featureCard}>
+                <div className={styles.featureIconCircle}>
+                  <svg viewBox='0 0 24 24' width='28' height='28' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                    <path d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z' />
+                    <polyline points='3.27 6.96 12 12.01 20.73 6.96' />
+                    <line x1='12' y1='22.08' x2='12' y2='12' />
+                  </svg>
+                </div>
+                <h4 className={styles.featureCardTitle}>Devolución Gratis por Talla</h4>
+                <p className={styles.featureCardDesc}>Si la talla no te queda perfecta, realizamos el cambio sin ningún costo adicional para ti.</p>
+              </div>
+
+              <div className={styles.featureCard}>
+                <div className={styles.featureIconCircle}>
+                  <svg viewBox='0 0 24 24' width='28' height='28' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                    <path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
+                  </svg>
+                </div>
+                <h4 className={styles.featureCardTitle}>Regalo de Medias Incluido</h4>
+                <p className={styles.featureCardDesc}>Recibe un par de medias deportivas de regalo con la compra de cualquiera de tus tenis.</p>
+              </div>
+
+              <div className={styles.featureCard}>
+                <div className={styles.featureIconCircle}>
+                  <svg viewBox='0 0 24 24' width='28' height='28' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                    <rect x='1' y='3' width='15' height='13' />
+                    <polygon points='16 8 20 8 23 11 23 16 16 16 16 8' />
+                    <circle cx='5.5' cy='18.5' r='2.5' />
+                    <circle cx='18.5' cy='18.5' r='2.5' />
+                  </svg>
+                </div>
+                <h4 className={styles.featureCardTitle}>Despacho en 1–3 Días</h4>
+                <p className={styles.featureCardDesc}>Envío rápido a toda Colombia con opción de Pago Contraentrega en la puerta de tu casa.</p>
+              </div>
+            </section>
+
+            {/* Productos Relacionados */}
+            <section className={styles.relatedProductsSection}>
+              <h3 className={styles.sectionHeading}>OTROS PRODUCTOS QUE TE PUEDEN GUSTAR</h3>
+              <div className={styles.productsGrid} style={{ marginTop: '20px' }}>
+                {SNEAKERS_DATA.filter(p => p.id !== selectedProduct.id).slice(0, 3).map((product) => (
+                  <div
+                    key={product.id}
+                    className={styles.productCard}
+                    onClick={() => handleProductClick(product)}
+                  >
+                    <div className={styles.cardTop}>
+                      <span className={styles.cardBrand}>{product.brand}</span>
+                    </div>
+                    <div className={styles.cardImageWrapper}>
+                      <img src={product.image} alt={product.name} className={styles.cardImg} />
+                    </div>
+                    <div className={styles.cardInfo}>
+                      <h4 className={styles.cardName}>{product.name}</h4>
+                      <div className={styles.cardFooter}>
+                        <span className={styles.cardPrice}>${product.price.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
+          </div>
+        ) : (
+          /* ==================== VISTA PRINCIPAL DEL CATÁLOGO ==================== */
+          <>
+            {/* Hero Banner */}
+            <section className={styles.heroBanner}>
+              <div className={styles.heroContent}>
+                <span className={styles.heroSubtitle}>DC SNEAKERS • SNEAKERS & STREETWEAR</span>
+                <h1 className={styles.heroTitle}>
+                  EL TEMPLO DEL <br />
+                  <span className={styles.heroHighlight}>SNEAKERHEAD</span>
+                </h1>
+                <p className={styles.heroDesc}>
+                  Descubre las siluetas más icónicas y exclusivas de tenis en Colombia. Cultura urbana combinada con diseños legendarios listos para marcar tu estilo.
+                </p>
+                <button
+                  className={styles.heroCTA}
+                  onClick={() => setShowPromoModal(true)}
+                >
+                  ACTIVAR CUPÓN DC SNEAKERS
+                </button>
+              </div>
+
+              <div className={styles.heroImageSection}>
+                <div className={styles.heroGlow} />
+                <img
+                  src='https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80'
+                  alt='Air Jordan 1 DC SNEAKERS'
+                  className={styles.heroShoe}
+                />
+                <div className={styles.badgeSale}>30% OFF</div>
+              </div>
+            </section>
+
+            {/* SECCIÓN DE CARACTERÍSTICAS / GARANTÍAS (ESTILO IMAGEN) */}
+            <section className={styles.featureCardsSection}>
+              <div className={styles.featureCard}>
+                <div className={styles.featureIconCircle}>
+                  <svg viewBox='0 0 24 24' width='28' height='28' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                    <path d='M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z' />
+                    <polyline points='3.27 6.96 12 12.01 20.73 6.96' />
+                    <line x1='12' y1='22.08' x2='12' y2='12' />
+                  </svg>
+                </div>
+                <h4 className={styles.featureCardTitle}>Devolución Gratis por Talla</h4>
+                <p className={styles.featureCardDesc}>Si la talla no te queda perfecta, realizamos el cambio sin ningún costo adicional para ti.</p>
+              </div>
+
+              <div className={styles.featureCard}>
+                <div className={styles.featureIconCircle}>
+                  <svg viewBox='0 0 24 24' width='28' height='28' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                    <path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
+                  </svg>
+                </div>
+                <h4 className={styles.featureCardTitle}>Regalo de Medias Incluido</h4>
+                <p className={styles.featureCardDesc}>Recibe un par de medias deportivas de regalo con la compra de cualquiera de tus tenis.</p>
+              </div>
+
+              <div className={styles.featureCard}>
+                <div className={styles.featureIconCircle}>
+                  <svg viewBox='0 0 24 24' width='28' height='28' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                    <rect x='1' y='3' width='15' height='13' />
+                    <polygon points='16 8 20 8 23 11 23 16 16 16 16 8' />
+                    <circle cx='5.5' cy='18.5' r='2.5' />
+                    <circle cx='18.5' cy='18.5' r='2.5' />
+                  </svg>
+                </div>
+                <h4 className={styles.featureCardTitle}>Despacho en 1–3 Días</h4>
+                <p className={styles.featureCardDesc}>Envío rápido a toda Colombia con opción de Pago Contraentrega en la puerta de tu casa.</p>
+              </div>
+            </section>
+
+            {/* Categorías y Controles */}
+            <div className={styles.catalogControls}>
+              <div className={styles.categoriesBar}>
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    className={`${styles.categoryTab} ${selectedCategory === cat ? styles.activeTab : ''}`}
+                    onClick={() => setSelectedCategory(cat)}
+                  >
+                    {cat === 'ALL' ? 'TODOS' : cat}
+                  </button>
+                ))}
+              </div>
+
+              <div className={styles.gridInfo}>
+                <h3 className={styles.sectionHeading}>PRODUCTOS POPULARES</h3>
+                <span className={styles.productCount}>
+                  Mostrando {filteredProducts.length} productos
+                </span>
+              </div>
+            </div>
+
+            {/* Grid de Productos */}
+            {filteredProducts.length > 0
+              ? (
+                <section className={styles.productsGrid}>
+                  {filteredProducts.map((product) => (
+                    <div
+        key={product.id}
+        className={styles.productCard}
+        onClick={() => handleProductClick(product)}
+      >
+        <div className={styles.cardTop}>
+                      <span className={styles.cardBrand}>{product.brand}</span>
+                      <button
+                        className={`${styles.favoriteBtn} ${favorites.has(product.id) ? styles.isFavorite : ''}`}
+                        onClick={(e) => toggleFavorite(product.id, e)}
+                        aria-label='Agregar a favoritos'
+                      >
+                        <svg viewBox='0 0 24 24' width='18' height='18' fill={favorites.has(product.id) ? 'currentColor' : 'none'} stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
+                          <path d='M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z' />
+                        </svg>
+                      </button>
+                    </div>
+
+        <div className={styles.cardImageWrapper}>
+                      <div className={styles.cardGlow} />
+                      <img src={product.image} alt={product.name} className={styles.cardImg} />
+                    </div>
+
+        <div className={styles.cardInfo}>
+                      <h4 className={styles.cardName}>{product.name}</h4>
+
+                      <div className={styles.cardFooter}>
+                        <span className={styles.cardPrice}>${product.price.toFixed(2)}</span>
+                        <div className={styles.ratingBadge}>
+                          <svg viewBox='0 0 24 24' width='12' height='12' fill='currentColor' className={styles.starIcon}>
+                            <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2' />
+                          </svg>
+                          <span>{product.rating.toFixed(1)}</span>
+                        </div>
+                      </div>
+                    </div>
+
+        <div className={styles.quickAddOverlay}>
+                      <span>VER PRODUCTO COMPLETO</span>
+                    </div>
+      </div>
+                  ))}
+                </section>
+                )
+              : (
+                <div className={styles.noResults}>
+                  <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
+                    <circle cx='11' cy='11' r='8' />
+                    <line x1='21' y1='21' x2='16.65' y2='16.65' />
+                  </svg>
+                  <h3>No se encontraron tenis</h3>
+                  <p>Intenta ajustar tu búsqueda o busca otra categoría.</p>
+                  <button className={styles.resetBtn} onClick={() => { setSearchQuery(''); setSelectedCategory('ALL') }}>
+                    Ver todos los tenis
+                </button>
+                </div>
+                )}
+          </>
+        )}
       </main>
 
+      {/* Floating WhatsApp Action Button */}
       <a
         href='https://wa.me/573008625143?text=Hola%20DC%20SNEAKERS!%20Tengo%20una%20consulta%20sobre%20los%20sneakers'
         target='_blank'
@@ -545,6 +991,7 @@ function Home () {
         <span className={styles.whatsappFloatTooltip}>¿Dudas? Habla al 300 862 5143</span>
       </a>
 
+      {/* Footer Section */}
       <footer className={styles.footer}>
         <div className={styles.footerMain}>
           <div className={styles.footerBrand}>
@@ -584,6 +1031,7 @@ function Home () {
         </div>
       </footer>
 
+      {/* Coupon Modal */}
       {showPromoModal && (
         <div className={styles.modalOverlay} onClick={() => setShowPromoModal(false)}>
           <div className={styles.promoModal} onClick={(e) => e.stopPropagation()}>
@@ -621,6 +1069,7 @@ function Home () {
         </div>
       )}
 
+      {/* Modal: Guía de Tallas (EU / US / CM) */}
       {showSizeGuide && (
         <div className={styles.modalOverlay} onClick={() => setShowSizeGuide(false)}>
           <div className={styles.sizeGuideModal} onClick={(e) => e.stopPropagation()}>
@@ -678,6 +1127,7 @@ function Home () {
         </div>
       )}
 
+      {/* Modal: Mis Órdenes */}
       {showOrdersModal && (
         <div className={styles.modalOverlay} onClick={() => setShowOrdersModal(false)}>
           <div className={styles.ordersModal} onClick={(e) => e.stopPropagation()}>
@@ -700,20 +1150,20 @@ function Home () {
                     ordersList.map(order => (
                       <div key={order.id} className={styles.orderCard}>
                         <div className={styles.orderCardHeader}>
-                      <div>
+                          <div>
                         <span className={styles.orderIdText}>{order.id}</span>
                         <span className={styles.orderDateText}> • {order.date}</span>
                       </div>
-                      <span
+                          <span
                         className={styles.orderStatusBadge}
                         style={{ backgroundColor: order.statusBg, color: order.statusColor }}
                       >
                         {order.status}
                       </span>
-                    </div>
+                        </div>
 
                         <div className={styles.orderItemsList}>
-                      {order.items.map((item, idx) => (
+                          {order.items.map((item, idx) => (
                         <div key={idx} className={styles.orderItemRow}>
                           <img src={item.image} alt={item.name} className={styles.orderItemThumb} />
                           <div className={styles.orderItemInfo}>
@@ -723,29 +1173,29 @@ function Home () {
                           <span className={styles.orderItemPrice}>${(item.price * item.quantity).toFixed(2)} USD</span>
                         </div>
                       ))}
-                    </div>
+                        </div>
 
                         <div className={styles.orderCardFooter}>
-                      <div>
+                          <div>
                         <div className={styles.orderPaymentMeta}>💳 Método: <strong>{order.paymentMethod}</strong></div>
                         <div className={styles.orderShippingMeta}>📍 Destino: <strong>{order.city}</strong></div>
                       </div>
-                      <div className={styles.orderTotalWrapper}>
+                          <div className={styles.orderTotalWrapper}>
                         <span>Total:</span>
                         <span className={styles.orderTotalAmount}>${order.total.toFixed(2)} USD</span>
                       </div>
-                    </div>
+                        </div>
 
                         <a
-                      href={`https://wa.me/573008625143?text=Hola%20DC%20SNEAKERS,%20deseo%20consultar%20el%20estado%20de%20mi%20pedido%20${order.id}`}
-                      target='_blank'
-                      rel='noopener noreferrer'
-                      className={styles.trackOrderBtn}
-                    >
-                      <svg viewBox='0 0 24 24' width='16' height='16' fill='currentColor'>
+                          href={`https://wa.me/573008625143?text=Hola%20DC%20SNEAKERS,%20deseo%20consultar%20el%20estado%20de%20mi%20pedido%20${order.id}`}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className={styles.trackOrderBtn}
+                        >
+                          <svg viewBox='0 0 24 24' width='16' height='16' fill='currentColor'>
                         <path d='M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654z' />
                       </svg>
-                      Rastrear Pedido en WhatsApp (300 862 5143)
+                          Rastrear Pedido en WhatsApp (300 862 5143)
                     </a>
                       </div>
                     ))
@@ -760,6 +1210,7 @@ function Home () {
         </div>
       )}
 
+      {/* Cart Sidebar */}
       {isCartOpen && (
         <div className={styles.cartOverlay} onClick={() => setIsCartOpen(false)}>
           <div className={styles.cartSidebar} onClick={(e) => e.stopPropagation()}>
@@ -781,11 +1232,11 @@ function Home () {
                         <img src={item.product.image} alt={item.product.name} className={styles.cartItemImg} />
 
                         <div className={styles.cartItemDetails}>
-                      <h4>{item.product.name}</h4>
-                      <span className={styles.cartItemMeta}>
+                          <h4>{item.product.name}</h4>
+                          <span className={styles.cartItemMeta}>
                         Talla EU: {item.size} | Color: {item.color.name}
                       </span>
-                      <div className={styles.cartItemPriceRow}>
+                          <div className={styles.cartItemPriceRow}>
                         <span className={styles.cartItemPrice}>
                           ${(item.product.price * item.quantity).toFixed(2)}
                         </span>
@@ -796,20 +1247,20 @@ function Home () {
                           <button onClick={() => updateCartQuantity(index, 1)}>+</button>
                         </div>
                       </div>
-                    </div>
+                        </div>
                       </div>
                     ))
                   )
                 : (
                   <div className={styles.emptyCart}>
                     <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' strokeLinejoin='round'>
-      <circle cx='9' cy='21' r='1' />
-      <circle cx='20' cy='21' r='1' />
-      <path d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6' />
-    </svg>
+                      <circle cx='9' cy='21' r='1' />
+                      <circle cx='20' cy='21' r='1' />
+                      <path d='M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6' />
+                    </svg>
                     <p>Aún no has agregado tenis a tu bolsa.</p>
                     <button className={styles.startShoppingBtn} onClick={() => setIsCartOpen(false)}>
-      Empezar a comprar
+                      Empezar a comprar
                   </button>
                   </div>
                   )}
@@ -841,117 +1292,7 @@ function Home () {
         </div>
       )}
 
-      {selectedProduct && (
-        <div className={styles.modalOverlay} onClick={() => setSelectedProduct(null)}>
-          <div className={styles.detailModal} onClick={(e) => e.stopPropagation()}>
-            <button className={styles.modalClose} onClick={() => setSelectedProduct(null)}>
-              <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2.5' strokeLinecap='round' strokeLinejoin='round'>
-                <line x1='18' y1='6' x2='6' y2='18' />
-                <line x1='6' y1='6' x2='18' y2='18' />
-              </svg>
-            </button>
-
-            <div className={styles.detailGrid}>
-              <div className={styles.detailLeft}>
-                <div className={styles.glowBg} />
-                <img src={selectedProduct.image} alt={selectedProduct.name} className={styles.detailImg} />
-              </div>
-
-              <div className={styles.detailRight}>
-                <div className={styles.detailBrandRow}>
-                  <span className={styles.detailBrand}>{selectedProduct.brand}</span>
-                  <div className={styles.detailRating}>
-                    <svg viewBox='0 0 24 24' width='14' height='14' fill='currentColor' className={styles.starIcon}>
-                      <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2' />
-                    </svg>
-                    <span>{selectedProduct.rating.toFixed(1)}</span>
-                  </div>
-                </div>
-
-                <h2 className={styles.detailName}>{selectedProduct.name}</h2>
-                <span className={styles.detailPrice}>${selectedProduct.price.toFixed(2)}</span>
-
-                <div className={styles.liveViewersBadge}>
-                  <span className={styles.livePulseDot} />
-                  <span>🔥 <strong>{((selectedProduct.id * 7) % 15) + 9} personas</strong> están viendo este producto ahora mismo</span>
-                </div>
-
-                <p className={styles.detailDesc}>{selectedProduct.description}</p>
-
-                <div className={styles.selectorSection}>
-                  <div className={styles.sizeHeaderRow}>
-                    <span className={styles.selectorTitle}>Seleccionar Talla (EU)</span>
-                    <button
-                      className={styles.sizeGuideLinkBtn}
-                      onClick={() => setShowSizeGuide(true)}
-                    >
-                      📏 Guía de Tallas
-                    </button>
-                  </div>
-                  <div className={styles.sizesRow}>
-                    {selectedProduct.sizes.map((size) => (
-                      <button
-                        key={size}
-                        className={`${styles.sizeBtn} ${detailSize === size ? styles.activeSize : ''}`}
-                        onClick={() => setDetailSize(size)}
-                      >
-                        EU {size}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className={styles.selectorSection}>
-                  <span className={styles.selectorTitle}>Seleccionar Color</span>
-                  <div className={styles.colorsRow}>
-                    {selectedProduct.colors.map((color, index) => (
-                      <button
-                        key={color.name}
-                        className={`${styles.colorBtn} ${detailColor === index ? styles.activeColor : ''}`}
-                        style={{ '--color-hex': color.hex }}
-                        onClick={() => setDetailColor(index)}
-                        title={color.name}
-                      >
-                        <span className={styles.colorCircle} />
-                      </button>
-                    ))}
-                    <span className={styles.colorTextLabel}>
-                      {selectedProduct.colors[detailColor]?.name}
-                    </span>
-                  </div>
-                </div>
-
-                <button
-                  className={`${styles.addToCartBtn} ${isAddedToCart ? styles.added : ''}`}
-                  onClick={handleAddToCart}
-                  disabled={isAddedToCart}
-                >
-                  {isAddedToCart
-                    ? (
-                      <>
-                        <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='3' strokeLinecap='round' strokeLinejoin='round'>
-      <polyline points='20 6 9 17 4 12' />
-    </svg>
-                        <span>¡AGREGADO A LA BOLSA!</span>
-                      </>
-                      )
-                    : (
-                      <>
-                        <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round'>
-      <path d='M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z' />
-      <line x1='3' y1='6' x2='21' y2='6' />
-      <path d='M16 10a4 4 0 0 1-8 0' />
-    </svg>
-                        <span>AÑADIR A LA BOLSA</span>
-                      </>
-                      )}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* Checkout Modal */}
       {isCheckoutOpen && (
         <div className={styles.modalOverlay} onClick={() => setIsCheckoutOpen(false)}>
           <div className={styles.checkoutModal} onClick={(e) => e.stopPropagation()}>
@@ -1255,6 +1596,7 @@ function Home () {
         </div>
       )}
 
+      {/* Success Order Modal */}
       {completedOrder && (
         <div className={styles.modalOverlay} onClick={() => setCompletedOrder(null)}>
           <div className={styles.checkoutModal} style={{ maxWidth: '550px' }} onClick={(e) => e.stopPropagation()}>
