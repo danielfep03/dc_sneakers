@@ -1,0 +1,307 @@
+.headerWrapper {
+  --color-bg: #0B0B0C;
+  --color-surface: #141416;
+  --color-volt: #D4FF00;
+  --color-volt-hover: #bce000;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text-main: #FFFFFF;
+  --color-text-muted: #8E8E93;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body: 'Space Grotesk', -apple-system, sans-serif;
+
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  background: var(--color-bg);
+  font-family: var(--font-body);
+}
+
+/* 1. Ticker superior con separadores "+" */
+.topTicker {
+  background: #000000;
+  border-bottom: 1px solid var(--color-border);
+  padding: 6px 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tickerTrack {
+  display: inline-flex;
+  gap: 2rem;
+  animation: tickerScroll 24s linear infinite;
+  align-items: center;
+}
+
+.tickerItem {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c4c4c8;
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.tickerSep {
+  color: var(--color-volt);
+  font-size: 0.8rem;
+  font-weight: 900;
+}
+
+@keyframes tickerScroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* 2. Barra de Navegación Principal */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 2.5rem;
+  border-bottom: 1px solid var(--color-border);
+  background: rgba(11, 11, 12, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Brand / Logo */
+.brandLink {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+.brandLogoText {
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  letter-spacing: 0.04em;
+  color: var(--color-text-main);
+  line-height: 1;
+}
+
+.brandLogoSub {
+  font-family: var(--font-body);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  color: var(--color-volt);
+  text-transform: uppercase;
+}
+
+/* Navegación Central (Desktop) */
+.navCenter {
+  display: flex;
+  align-items: center;
+  gap: 2.2rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  color: var(--color-text-main);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 0.2s ease;
+  position: relative;
+  padding: 0.4rem 0;
+}
+
+.navLink:hover {
+  color: var(--color-volt);
+}
+
+.navLink.active {
+  color: var(--color-volt);
+}
+
+.navLink.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--color-volt);
+}
+
+.saleLink {
+  color: #ff4757 !important;
+}
+
+.saleLink:hover {
+  color: var(--color-volt) !important;
+}
+
+/* Acciones a la Derecha */
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.actionBtn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--color-text-main);
+  padding: 0.55rem;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.actionBtn:hover {
+  background: var(--color-surface);
+  border-color: var(--color-border);
+  color: var(--color-volt);
+}
+
+/* Badge del carrito estilo Volt */
+.cartBadge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  background: var(--color-volt);
+  color: #000000;
+  font-size: 0.65rem;
+  font-weight: 900;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Botón Burger Mobile */
+.burgerBtn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: var(--color-text-main);
+  padding: 0.4rem;
+  cursor: pointer;
+}
+
+/* 3. Barra de Búsqueda Desplegable */
+.searchBarContainer {
+  padding: 0.8rem 2.5rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  animation: slideDown 0.25s ease-out;
+}
+
+.searchBarInner {
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #000000;
+  border: 1px solid var(--color-border);
+  padding: 0.6rem 1rem;
+  border-radius: 2px;
+}
+
+.searchBarInner:focus-within {
+  border-color: var(--color-volt);
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-muted);
+}
+
+.searchCloseBtn {
+  background: none;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.searchCloseBtn:hover {
+  color: var(--color-volt);
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 4. Menú Drawer Mobile */
+.mobileMenuDrawer {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .navbar {
+    padding: 0.8rem 1.25rem;
+  }
+
+  .navCenter {
+    display: none;
+  }
+
+  .burgerBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobileMenuDrawer {
+    display: flex;
+    flex-direction: column;
+    background: var(--color-bg);
+    border-bottom: 1px solid var(--color-border);
+    padding: 1.25rem;
+    gap: 0.75rem;
+    animation: slideDown 0.25s ease-out;
+  }
+
+  .mobileNavLink {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    letter-spacing: 0.05em;
+    color: var(--color-text-main);
+    text-decoration: none;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .mobileNavLink:hover,
+  .mobileNavLink.active {
+    color: var(--color-volt);
+  }
+}

@@ -1,0 +1,265 @@
+.headerContainer {
+  --color-bg: rgba(10, 10, 12, 0.75);
+  --color-text: #ffffff;
+  --color-muted: #9e9ea7;
+  --color-volt: #d4ff00;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+  background: var(--color-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-border);
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.navRow {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.1rem 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 1. Logo / Brand Izquierda */
+.brandLink {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.brandText {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.brandScript {
+  font-family: 'Permanent Marker', cursive, sans-serif;
+  font-size: 1.15rem;
+  color: #ffffff;
+  margin-left: 2px;
+  font-weight: 400;
+  transform: rotate(-3deg);
+  display: inline-block;
+}
+
+/* 2. Navegación Central Desktop */
+.navCenter {
+  display: flex;
+  align-items: center;
+  gap: 2.8rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  color: var(--color-text);
+  text-decoration: none;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: color 0.2s ease, opacity 0.2s ease;
+  position: relative;
+  padding: 0.35rem 0;
+  opacity: 0.9;
+}
+
+.navLink:hover {
+  color: var(--color-volt);
+  opacity: 1;
+}
+
+/* 3. Acciones Derecha (Search, Bag, Burger) */
+.navActions {
+  display: flex;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+.iconBtn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: transform 0.15s ease, color 0.2s ease;
+}
+
+.iconBtn:hover {
+  color: var(--color-volt);
+  transform: translateY(-1px);
+}
+
+.cartBadge {
+  position: absolute;
+  top: -4px;
+  right: -6px;
+  background: var(--color-volt);
+  color: #000000;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.burgerBtn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px;
+  width: 26px;
+  height: 26px;
+  transition: opacity 0.2s ease;
+}
+
+.burgerLineTop,
+.burgerLineBottom {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #ffffff;
+  transition: transform 0.25s ease, background 0.2s ease;
+}
+
+.burgerBtn:hover .burgerLineTop,
+.burgerBtn:hover .burgerLineBottom {
+  background: var(--color-volt);
+}
+
+.burgerBtnActive .burgerLineTop {
+  transform: translateY(4px) rotate(45deg);
+  background: var(--color-volt);
+}
+
+.burgerBtnActive .burgerLineBottom {
+  transform: translateY(-4px) rotate(-45deg);
+  background: var(--color-volt);
+}
+
+/* 4. Barra de Búsqueda Desplegable */
+.searchBar {
+  padding: 0.75rem 2.5rem;
+  background: #111113;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.searchInner {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #000000;
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 1rem;
+}
+
+.searchInner:focus-within {
+  border-color: var(--color-volt);
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-family: inherit;
+}
+
+.searchInput::placeholder {
+  color: var(--color-muted);
+}
+
+.searchClose {
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.searchClose:hover {
+  color: #ffffff;
+}
+
+/* 5. Mobile Drawer */
+.mobileDrawer {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .navRow {
+    padding: 0.9rem 1.25rem;
+  }
+
+  .navCenter {
+    display: none;
+  }
+
+  .mobileDrawer {
+    display: flex;
+    flex-direction: column;
+    background: #0d0d0f;
+    border-top: 1px solid var(--color-border);
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
+    animation: fadeIn 0.2s ease-out;
+  }
+
+  .mobileNavLink {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  .mobileNavLink:hover {
+    color: var(--color-volt);
+  }
+}
+

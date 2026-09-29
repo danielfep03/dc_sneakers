@@ -1,0 +1,150 @@
+/* Premium Desktop Hero Banner */
+.heroBanner {
+  background: linear-gradient(135deg, #1c1c1e 0%, #000000 100%);
+  border-radius: 36px;
+  padding: 60px;
+  color: #ffffff;
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 900px) {
+  .heroBanner {
+    grid-template-columns: 1fr;
+    padding: 40px;
+    gap: 40px;
+  }
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 20px;
+  z-index: 2;
+}
+
+.heroSubtitle {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--color-brand);
+  letter-spacing: 3px;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-size: 42px;
+  font-weight: 900;
+  line-height: 1.15;
+  margin: 0;
+  letter-spacing: -1px;
+}
+
+@media (max-width: 600px) {
+  .heroTitle {
+    font-size: 32px;
+  }
+}
+
+.heroHighlight {
+  color: #ffffff;
+  text-shadow: 0 4px 20px rgba(255, 59, 48, 0.4);
+}
+
+.heroDesc {
+  font-size: 15px;
+  color: #c7c7cc;
+  line-height: 1.6;
+  max-width: 85%;
+  margin: 0;
+}
+
+.heroCTA {
+  background-color: #ffffff;
+  color: #000000;
+  border: none;
+  padding: 16px 36px;
+  border-radius: 30px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  letter-spacing: 0.5px;
+  box-shadow: 0 10px 20px rgba(255, 255, 255, 0.05);
+}
+
+.heroCTA:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 30px rgba(255, 255, 255, 0.25);
+  background-color: var(--color-brand);
+  color: #ffffff;
+}
+
+.heroCTA:active {
+  transform: translateY(-1px);
+}
+
+.heroImageSection {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+}
+
+.heroGlow {
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 59, 48, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+  z-index: 1;
+}
+
+.heroShoe {
+  width: 100%;
+  max-width: 360px;
+  height: auto;
+  object-fit: contain;
+  transform: rotate(-18deg) translateY(0);
+  filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.6));
+  z-index: 2;
+  transition: transform 0.5s ease;
+  animation: floatShoe 4s ease-in-out infinite alternate;
+}
+
+.heroBanner:hover .heroShoe {
+  transform: rotate(-12deg) scale(1.05);
+}
+
+.badgeSale {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: var(--color-brand);
+  color: #ffffff;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 1px;
+  transform: rotate(10deg);
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.4);
+  z-index: 3;
+}
+
+@keyframes floatShoe {
+  0% {
+    transform: rotate(-18deg) translateY(-8px);
+  }
+  100% {
+    transform: rotate(-14deg) translateY(8px);
+  }
+}

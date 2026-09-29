@@ -1,0 +1,31 @@
+.ecommerceWrapper {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+  color: var(--color-dark);
+  font-family: var(--font-body);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.mainContainer {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 4% 60px 4%;
+  box-sizing: border-box;
+}
+
+/* Modo Oscuro Global en el Wrapper */
+.darkTheme {
+  background-color: #0b0b0d;
+  color: #f2f2f7;
+}
+
+@media (max-width: 768px) {
+  .mainContainer {
+    padding: 0 4% 40px 4%;
+  }
+}

@@ -1,0 +1,169 @@
+.productCard {
+  background-color: #fcfcfd;
+  border-radius: 28px;
+  padding: 20px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid rgba(0,0,0,0.03);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.productCard:hover {
+  background-color: #ffffff;
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  border-color: rgba(0,0,0,0.08);
+}
+
+.cardTop {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 2;
+}
+
+.cardBrand {
+  font-size: 11px;
+  font-weight: 800;
+  color: #8e8e93;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.favoriteBtn {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8e8e93;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+}
+
+.favoriteBtn:hover {
+  transform: scale(1.1);
+  color: #0f0f11;
+}
+
+.favoriteBtn.isFavorite {
+  color: #e5383b;
+  box-shadow: 0 4px 12px rgba(255, 59, 48, 0.15);
+}
+
+.cardImageWrapper {
+  position: relative;
+  width: 100%;
+  height: 160px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 16px 0;
+}
+
+.cardGlow {
+  position: absolute;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,0,0,0.015) 0%, rgba(0,0,0,0) 75%);
+  transition: all 0.35s ease;
+}
+
+.productCard:hover .cardGlow {
+  transform: scale(1.4);
+  background: radial-gradient(circle, rgba(255,59,48,0.035) 0%, rgba(0,0,0,0) 75%);
+}
+
+.cardImg {
+  width: 150px;
+  height: auto;
+  object-fit: contain;
+  transform: rotate(-10deg);
+  filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.06));
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 2;
+}
+
+.productCard:hover .cardImg {
+  transform: rotate(-15deg) translateY(-10px) scale(1.08);
+  filter: drop-shadow(0 20px 20px rgba(0, 0, 0, 0.12));
+}
+
+.cardInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardName {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f0f11;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cardPrice {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f0f11;
+}
+
+.ratingBadge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #0f0f11;
+}
+
+.starIcon {
+  color: #f59e0b;
+}
+
+.quickAddOverlay {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  height: 48px;
+  background-color: #0f0f11;
+  color: #ffffff;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  z-index: 5;
+}
+
+.productCard:hover .quickAddOverlay {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.productCard:hover .cardInfo {
+  opacity: 0.1;
+}
