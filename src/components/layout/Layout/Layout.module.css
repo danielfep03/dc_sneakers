@@ -1,0 +1,13 @@
+.layoutWrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg, #0a0a0c);
+  color: var(--color-text, #ffffff);
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+}
+
+.mainContent {
+  flex: 1;
+  width: 100%;
+}

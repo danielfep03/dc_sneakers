@@ -1,0 +1,26 @@
+[
+  {
+    "id": "lifestyle",
+    "name": "Casual & Lifestyle",
+    "slug": "lifestyle",
+    "description": "Siluetas esenciales para el uso diario y estilo urbano."
+  },
+  {
+    "id": "basketball",
+    "name": "Basketball",
+    "slug": "basketball",
+    "description": "Alto rendimiento y amortiguación para la cancha o el streetwear."
+  },
+  {
+    "id": "running",
+    "name": "Running & Retro",
+    "slug": "running",
+    "description": "Comodidad ligera y siluetas retro runners de los 2000s."
+  },
+  {
+    "id": "skate",
+    "name": "Skateboarding",
+    "slug": "skate",
+    "description": "Durabilidad, suela plana y agarre para la tabla y las calles."
+  }
+]

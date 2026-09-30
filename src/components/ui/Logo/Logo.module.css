@@ -1,0 +1,41 @@
+.logoLink {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1, 0.25rem);
+  user-select: none;
+}
+
+.brandText {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.scriptText {
+  font-family: var(--font-script, 'Permanent Marker', cursive);
+  color: var(--color-accent, #c6ff00);
+  font-weight: 400;
+  display: inline-block;
+  transform: rotate(-3deg);
+  line-height: 1;
+}
+
+/* Variantes de tamaño */
+.headerVariant .brandText {
+  font-size: clamp(1.4rem, 2.5vw, 1.85rem);
+}
+.headerVariant .scriptText {
+  font-size: clamp(1.15rem, 2vw, 1.55rem);
+}
+
+.footerVariant .brandText {
+  font-size: var(--text-2xl, 2.2rem);
+}
+.footerVariant .scriptText {
+  font-size: var(--text-xl, 1.5rem);
+  color: #ffffff;
+}

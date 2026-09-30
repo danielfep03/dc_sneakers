@@ -1,0 +1,119 @@
+.panel {
+  background-color: var(--color-surface, #141416);
+  border: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-sm, 2px);
+  padding: var(--space-5, 1.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5, 1.5rem);
+}
+
+.panelTitle {
+  font-family: var(--font-display, 'Bebas Neue', sans-serif);
+  font-size: var(--text-xl, 1.5rem);
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  padding-bottom: var(--space-3, 0.75rem);
+}
+
+.clearBtn {
+  background: none;
+  border: none;
+  color: var(--color-accent, #c6ff00);
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 800;
+  cursor: pointer;
+  text-transform: uppercase;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2, 0.5rem);
+}
+
+.groupLabel {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--color-text-muted, #9a9a9f);
+  text-transform: uppercase;
+}
+
+.optionsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-sm, 0.85rem);
+  color: var(--color-text, #ffffff);
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox {
+  accent-color: var(--color-accent, #c6ff00);
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+}
+
+.sizesGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+}
+
+.sizeBtn {
+  background: #0d0d0f;
+  border: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.1));
+  color: #ffffff;
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 700;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm, 2px);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.sizeBtn:hover {
+  border-color: var(--color-accent, #c6ff00);
+}
+
+.sizeActive {
+  background-color: var(--color-accent, #c6ff00);
+  color: #000000;
+  border-color: var(--color-accent, #c6ff00);
+  font-weight: 900;
+}
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  border-bottom: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+}
+
+.toggleLabel {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-sm, 0.85rem);
+  font-weight: 800;
+  color: var(--color-text, #ffffff);
+}

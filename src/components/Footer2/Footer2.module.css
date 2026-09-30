@@ -1,0 +1,159 @@
+.footerContainer {
+  background-color: #08080a;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5rem 2.5rem 2.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  box-sizing: border-box;
+}
+
+.footerInner {
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.topGrid {
+  display: grid;
+  grid-template-columns: 1.8fr 1fr 1fr 1.4fr;
+  gap: 3rem;
+  padding-bottom: 4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.brandCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.footerBrandHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footerLogo {
+  height: 44px;
+  width: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
+.brandTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.4rem;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1;
+}
+
+.brandTagline {
+  font-size: 0.85rem;
+  color: #8e8e93;
+  line-height: 1.6;
+  max-width: 320px;
+  margin: 0;
+}
+
+.colTitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d4ff00;
+  margin: 0 0 1.2rem 0;
+}
+
+.linksList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.footerLink {
+  color: #a0a0a5;
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  transition: color 0.2s ease;
+}
+
+.footerLink:hover {
+  color: #ffffff;
+}
+
+.newsletterDesc {
+  font-size: 0.82rem;
+  color: #8e8e93;
+  line-height: 1.5;
+  margin: 0 0 1rem 0;
+}
+
+.inputRow {
+  display: flex;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: #111114;
+}
+
+.newsletterInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  padding: 0.75rem 1rem;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 0.82rem;
+}
+
+.subscribeBtn {
+  background-color: #d4ff00;
+  color: #000000;
+  border: none;
+  padding: 0 1.2rem;
+  font-family: inherit;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.subscribeBtn:hover {
+  background-color: #ffffff;
+}
+
+.bottomRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 2rem;
+  font-size: 0.75rem;
+  color: #636366;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 992px) {
+  .topGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .footerContainer {
+    padding: 3.5rem 1.25rem 2rem;
+  }
+  .topGrid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .bottomRow {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+}

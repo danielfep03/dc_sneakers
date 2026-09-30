@@ -1,0 +1,46 @@
+.tableWrap {
+  overflow-x: auto;
+  margin: var(--space-4, 1rem) 0;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-sm, 0.85rem);
+  text-align: center;
+}
+
+.table th {
+  background-color: #0b0b0d;
+  color: var(--color-accent, #c6ff00);
+  font-weight: 800;
+  padding: 0.75rem 0.5rem;
+  border-bottom: 2px solid var(--color-border, #242428);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.table td {
+  padding: 0.65rem 0.5rem;
+  border-bottom: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  color: var(--color-text, #ffffff);
+}
+
+.tipBox {
+  background-color: rgba(198, 255, 0, 0.06);
+  border: 1px solid rgba(198, 255, 0, 0.2);
+  padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
+  border-radius: var(--radius-sm, 2px);
+  margin-top: var(--space-4, 1rem);
+  font-size: var(--text-xs, 0.72rem);
+  color: var(--color-text-muted, #9a9a9f);
+  line-height: 1.5;
+}
+
+.tipTitle {
+  color: var(--color-accent, #c6ff00);
+  font-weight: 800;
+  margin-bottom: 0.2rem;
+  text-transform: uppercase;
+}

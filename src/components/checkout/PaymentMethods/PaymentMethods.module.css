@@ -1,0 +1,53 @@
+.methodsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3, 0.75rem);
+}
+
+.optionCard {
+  background-color: var(--color-surface, #141416);
+  border: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-sm, 2px);
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.optionCard:hover {
+  border-color: rgba(198, 255, 0, 0.3);
+}
+
+.selected {
+  border-color: var(--color-accent, #c6ff00) !important;
+  background-color: var(--color-surface-2, #1c1c20);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.radio {
+  accent-color: var(--color-accent, #c6ff00);
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.titleGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-sm, 0.85rem);
+  font-weight: 800;
+  color: var(--color-text, #ffffff);
+}
+
+.desc {
+  font-size: var(--text-xs, 0.72rem);
+  color: var(--color-text-muted, #9a9a9f);
+}

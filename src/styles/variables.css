@@ -1,0 +1,70 @@
+/* ==========================================================================
+   VARIABLES Y TOKENS DE DISEÑO - DC SNEAKERS
+   Inspirado en la estética Streetwear / Brutalista Urbana (URBANcode).
+   Paleta: Base negro profundo + Acento Verde Lima / Volt Neón (#C6FF00)
+   ========================================================================== */
+
+:root {
+  /* --- FONDOS --- */
+  --color-bg: #0a0a0c;            /* Negro base de la página */
+  --color-surface: #141416;       /* Tarjetas, paneles y modales */
+  --color-surface-2: #1c1c20;     /* Hover de tarjetas y controles secundarios */
+  --color-paper: #ececec;         /* Secciones tipo papel rasgado / claras */
+
+  /* --- TEXTO --- */
+  --color-text: #ffffff;          /* Texto principal */
+  --color-text-muted: #9a9a9f;    /* Texto secundario y etiquetas */
+  --color-text-on-accent: #0a0a0c;/* Texto oscuro sobre fondos verde lima */
+
+  /* --- ACENTO LIMA / VOLT NEÓN --- */
+  --color-accent: #c6ff00;        /* Verde lima de la referencia */
+  --color-accent-hover: #d8ff4d;  /* Hover del botón principal */
+  --color-script-gold: #e2b842;   /* Acento caligráfico dorado (RULE THE STREETS) */
+
+  /* --- ESTADOS Y BORDES --- */
+  --color-danger: #ff4d4d;        /* Etiqueta de oferta / errores de formulario */
+  --color-border: #242428;        /* Bordes y líneas divisorias sutiles */
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+
+  /* --- TIPOGRAFÍA (Google Fonts) --- */
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-script: 'Permanent Marker', cursive, sans-serif;
+  --font-body: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* --- ESCALA DE TAMAÑOS --- */
+  --text-xs: 0.72rem;
+  --text-sm: 0.85rem;
+  --text-base: 1rem;
+  --text-lg: 1.15rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2.2rem;
+  --text-3xl: 3.2rem;
+  --text-hero: clamp(4rem, 8vw, 7.5rem);
+
+  /* --- ESPACIADO (Múltiplos de 4px) --- */
+  --space-1: 0.25rem;  /* 4px */
+  --space-2: 0.5rem;   /* 8px */
+  --space-3: 0.75rem;  /* 12px */
+  --space-4: 1rem;     /* 16px */
+  --space-5: 1.5rem;   /* 24px */
+  --space-6: 2rem;     /* 32px */
+  --space-7: 3rem;     /* 48px */
+  --space-8: 4rem;     /* 64px */
+
+  /* --- RADIOS (Bordes rectos o casi rectos) --- */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-full: 9999px;
+
+  /* --- SOMBRAS --- */
+  --shadow-neon: 0 0 25px rgba(198, 255, 0, 0.25);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
+
+  /* --- BREAKPOINTS DOCUMENTADOS (Para uso en @media) ---
+     Móvil grande: 640px
+     Tablet: 900px
+     Escritorio: 1200px
+     Contenedor máximo: 1440px
+  */
+  --container-max: 1440px;
+}

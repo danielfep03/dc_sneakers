@@ -1,0 +1,10 @@
+[
+  { "col": 37, "usMen": 5.5, "usWomen": 7.0, "cm": 23.5 },
+  { "col": 38, "usMen": 6.0, "usWomen": 7.5, "cm": 24.0 },
+  { "col": 39, "usMen": 6.5, "usWomen": 8.0, "cm": 24.5 },
+  { "col": 40, "usMen": 7.5, "usWomen": 9.0, "cm": 25.5 },
+  { "col": 41, "usMen": 8.5, "usWomen": 10.0, "cm": 26.5 },
+  { "col": 42, "usMen": 9.0, "usWomen": 10.5, "cm": 27.0 },
+  { "col": 43, "usMen": 10.0, "usWomen": 11.5, "cm": 28.0 },
+  { "col": 44, "usMen": 11.0, "usWomen": 12.5, "cm": 29.0 }
+]

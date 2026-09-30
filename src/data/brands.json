@@ -1,0 +1,26 @@
+[
+  {
+    "id": "nike",
+    "name": "Nike",
+    "slug": "nike",
+    "description": "Innovación y rendimiento en cada pisada."
+  },
+  {
+    "id": "adidas",
+    "name": "Adidas",
+    "slug": "adidas",
+    "description": "El balance perfecto entre el deporte y la moda urbana."
+  },
+  {
+    "id": "new-balance",
+    "name": "New Balance",
+    "slug": "new-balance",
+    "description": "Comodidad clásica y estética retro runner impecable."
+  },
+  {
+    "id": "jordan",
+    "name": "Jordan",
+    "slug": "jordan",
+    "description": "La silueta legendaria que cambió la historia del baloncesto."
+  }
+]

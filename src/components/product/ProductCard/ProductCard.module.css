@@ -1,0 +1,136 @@
+.card {
+  background-color: var(--color-surface, #141416);
+  border: 1px solid var(--color-border-subtle, rgba(255, 255, 255, 0.08));
+  border-radius: var(--radius-sm, 2px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  text-decoration: none;
+  transition: transform 0.25s ease, border-color 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(198, 255, 0, 0.4);
+}
+
+/* Contenedor de la imagen con zoom en hover recortado */
+.imageContainer {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1.05;
+  background-color: #17171a;
+  overflow: hidden;
+}
+
+.productImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Solo aplicar zoom en dispositivos que soportan hover (evitar bugs en pantallas táctiles) */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .productImage {
+    transform: scale(1.08);
+  }
+}
+
+/* Badges superiores */
+.badgeArea {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 2;
+}
+
+/* Botón de favorito corazón en la esquina superior derecha */
+.favoriteBtn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full, 50%);
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  cursor: pointer;
+  z-index: 2;
+  transition: all 0.2s ease;
+}
+
+.favoriteBtn:hover {
+  background: rgba(0, 0, 0, 0.85);
+  color: var(--color-accent, #c6ff00);
+  transform: scale(1.08);
+}
+
+.isFavorite {
+  color: #ff4d4d !important;
+  border-color: rgba(255, 77, 77, 0.4);
+}
+
+/* Botón cuadrado lima con '+' en esquina inferior derecha */
+.addBtn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 38px;
+  height: 38px;
+  background-color: var(--color-accent, #c6ff00);
+  color: var(--color-text-on-accent, #0a0a0c);
+  border: none;
+  font-size: 1.3rem;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 2;
+  transition: background-color 0.2s ease, transform 0.15s ease;
+}
+
+.addBtn:hover {
+  background-color: #ffffff;
+  transform: scale(1.06);
+}
+
+/* Pie de tarjeta */
+.footer {
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.brand {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-xs, 0.72rem);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--color-text-muted, #9a9a9f);
+  text-transform: uppercase;
+}
+
+.name {
+  font-family: var(--font-body, 'Space Grotesk', sans-serif);
+  font-size: var(--text-sm, 0.85rem);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: var(--color-text, #ffffff);
+  margin: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

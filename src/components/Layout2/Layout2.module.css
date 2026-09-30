@@ -1,0 +1,22 @@
+.ecommerceWrapper {
+  --color-bg-dark: #0a0a0c;
+  --color-surface-dark: #121215;
+  --color-volt: #d4ff00;
+  --color-volt-hover: #bce000;
+  --color-text-main: #ffffff;
+  --color-text-muted: #8e8e93;
+  --color-border: rgba(255, 255, 255, 0.08);
+
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-main);
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
+}
+
+.ecommerceWrapper main {
+  flex: 1;
+  width: 100%;
+}

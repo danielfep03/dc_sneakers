@@ -1,0 +1,516 @@
+[
+  {
+    "id": "p-001",
+    "slug": "nike-air-force-1-low-triple-white",
+    "name": "Nike Air Force 1 Low Triple White",
+    "brandId": "nike",
+    "categoryId": "lifestyle",
+    "description": "El fulgor sigue vivo en las Nike Air Force 1, un clásico atemporal con cuero premium impecable y amortiguación Air encapsulada.",
+    "price": 489900,
+    "salePrice": 399900,
+    "images": [
+      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 38, "stock": 4 },
+      { "size": 39, "stock": 0 },
+      { "size": 40, "stock": 6 },
+      { "size": 41, "stock": 3 },
+      { "size": 42, "stock": 5 },
+      { "size": 43, "stock": 0 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-01T00:00:00Z"
+  },
+  {
+    "id": "p-002",
+    "slug": "air-jordan-1-retro-high-chicago",
+    "name": "Air Jordan 1 Retro High OG Chicago",
+    "brandId": "jordan",
+    "categoryId": "basketball",
+    "description": "La silueta que lo cambió todo. Tonos rojo fuego, blanco y negro con la construcción legendaria de cuero curtido y cuello acolchado.",
+    "price": 689900,
+    "salePrice": 589900,
+    "images": [
+      "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 39, "stock": 2 },
+      { "size": 40, "stock": 5 },
+      { "size": 41, "stock": 4 },
+      { "size": 42, "stock": 3 },
+      { "size": 43, "stock": 2 },
+      { "size": 44, "stock": 1 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-05T00:00:00Z"
+  },
+  {
+    "id": "p-003",
+    "slug": "adidas-campus-00s-core-black",
+    "name": "Adidas Campus 00s Core Black",
+    "brandId": "adidas",
+    "categoryId": "skate",
+    "description": "Inspiradas en la era del skate de los 2000s con cordones gruesos, empeine de gamuza suave y suela vulcanizada de gran tracción.",
+    "price": 429900,
+    "salePrice": 349900,
+    "images": [
+      "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 37, "stock": 2 },
+      { "size": 38, "stock": 3 },
+      { "size": 39, "stock": 0 },
+      { "size": 40, "stock": 4 },
+      { "size": 41, "stock": 5 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-08-15T00:00:00Z"
+  },
+  {
+    "id": "p-004",
+    "slug": "new-balance-550-white-green",
+    "name": "New Balance 550 White Green",
+    "brandId": "new-balance",
+    "categoryId": "lifestyle",
+    "description": "Tributo a los profesionales del baloncesto de 1989. Silueta aerodinámica y robusta con toques verde bosque en cuero premium.",
+    "price": 499900,
+    "salePrice": 399900,
+    "images": [
+      "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 38, "stock": 2 },
+      { "size": 39, "stock": 3 },
+      { "size": 40, "stock": 4 },
+      { "size": 41, "stock": 0 },
+      { "size": 42, "stock": 3 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-08T00:00:00Z"
+  },
+  {
+    "id": "p-005",
+    "slug": "nike-dunk-low-retro-panda",
+    "name": "Nike Dunk Low Retro Panda",
+    "brandId": "nike",
+    "categoryId": "lifestyle",
+    "description": "El bloque de color blanco y negro más buscado del streetwear mundial con cuello de corte bajo y amortiguación ligera.",
+    "price": 479900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 38, "stock": 3 },
+      { "size": 39, "stock": 5 },
+      { "size": 40, "stock": 6 },
+      { "size": 41, "stock": 4 },
+      { "size": 42, "stock": 2 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-08-20T00:00:00Z"
+  },
+  {
+    "id": "p-006",
+    "slug": "new-balance-2002r-protection-pack-rain-cloud",
+    "name": "New Balance 2002R Protection Pack Rain Cloud",
+    "brandId": "new-balance",
+    "categoryId": "running",
+    "description": "Estética deconstructed con paneles de gamuza deshilachada y amortiguación N-ergy para comodidad absoluta durante todo el día.",
+    "price": 589900,
+    "salePrice": 489900,
+    "images": [
+      "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 3 },
+      { "size": 41, "stock": 4 },
+      { "size": 42, "stock": 2 },
+      { "size": 43, "stock": 0 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-10T00:00:00Z"
+  },
+  {
+    "id": "p-007",
+    "slug": "air-jordan-4-retro-military-black",
+    "name": "Air Jordan 4 Retro Military Black",
+    "brandId": "jordan",
+    "categoryId": "basketball",
+    "description": "Una de las combinaciones más aclamadas de la silueta AJ4. Detalles en malla transpirable, soporte triangular lateral y cámara Air visible.",
+    "price": 729900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1575537302964-96cd47c06b1b?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 2 },
+      { "size": 41, "stock": 3 },
+      { "size": 42, "stock": 4 },
+      { "size": 43, "stock": 1 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-12T00:00:00Z"
+  },
+  {
+    "id": "p-008",
+    "slug": "adidas-samba-og-cloud-white",
+    "name": "Adidas Samba OG Cloud White",
+    "brandId": "adidas",
+    "categoryId": "lifestyle",
+    "description": "Nacidas en las canchas de fútbol sala y reinventadas como ícono del fashion global. Puntera de gamuza en T y suela de caucho caramelo.",
+    "price": 459900,
+    "salePrice": 379900,
+    "images": [
+      "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 37, "stock": 4 },
+      { "size": 38, "stock": 5 },
+      { "size": 39, "stock": 3 },
+      { "size": 40, "stock": 0 },
+      { "size": 41, "stock": 2 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-08-01T00:00:00Z"
+  },
+  {
+    "id": "p-009",
+    "slug": "nike-air-max-plus-tn-triple-black",
+    "name": "Nike Air Max Plus TN Triple Black",
+    "brandId": "nike",
+    "categoryId": "running",
+    "description": "El clásico underground de las calles con sus líneas onduladas inspiradas en palmeras y tecnología Tuned Air para máximo impacto.",
+    "price": 549900,
+    "salePrice": 469900,
+    "images": [
+      "https://images.unsplash.com/photo-1600185365483-26d7a4cc7519?q=80&w=1450&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+    ],
+    "sizes": [
+      { "size": 39, "stock": 3 },
+      { "size": 40, "stock": 4 },
+      { "size": 41, "stock": 2 },
+      { "size": 42, "stock": 0 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-07-20T00:00:00Z"
+  },
+  {
+    "id": "p-010",
+    "slug": "new-balance-9060-sea-salt",
+    "name": "New Balance 9060 Sea Salt",
+    "brandId": "new-balance",
+    "categoryId": "lifestyle",
+    "description": "Fusión futurista de la serie 99X de los 2000s con mediasuela exagerada ondulada y amortiguación ABZORB.",
+    "price": 619900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 38, "stock": 2 },
+      { "size": 39, "stock": 3 },
+      { "size": 40, "stock": 4 },
+      { "size": 41, "stock": 3 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-14T00:00:00Z"
+  },
+  {
+    "id": "p-011",
+    "slug": "adidas-gazelle-indoor-blue-fusion",
+    "name": "Adidas Gazelle Indoor Blue Fusion",
+    "brandId": "adidas",
+    "categoryId": "lifestyle",
+    "description": "Gamuza azul vibrante con suela semitranslúcida de goma. Un homenaje vibrante a la cultura casual británica.",
+    "price": 439900,
+    "salePrice": 359900,
+    "images": [
+      "https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 37, "stock": 3 },
+      { "size": 38, "stock": 2 },
+      { "size": 39, "stock": 0 },
+      { "size": 40, "stock": 4 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-08-10T00:00:00Z"
+  },
+  {
+    "id": "p-012",
+    "slug": "air-jordan-3-retro-white-cement",
+    "name": "Air Jordan 3 Retro White Cement Reimagined",
+    "brandId": "jordan",
+    "categoryId": "basketball",
+    "description": "La primera creación de Tinker Hatfield con el icónico estampado Elephant Print y el logotipo Nike Air original en el talón.",
+    "price": 749900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1607522370275-f14206abe5d3?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 2 },
+      { "size": 41, "stock": 4 },
+      { "size": 42, "stock": 3 },
+      { "size": 43, "stock": 2 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-15T00:00:00Z"
+  },
+  {
+    "id": "p-013",
+    "slug": "nike-sb-dunk-low-pro-white-gum",
+    "name": "Nike SB Dunk Low Pro White Gum",
+    "brandId": "nike",
+    "categoryId": "skate",
+    "description": "Lengüeta acolchada gruesa, unidad Zoom Air en la plantilla y suela de goma color caramelo para agarre superior.",
+    "price": 489900,
+    "salePrice": 399900,
+    "images": [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 39, "stock": 3 },
+      { "size": 40, "stock": 5 },
+      { "size": 41, "stock": 4 },
+      { "size": 42, "stock": 0 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-07-28T00:00:00Z"
+  },
+  {
+    "id": "p-014",
+    "slug": "new-balance-530-white-silver",
+    "name": "New Balance 530 White Silver Metallic",
+    "brandId": "new-balance",
+    "categoryId": "running",
+    "description": "El estilo retro runner definitivo de los años 90 con malla abierta ultratranspirable y amortiguación ABZORB.",
+    "price": 449900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1539185441755-769473a23570?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 37, "stock": 5 },
+      { "size": 38, "stock": 4 },
+      { "size": 39, "stock": 6 },
+      { "size": 40, "stock": 2 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-08-05T00:00:00Z"
+  },
+  {
+    "id": "p-015",
+    "slug": "adidas-handball-spezial-clear-pink",
+    "name": "Adidas Handball Spezial Clear Pink",
+    "brandId": "adidas",
+    "categoryId": "lifestyle",
+    "description": "Silueta clásica de balonmano de 1979 confeccionada en suave ante rosa pastel con detalles azules y suela de caucho.",
+    "price": 449900,
+    "salePrice": 369900,
+    "images": [
+      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 36, "stock": 3 },
+      { "size": 37, "stock": 4 },
+      { "size": 38, "stock": 2 },
+      { "size": 39, "stock": 0 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-18T00:00:00Z"
+  },
+  {
+    "id": "p-016",
+    "slug": "air-jordan-11-retro-gratitude",
+    "name": "Air Jordan 11 Retro Gratitude",
+    "brandId": "jordan",
+    "categoryId": "basketball",
+    "description": "Charol negro brillante de primera calidad, cuero blanco suave y detalles dorados metálicos que rinden tributo a la grandeza.",
+    "price": 799900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 3 },
+      { "size": 41, "stock": 4 },
+      { "size": 42, "stock": 2 },
+      { "size": 43, "stock": 1 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-20T00:00:00Z"
+  },
+  {
+    "id": "p-017",
+    "slug": "nike-air-max-1-86-big-bubble",
+    "name": "Nike Air Max 1 86 OG Big Bubble",
+    "brandId": "nike",
+    "categoryId": "running",
+    "description": "El regreso de la legendaria cápsula de aire más grande de 1986. Bloques de color rojo y blanco con gamuza suave.",
+    "price": 529900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 38, "stock": 2 },
+      { "size": 39, "stock": 3 },
+      { "size": 40, "stock": 0 },
+      { "size": 41, "stock": 4 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-07-15T00:00:00Z"
+  },
+  {
+    "id": "p-018",
+    "slug": "new-balance-1906r-silver-metallic",
+    "name": "New Balance 1906R Silver Metallic",
+    "brandId": "new-balance",
+    "categoryId": "running",
+    "description": "Inspiradas en el diseño tecnológico runner de 2000 con soporte N-lock y suela amortiguada N-ergy.",
+    "price": 569900,
+    "salePrice": 469900,
+    "images": [
+      "https://images.unsplash.com/photo-1515955656352-a1fa3ffcd111?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 4 },
+      { "size": 41, "stock": 3 },
+      { "size": 42, "stock": 5 },
+      { "size": 43, "stock": 2 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-22T00:00:00Z"
+  },
+  {
+    "id": "p-019",
+    "slug": "adidas-forum-low-white-royal-blue",
+    "name": "Adidas Forum Low White Royal Blue",
+    "brandId": "adidas",
+    "categoryId": "basketball",
+    "description": "El ícono del baloncesto ochentero con su correa ajustable en el tobillo y construcción de cuero prémium resistente.",
+    "price": 419900,
+    "salePrice": 339900,
+    "images": [
+      "https://images.unsplash.com/photo-1587563871167-1ee9c731aefb?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 39, "stock": 3 },
+      { "size": 40, "stock": 4 },
+      { "size": 41, "stock": 2 },
+      { "size": 42, "stock": 1 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-06-30T00:00:00Z"
+  },
+  {
+    "id": "p-020",
+    "slug": "air-jordan-5-retro-fire-red",
+    "name": "Air Jordan 5 Retro Fire Red",
+    "brandId": "jordan",
+    "categoryId": "basketball",
+    "description": "Diseño inspirado en aviones de combate de la Segunda Guerra Mundial, lengüeta reflectante 3M y suela de goma helada.",
+    "price": 769900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 3 },
+      { "size": 41, "stock": 2 },
+      { "size": 42, "stock": 4 },
+      { "size": 43, "stock": 2 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-07-10T00:00:00Z"
+  },
+  {
+    "id": "p-021",
+    "slug": "nike-blazer-mid-77-vintage",
+    "name": "Nike Blazer Mid 77 Vintage",
+    "brandId": "nike",
+    "categoryId": "lifestyle",
+    "description": "Espuma expuesta en la lengüeta y tratamiento vintage en la entresuela para un aspecto retro que parece sacado de los libros de historia.",
+    "price": 439900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 38, "stock": 4 },
+      { "size": 39, "stock": 2 },
+      { "size": 40, "stock": 5 },
+      { "size": 41, "stock": 0 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-08-25T00:00:00Z"
+  },
+  {
+    "id": "p-022",
+    "slug": "new-balance-990v6-made-in-usa-grey",
+    "name": "New Balance 990v6 Made in USA Grey",
+    "brandId": "new-balance",
+    "categoryId": "running",
+    "description": "El pináculo de la ingeniería New Balance con amortiguación FuelCell y materiales de manufactura estadounidense insuperable.",
+    "price": 849900,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1584735935682-2f2b69dff9d2?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 2 },
+      { "size": 41, "stock": 3 },
+      { "size": 42, "stock": 4 },
+      { "size": 43, "stock": 2 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-24T00:00:00Z"
+  },
+  {
+    "id": "p-023",
+    "slug": "adidas-superstar-core-black-white",
+    "name": "Adidas Superstar Core Black White",
+    "brandId": "adidas",
+    "categoryId": "lifestyle",
+    "description": "La legendaria puntera de concha de goma (Shell Toe) que dominó la cultura Hip-Hop de los 80 con cuero liso de alta durabilidad.",
+    "price": 399900,
+    "salePrice": 319900,
+    "images": [
+      "https://images.unsplash.com/photo-1518002171953-a080ee817e1f?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 37, "stock": 4 },
+      { "size": 38, "stock": 3 },
+      { "size": 39, "stock": 5 },
+      { "size": 40, "stock": 4 }
+    ],
+    "isNew": false,
+    "createdAt": "2026-06-15T00:00:00Z"
+  },
+  {
+    "id": "p-024",
+    "slug": "air-jordan-1-low-travis-scott-reverse-mocha",
+    "name": "Air Jordan 1 Low OG Reverse Mocha",
+    "brandId": "jordan",
+    "categoryId": "lifestyle",
+    "description": "El codiciado Swoosh invertido con detalles Cactus Jack, cuero nobuk marrón y revestimientos blancos de máxima calidad.",
+    "price": 950000,
+    "salePrice": null,
+    "images": [
+      "https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80"
+    ],
+    "sizes": [
+      { "size": 40, "stock": 1 },
+      { "size": 41, "stock": 2 },
+      { "size": 42, "stock": 1 },
+      { "size": 43, "stock": 0 }
+    ],
+    "isNew": true,
+    "createdAt": "2026-09-25T00:00:00Z"
+  }
+]

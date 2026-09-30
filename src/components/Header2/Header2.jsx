@@ -12,20 +12,23 @@ export default function Header2 () {
   const cartCount = getTotalItems()
 
   const navLinks = [
-    { label: 'SHOP', path: '/categorias' },
-    { label: 'NEW IN', path: '/categorias?tag=new' },
-    { label: 'BRANDS', path: '/categorias?tag=brands' },
-    { label: 'SALE', path: '/categorias?tag=sale' },
+    { label: 'CATÁLOGO', path: '/categorias' },
+    { label: 'NOVEDADES', path: '/categorias?tag=new' },
+    { label: 'MARCAS', path: '/categorias?tag=brands' },
+    { label: 'OFERTAS', path: '/categorias?tag=sale' },
     { label: 'LOOKBOOK', path: '/categorias?tag=lookbook' }
   ]
 
   return (
     <header className={styles.headerContainer}>
       <div className={styles.navRow}>
-        {/* 1. Logotipo estilo URBANcode */}
-        <Link to='/' className={styles.brandLink}>
-          <span className={styles.brandText}>DC</span>
-          <span className={styles.brandScript}>sneakers</span>
+        {/* 1. Logotipo oficial DC SNEAKERS */}
+        <Link to='/' className={styles.brandLink} aria-label='DC SNEAKERS Inicio'>
+          <img src='/icon.png' alt='DC SNEAKERS' className={styles.brandLogo} />
+          <div className={styles.brandTextWrapper}>
+            <span className={styles.brandText}>DC</span>
+            <span className={styles.brandScript}>sneakers</span>
+          </div>
         </Link>
 
         {/* 2. Menú Central Desktop */}
