@@ -1,13 +1,17 @@
 /**
  * categoryService.js
- * Capa de abstracción para categorías de productos.
+ * Categorías desde Supabase. `id`/`slug` en minúscula (ej: 'basketball');
+ * `name` ya viene capitalizado para mostrar en la UI (ej: 'Casual & Retro').
  */
 
-import categoriesData from '../data/categories.json'
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+import { supabase } from '@/lib/supabaseClient'
 
 export async function getCategories () {
-  await delay(200)
-  return categoriesData
+  const { data, error } = await supabase
+    .from('categories')
+    .select('id, name, slug, description')
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return data || []
 }

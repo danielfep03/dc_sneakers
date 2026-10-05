@@ -13,16 +13,23 @@
  */
 
 import Modal from '@/components/ui/Modal'
-import { SNEAKERS_DATA } from '@/data/sneakers'
+import { useCategories, useProducts } from '@/hooks/useCatalog'
+import { pickDefaultSelection } from '@/services/productService'
 import { useCartStore } from '@/store/useCartStore'
+import { capitalize } from '@/utils/capitalize'
 import { formatPrice } from '@/utils/formatPrice'
 import { useEffect, useMemo, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import styles from './Collections2.module.css'
 
+// Las categorías viven en minúscula en la BD; las URLs antiguas (?category=BASKETBALL) siguen funcionando.
+const normalizeCategory = (value) => (value ? value.toLowerCase() : 'all')
+
 export default function Collections2 () {
   const [searchParams, setSearchParams] = useSearchParams()
   const { addItem, toggleCart } = useCartStore()
+  const { products, loading, error, retry } = useProducts()
+  const { categories } = useCategories()
 
   // Inicializar estado desde URL params
   const [selectedBrands, setSelectedBrands] = useState(() => {
@@ -31,7 +38,7 @@ export default function Collections2 () {
   })
 
   const [selectedCategory, setSelectedCategory] = useState(() => {
-    return searchParams.get('category') || 'ALL'
+    return normalizeCategory(searchParams.get('category'))
   })
 
   const [selectedSizes, setSelectedSizes] = useState([])
@@ -39,15 +46,22 @@ export default function Collections2 () {
   const [sortBy, setSortBy] = useState('newest')
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false)
 
-  const availableBrands = ['Nike', 'Jordan', 'Adidas', 'Asics']
-  const availableCategories = [
-    { id: 'ALL', label: 'TODAS' },
-    { id: 'BASKETBALL', label: 'BASKETBALL' },
-    { id: 'CASUAL', label: 'CASUAL & RETRO' },
-    { id: 'RUNNING', label: 'RUNNING' },
-    { id: 'VOLEIBOL', label: 'VOLEIBOL' }
-  ]
-  const availableSizes = [36, 37, 38, 39, 40, 41, 42, 43, 44, 45]
+  // Marcas, categorías y tallas disponibles salen de los datos reales
+  const availableBrands = useMemo(
+    () => [...new Set(products.map((p) => p.brand).filter(Boolean))].sort(),
+    [products]
+  )
+  const availableCategories = useMemo(
+    () => [
+      { id: 'all', label: 'TODAS' },
+      ...categories.map((c) => ({ id: c.slug, label: c.name.toUpperCase() }))
+    ],
+    [categories]
+  )
+  const availableSizes = useMemo(
+    () => [...new Set(products.flatMap((p) => p.sizes))].sort((a, b) => a - b),
+    [products]
+  )
 
   // Actualizar filtros cuando cambie la URL
   useEffect(() => {
@@ -55,17 +69,17 @@ export default function Collections2 () {
     const brand = searchParams.get('brand')
     const tag = searchParams.get('tag')
 
-    if (cat) setSelectedCategory(cat)
+    if (cat) setSelectedCategory(normalizeCategory(cat))
     if (brand) setSelectedBrands([brand])
     if (tag === 'sale') setOnlyOffers(true)
   }, [searchParams])
 
   // Filtrado y Ordenamiento
   const filteredProducts = useMemo(() => {
-    let list = [...SNEAKERS_DATA]
+    let list = [...products]
 
     // 1. Filtro por Categoría
-    if (selectedCategory && selectedCategory !== 'ALL') {
+    if (selectedCategory && selectedCategory !== 'all') {
       list = list.filter((p) => p.category === selectedCategory)
     }
 
@@ -74,16 +88,18 @@ export default function Collections2 () {
       list = list.filter((p) => selectedBrands.includes(p.brand))
     }
 
-    // 3. Filtro por Tallas
+    // 3. Filtro por Tallas (solo cuenta si hay stock en alguna variante)
     if (selectedSizes.length > 0) {
       list = list.filter((p) =>
-        p.sizes?.some((sz) => selectedSizes.includes(sz))
+        p.colors.some((c) =>
+          c.sizes.some((s) => selectedSizes.includes(s.size) && s.stock > 0)
+        )
       )
     }
 
-    // 4. Filtro por Ofertas
+    // 4. Filtro por Ofertas (productos con precio de oferta real)
     if (onlyOffers) {
-      list = list.filter((p) => p.price <= 399900 || p.name.includes('Air Force') || p.name.includes('Campus'))
+      list = list.filter((p) => p.originalPrice !== null)
     }
 
     // 5. Ordenamiento
@@ -93,11 +109,11 @@ export default function Collections2 () {
       list.sort((a, b) => b.price - a.price)
     } else {
       // 'newest' por defecto
-      list.sort((a, b) => b.id - a.id)
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || (b.legacyId ?? 0) - (a.legacyId ?? 0))
     }
 
     return list
-  }, [selectedCategory, selectedBrands, selectedSizes, onlyOffers, sortBy])
+  }, [products, selectedCategory, selectedBrands, selectedSizes, onlyOffers, sortBy])
 
   // Manejadores de Filtros
   const toggleBrand = (brand) => {
@@ -114,7 +130,7 @@ export default function Collections2 () {
 
   const clearAllFilters = () => {
     setSelectedBrands([])
-    setSelectedCategory('ALL')
+    setSelectedCategory('all')
     setSelectedSizes([])
     setOnlyOffers(false)
     setSearchParams({})
@@ -123,9 +139,9 @@ export default function Collections2 () {
   const handleQuickAdd = (product, e) => {
     e.preventDefault()
     e.stopPropagation()
-    const size = product.sizes?.[0] || 40
-    const color = product.colors?.[0] || { name: 'Default', hex: '#000' }
-    addItem(product, size, color, 1)
+    const selection = pickDefaultSelection(product)
+    if (!selection) return // producto agotado
+    addItem(product, selection.size, selection.color, 1)
     toggleCart(true)
   }
 
@@ -211,7 +227,7 @@ export default function Collections2 () {
 
   const hasActiveFilters =
     selectedBrands.length > 0 ||
-    selectedCategory !== 'ALL' ||
+    selectedCategory !== 'all' ||
     selectedSizes.length > 0 ||
     onlyOffers
 
@@ -232,13 +248,13 @@ export default function Collections2 () {
         <div className={styles.activeChipsBar}>
           <span className={styles.chipsLabel}>Filtros activos:</span>
 
-          {selectedCategory !== 'ALL' && (
+          {selectedCategory !== 'all' && (
             <span className={styles.chip}>
-              Categoría: {selectedCategory}
+              Categoría: {capitalize(selectedCategory)}
               <button
                 type='button'
                 className={styles.chipRemoveBtn}
-                onClick={() => setSelectedCategory('ALL')}
+                onClick={() => setSelectedCategory('all')}
               >
                 ✕
               </button>
@@ -328,7 +344,30 @@ export default function Collections2 () {
 
         {/* Grid de Productos */}
         <div>
-          {filteredProducts.length === 0 ? (
+          {loading ? (
+            <div className={styles.emptyState}>
+              <h2 style={{ fontFamily: 'Bebas Neue', fontSize: '2.2rem', margin: 0 }}>
+                CARGANDO CATÁLOGO...
+              </h2>
+            </div>
+          ) : error ? (
+            <div className={styles.emptyState}>
+              <h2 style={{ fontFamily: 'Bebas Neue', fontSize: '2.2rem', margin: 0 }}>
+                NO PUDIMOS CARGAR EL CATÁLOGO
+              </h2>
+              <p style={{ color: '#8e8e93', fontSize: '0.9rem' }}>
+                Revisa tu conexión e intenta de nuevo.
+              </p>
+              <button
+                type='button'
+                className={styles.clearAllBtn}
+                onClick={retry}
+                style={{ fontSize: '0.85rem' }}
+              >
+                REINTENTAR
+              </button>
+            </div>
+          ) : filteredProducts.length === 0 ? (
             <div className={styles.emptyState}>
               <h2 style={{ fontFamily: 'Bebas Neue', fontSize: '2.2rem', margin: 0 }}>
                 NO HAY RESULTADOS

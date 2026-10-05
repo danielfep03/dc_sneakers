@@ -1,57 +1,74 @@
 /**
  * buildWhatsappMessage.js
- * Construye el mensaje estructurado de WhatsApp y genera la URL de wa.me
- * siguiendo fielmente la plantilla de la sección 8.6 del plan.
+ * Template del mensaje estructurado de WhatsApp (click-to-chat wa.me).
+ * Preparado para reutilizarse cuando se integre el envío automático con Kapso.
  */
 
-import { formatPrice } from './formatPrice'
 import { storeConfig } from '../config/storeConfig'
+import { formatPrice } from './formatPrice'
+
+const PAYMENT_LABELS = {
+  transfer: 'Transferencia bancaria',
+  'cash-on-delivery': 'Pago contraentrega (efectivo al recibir)',
+  'bold-demo': 'Tarjeta / pasarela digital'
+}
 
 /**
- * Genera el texto y la URL directa para abrir WhatsApp con los datos de la orden.
- * @param {Object} params
- * @param {string} params.orderId - Identificador único de orden (ej: "ORD-9481")
- * @param {Object} params.contact - Datos de contacto { name, phone, address, city }
- * @param {Array} params.items - Lista de productos comprados
- * @param {number} params.total - Total a pagar en COP
- * @param {string} params.paymentMethod - "transfer" | "bold-demo" | "cash-on-delivery"
- * @returns {string} URL completa hacia api.whatsapp.com / wa.me
+ * Normaliza un ítem del carrito ({ product, size, color, quantity })
+ * o un ítem plano ({ name, variantName, size, quantity, unitPrice }).
  */
-export function buildWhatsappMessage ({
-  orderId,
-  contact,
-  items,
-  total,
-  paymentMethod
-}) {
-  const paymentMethodLabel =
-    paymentMethod === 'transfer'
-      ? 'Transferencia bancaria'
-      : paymentMethod === 'bold-demo'
-        ? 'Tarjeta / Bold (Demo)'
-        : 'Pago Contraentrega'
+function normalizeItem (item) {
+  if (item.product) {
+    return {
+      name: item.product.name,
+      variantName: item.color?.name ?? null,
+      size: item.size,
+      quantity: item.quantity,
+      unitPrice: item.product.price
+    }
+  }
+  return item
+}
 
+/**
+ * Construye el texto del mensaje (útil para pruebas y para Kapso).
+ * @param {Object} params
+ * @param {string} params.orderId - ej: "ORD-1001"
+ * @param {Object} params.contact - { name, phone, address, city, notes }
+ * @param {Array} params.items - ítems del carrito
+ * @param {number} params.total - total a pagar en COP (el calculado por el servidor)
+ * @param {string} params.paymentMethod - "transfer" | "cash-on-delivery" | "bold-demo"
+ */
+export function buildWhatsappText ({ orderId, contact, items, total, paymentMethod }) {
   const productLines = items
-    .map(
-      (item) =>
-        `- ${item.name} · Talla ${item.size} · x${item.quantity} · ${formatPrice(item.unitPrice * item.quantity)}`
-    )
-    .join('\n')
+    .map(normalizeItem)
+    .map((item) => {
+      const variant = item.variantName ? ` (${item.variantName})` : ''
+      return `▪️ *${item.name}*${variant}\n   Talla EU ${item.size} · x${item.quantity} · ${formatPrice(item.unitPrice * item.quantity)}`
+    })
+    .join('\n\n')
 
-  const message = `Hola ${storeConfig.name}, quiero confirmar mi pedido #${orderId}
+  const location = `${contact.address}${contact.city ? `, ${contact.city}` : ''}`
 
-👤 Nombre: ${contact.name}
-📞 Teléfono: ${contact.phone}
-📍 Dirección: ${contact.address}${contact.city ? `, ${contact.city}` : ''}
+  return `👋 *¡Hola ${storeConfig.displayName}!* Quiero confirmar mi pedido *#${orderId}*
 
-🛒 Productos:
+📋 *DATOS DE ENTREGA*
+👤 *Nombre:* ${contact.name}
+📱 *Teléfono:* ${contact.phone}
+📍 *Dirección:* ${location}${contact.notes ? `\n📝 *Notas:* ${contact.notes}` : ''}
+
+👟 *DETALLE DEL PEDIDO*
 ${productLines}
 
-🧦 Incluye par de medias de regalo
-🚚 Envío: ${storeConfig.freeShipping ? 'Gratis' : '$ 15.000'}
-💰 Total: ${formatPrice(total)}
-💳 Método de pago: ${paymentMethodLabel}`
+🎁 *Cortesía:* ${storeConfig.giftText}
+🚚 *Envío:* ${storeConfig.freeShipping ? '¡Gratis a toda Colombia!' : '$ 15.000'}
+💳 *Método de pago:* ${PAYMENT_LABELS[paymentMethod] ?? paymentMethod}
+💰 *TOTAL A PAGAR:* ${formatPrice(total)}
 
-  const encodedMessage = encodeURIComponent(message)
-  return `https://wa.me/${storeConfig.whatsappNumber}?text=${encodedMessage}`
+_Quedo atento/a para coordinar el despacho. ¡Gracias!_`
+}
+
+/** URL de wa.me con el mensaje ya codificado. */
+export function buildWhatsappMessage (params) {
+  return `https://wa.me/${storeConfig.whatsappNumber}?text=${encodeURIComponent(buildWhatsappText(params))}`
 }

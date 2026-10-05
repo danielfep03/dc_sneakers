@@ -54,7 +54,12 @@ export const useCartStore = create(
       }
     }),
     {
-      name: 'dc-sneakers-cart-storage'
+      name: 'dc-sneakers-cart-storage',
+      // v1: los productos ahora vienen de Supabase (id = slug, colores con variantId).
+      // Los carritos guardados antes de la integración no son compatibles y se descartan.
+      version: 1,
+      migrate: (persistedState, version) =>
+        version < 1 ? { ...persistedState, cart: [] } : persistedState
     }
   )
 )

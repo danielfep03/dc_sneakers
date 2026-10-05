@@ -8,7 +8,7 @@ export default function OutfitLookbook2 () {
       tag: 'SILUETA 01 // BASKETBALL',
       title: 'RETRO HIGH TOPS',
       subtitle: 'VER MODELOS RETRO',
-      link: '/categorias?category=BASKETBALL',
+      link: '/categorias?category=basketball',
       image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80'
     },
     {
@@ -16,7 +16,7 @@ export default function OutfitLookbook2 () {
       tag: 'SILUETA 02 // CASUAL',
       title: 'DUNK LOW & COURT',
       subtitle: 'VER MODELOS CASUAL',
-      link: '/categorias?category=CASUAL',
+      link: '/categorias?category=casual',
       image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80'
     },
     {
@@ -24,7 +24,7 @@ export default function OutfitLookbook2 () {
       tag: 'SILUETA 03 // RUNNING',
       title: 'TECH RUNNER & SPORT',
       subtitle: 'VER MODELOS RUNNING',
-      link: '/categorias?category=RUNNING',
+      link: '/categorias?category=running',
       image: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=800&q=80'
     },
     {
@@ -32,7 +32,7 @@ export default function OutfitLookbook2 () {
       tag: 'SILUETA 04 // DUELA & CANCHA',
       title: 'PRO PERFORMANCE',
       subtitle: 'VER MODELOS DE CANCHA',
-      link: '/categorias?category=BASKETBALL',
+      link: '/categorias?category=basketball',
       image: 'https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&w=800&q=80'
     }
   ]

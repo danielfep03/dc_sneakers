@@ -1,4 +1,5 @@
-import { SNEAKERS_DATA } from '@/data/sneakers'
+import { useProducts } from '@/hooks/useCatalog'
+import { pickDefaultSelection } from '@/services/productService'
 import { useCartStore } from '@/store/useCartStore'
 import { formatPrice } from '@/utils/formatPrice'
 import { Link } from 'react-router-dom'
@@ -7,22 +8,16 @@ import styles from './Offers2.module.css'
 export default function Offers2 () {
   const { addItem, toggleCart } = useCartStore()
 
-  const offerProducts = SNEAKERS_DATA.slice(0, 4).map((item, idx) => {
-    const discountPercent = [25, 30, 20, 35][idx] || 20
-    const originalPrice = Math.round(item.price * (1 + discountPercent / 100))
-    return {
-      ...item,
-      discountPercent,
-      originalPrice
-    }
-  })
+  // Ofertas reales: productos con sale_price definido en la BD
+  const { products } = useProducts()
+  const offerProducts = products.filter((p) => p.originalPrice !== null).slice(0, 4)
 
   const handleQuickAdd = (product, e) => {
     e.preventDefault()
     e.stopPropagation()
-    const size = product.sizes[0] || 40
-    const color = product.colors[0] || { name: 'Default', hex: '#000' }
-    addItem(product, size, color, 1)
+    const selection = pickDefaultSelection(product)
+    if (!selection) return // agotado
+    addItem(product, selection.size, selection.color, 1)
     toggleCart(true)
   }
 

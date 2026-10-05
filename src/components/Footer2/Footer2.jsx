@@ -19,10 +19,10 @@ export default function Footer2 () {
           <div>
             <h4 className={styles.colTitle}>COLECCIONES</h4>
             <ul className={styles.linksList}>
-              <li><Link to='/categorias?category=BASKETBALL' className={styles.footerLink}>BASKETBALL</Link></li>
-              <li><Link to='/categorias?category=CASUAL' className={styles.footerLink}>CASUAL & RETRO</Link></li>
-              <li><Link to='/categorias?category=RUNNING' className={styles.footerLink}>RUNNING</Link></li>
-              <li><Link to='/categorias?category=VOLEIBOL' className={styles.footerLink}>VOLEIBOL</Link></li>
+              <li><Link to='/categorias?category=basketball' className={styles.footerLink}>BASKETBALL</Link></li>
+              <li><Link to='/categorias?category=casual' className={styles.footerLink}>CASUAL & RETRO</Link></li>
+              <li><Link to='/categorias?category=running' className={styles.footerLink}>RUNNING</Link></li>
+              <li><Link to='/categorias?category=voleibol' className={styles.footerLink}>VOLEIBOL</Link></li>
               <li><Link to='/categorias?tag=sale' className={styles.footerLink}>OFERTAS LIMITADAS</Link></li>
             </ul>
           </div>

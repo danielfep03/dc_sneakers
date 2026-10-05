@@ -10,14 +10,17 @@
  */
 
 import { storeConfig } from '@/config/storeConfig'
+import { confirmBoldPayment, createOrder, OrderError } from '@/services/orderService'
 import { useCartStore } from '@/store/useCartStore'
+import { buildWhatsappMessage } from '@/utils/buildWhatsappMessage'
 import { formatPrice } from '@/utils/formatPrice'
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import styles from './Checkout2.module.css'
 
 export default function Checkout2 () {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
   const { cart, getSubtotal, clearCart } = useCartStore()
 
   const [contact, setContact] = useState({
@@ -33,6 +36,36 @@ export default function Checkout2 () {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [copiedBank, setCopiedBank] = useState(false)
   const [completedOrder, setCompletedOrder] = useState(null)
+  const [submitError, setSubmitError] = useState(null)
+
+  // Detectar si el usuario regresa de la pasarela Bold con orden completada
+  useEffect(() => {
+    const boldReturn = searchParams.get('bold')
+    const orderId = searchParams.get('orderId')
+    const boldStatus = searchParams.get('bold-status') || searchParams.get('status') || 'approved'
+    const txId = searchParams.get('txId') || searchParams.get('bold-tx-id') || null
+
+    if (boldReturn && orderId) {
+      clearCart()
+      setCompletedOrder({
+        orderId,
+        name: 'Cliente',
+        total: 0,
+        isBoldPayment: true
+      })
+
+      // Actualizar orden en Supabase directamente (sin requerir webhooks de Bold)
+      confirmBoldPayment({ orderId, boldStatus, txId }).then((res) => {
+        if (res?.order) {
+          setCompletedOrder((prev) => ({
+            ...prev,
+            name: res.order.customer_name || 'Cliente',
+            total: res.order.total || 0
+          }))
+        }
+      })
+    }
+  }, [searchParams, clearCart])
 
   const subtotal = getSubtotal()
 
@@ -66,63 +99,65 @@ export default function Checkout2 () {
     setTimeout(() => setCopiedBank(false), 2500)
   }
 
-  const handleFinalizeOrder = () => {
+  const handleFinalizeOrder = async () => {
+    if (isSubmitting) return
     if (!validate()) {
       window.scrollTo({ top: 100, behavior: 'smooth' })
       return
     }
 
+    setSubmitError(null)
     setIsSubmitting(true)
 
-    // Generar ID amigable de orden
-    const orderId = `ORD-${Math.floor(1000 + Math.random() * 9000)}`
+    // Si es Bold Checkout en línea, no abrimos WhatsApp popup
+    const isBoldReal = paymentMethod === 'bold'
+    const waWindow = !isBoldReal ? window.open('', '_blank') : null
 
-    // Método de pago formateado
-    const paymentLabel =
-      paymentMethod === 'cash-on-delivery'
-        ? 'Pago Contraentrega (Efectivo al recibir)'
-        : paymentMethod === 'transfer'
-          ? 'Transferencia Bancaria'
-          : 'Tarjeta / Bold (Demo)'
+    try {
+      // 1. Crear la orden en Supabase (Edge Function: precios y stock se validan en servidor)
+      const originUrl = window.location.origin
+      const order = await createOrder({ contact, cart, paymentMethod, originUrl })
 
-    // Desglose de productos
-    const productLines = cart
-      .map(
-        (item) =>
-          `- ${item.product.name} · Talla EU ${item.size} · x${item.quantity} · ${formatPrice(item.product.price * item.quantity)}`
+      // 2. Si el método es Bold (Pagos en línea), redirigir al Checkout seguro de Bold
+      if (isBoldReal && order.boldCheckoutUrl) {
+        clearCart()
+        window.location.href = order.boldCheckoutUrl
+        return
+      }
+
+      // 3. Generar el mensaje de WhatsApp con el total calculado por el servidor
+      const whatsappUrl = buildWhatsappMessage({
+        orderId: order.orderId,
+        contact,
+        items: cart,
+        total: order.total,
+        paymentMethod
+      })
+
+      if (waWindow) waWindow.location.href = whatsappUrl
+
+      // 4. Guardar estado completado y vaciar carrito
+      setCompletedOrder({
+        orderId: order.orderId,
+        name: contact.name,
+        total: order.total,
+        whatsappUrl,
+        whatsappOpened: Boolean(waWindow)
+      })
+      clearCart()
+    } catch (err) {
+      // Si falla, NO se vacía el carrito ni se abre WhatsApp
+      if (waWindow) waWindow.close()
+      console.error('Error al crear la orden:', err)
+      setSubmitError(
+        err instanceof OrderError
+          ? err.message
+          : 'Hubo un inconveniente al generar tu orden. Por favor intenta nuevamente.'
       )
-      .join('\n')
-
-    // Mensaje estructurado de WhatsApp
-    const message = `Hola ${storeConfig.name}, quiero confirmar mi pedido #${orderId}
-
-👤 Nombre: ${contact.name}
-📞 Teléfono: ${contact.phone}
-📍 Dirección: ${contact.address}, ${contact.city}
-${contact.notes ? `📝 Notas: ${contact.notes}\n` : ''}
-🛒 Productos:
-${productLines}
-
-🧦 Incluye par de medias de regalo
-🚚 Envío: Gratis a toda Colombia
-💰 Total: ${formatPrice(subtotal)}
-💳 Método de pago: ${paymentLabel}`
-
-    const encoded = encodeURIComponent(message)
-    const whatsappUrl = `https://wa.me/${storeConfig.whatsappNumber}?text=${encoded}`
-
-    // Abrir WhatsApp en nueva pestaña
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
-
-    // Guardar estado completado y vaciar carrito
-    setCompletedOrder({
-      orderId,
-      name: contact.name,
-      total: subtotal
-    })
-
-    clearCart()
-    setIsSubmitting(false)
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   // 1. Vista de Éxito
@@ -136,8 +171,24 @@ ${productLines}
             Orden <strong>#{completedOrder.orderId}</strong>
           </p>
           <p style={{ color: '#a0a0a5', lineHeight: '1.6', maxWidth: '480px' }}>
-            Gracias por tu compra, <strong>{completedOrder.name}</strong>. Se ha abierto una ventana de WhatsApp para coordinar la entrega directamente con nuestro equipo.
+            Gracias por tu compra, <strong>{completedOrder.name}</strong>.{' '}
+            {completedOrder.isBoldPayment
+              ? 'Hemos recibido la confirmación de tu pago en línea con Bold. Procesaremos tu envío de inmediato.'
+              : completedOrder.whatsappOpened
+                ? 'Se ha abierto una ventana de WhatsApp para coordinar la entrega directamente con nuestro equipo.'
+                : 'Toca el botón de abajo para enviarnos tu pedido por WhatsApp y coordinar la entrega.'}
           </p>
+          {completedOrder.whatsappUrl && (
+            <a
+              href={completedOrder.whatsappUrl}
+              target='_blank'
+              rel='noopener noreferrer'
+              className={styles.submitBtn}
+              style={{ width: 'auto', padding: '0.9rem 2rem', textDecoration: 'none', textAlign: 'center' }}
+            >
+              ABRIR WHATSAPP →
+            </a>
+          )}
           <button
             type='button'
             className={styles.submitBtn}
@@ -348,25 +399,27 @@ ${productLines}
                 )}
               </div>
 
-              {/* Opción 3: Bold Demo */}
+              {/* Opción 3: Bold Pasarela en línea */}
               <div
                 className={`${styles.paymentOption} ${
-                  paymentMethod === 'bold-demo' ? styles.paymentSelected : ''
+                  paymentMethod === 'bold' ? styles.paymentSelected : ''
                 }`}
-                onClick={() => setPaymentMethod('bold-demo')}
+                onClick={() => setPaymentMethod('bold')}
               >
                 <div className={styles.paymentHeader}>
                   <input
                     type='radio'
                     name='payment'
                     className={styles.radio}
-                    checked={paymentMethod === 'bold-demo'}
-                    onChange={() => setPaymentMethod('bold-demo')}
+                    checked={paymentMethod === 'bold'}
+                    onChange={() => setPaymentMethod('bold')}
                   />
                   <div>
-                    <div className={styles.paymentTitle}>TARJETA CRÉDITO / DÉBITO (BOLD DEMO)</div>
+                    <div className={styles.paymentTitle}>
+                      PAGO EN LÍNEA SEGURO (BOLD) 💳
+                    </div>
                     <div className={styles.paymentDesc}>
-                      Simulación de pago en línea seguro con Bold.
+                      Tarjeta de crédito/débito, PSE, Nequi y Bancolombia. Redirección segura.
                     </div>
                   </div>
                 </div>
@@ -381,8 +434,17 @@ ${productLines}
             onClick={handleFinalizeOrder}
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'PROCESANDO ORDEN...' : 'FINALIZAR PEDIDO POR WHATSAPP →'}
+            {isSubmitting
+              ? 'PROCESANDO ORDEN...'
+              : paymentMethod === 'bold'
+                ? 'IR A PAGAR CON BOLD →'
+                : 'FINALIZAR PEDIDO POR WHATSAPP →'}
           </button>
+          {submitError && (
+            <p role='alert' style={{ color: '#ff453a', fontSize: '0.85rem', fontWeight: 700, margin: '0.75rem 0 0' }}>
+              {submitError}
+            </p>
+          )}
         </div>
 
         {/* Columna Derecha: Resumen de Orden */}

@@ -1,4 +1,4 @@
-import { SNEAKERS_DATA } from '@/data/sneakers'
+import { useProducts } from '@/hooks/useCatalog'
 import { formatPrice } from '@/utils/formatPrice'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -29,16 +29,17 @@ const TIME_AGOS = [
 export default function SalesNotificationToast () {
   const [currentNotification, setCurrentNotification] = useState(null)
   const [isVisible, setIsVisible] = useState(false)
+  const { products } = useProducts()
 
   useEffect(() => {
-    if (SNEAKERS_DATA.length === 0) return
+    if (products.length === 0) return
 
     let displayTimeout
     let nextTimeout
 
     const triggerNotification = () => {
       const randomBuyer = BUYERS[Math.floor(Math.random() * BUYERS.length)]
-      const randomProduct = SNEAKERS_DATA[Math.floor(Math.random() * SNEAKERS_DATA.length)]
+      const randomProduct = products[Math.floor(Math.random() * products.length)]
       const randomTime = TIME_AGOS[Math.floor(Math.random() * TIME_AGOS.length)]
 
       setCurrentNotification({
@@ -65,7 +66,7 @@ export default function SalesNotificationToast () {
       clearTimeout(displayTimeout)
       clearTimeout(nextTimeout)
     }
-  }, [])
+  }, [products])
 
   if (!currentNotification) return null
 

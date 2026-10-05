@@ -370,3 +370,34 @@
   }
 }
 
+
+/* Selector de color (variantes) */
+.colorsGrid {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.colorSwatch {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.2s ease;
+}
+
+.colorSwatch:hover {
+  border-color: #ffffff;
+}
+
+.colorSwatchActive {
+  border-color: #d4ff00;
+  box-shadow: 0 0 0 2px #000000, 0 0 0 4px #d4ff00;
+}
+
+.colorSwatchSoldOut {
+  opacity: 0.35;
+  position: relative;
+}

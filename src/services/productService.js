@@ -1,20 +1,139 @@
 /**
  * productService.js
- * Capa de abstracción de datos para productos.
- * Ningún componente o store importa products.json directamente.
- * Simula latencia de red (300-500ms) para probar estados de carga (skeletons).
- * Cuando se conecte Supabase, solo se reescribe el interior de estas funciones.
+ * Capa de datos de productos sobre Supabase.
+ *
+ * Adaptador: transforma las filas relacionales (products → product_variants →
+ * variant_sizes) a la forma que consume la UI:
+ *   {
+ *     id,            // slug (estable y legible en la URL)
+ *     legacyId,      // id numérico antiguo (compatibilidad con /producto/2)
+ *     name, brand, brandId, category (slug en minúscula), categoryId,
+ *     price,         // precio de venta efectivo
+ *     originalPrice, // precio antes del descuento (null si no hay oferta)
+ *     image, images, description, isNew, createdAt,
+ *     sizes: [38, 39, ...],                         // unión de tallas de todas las variantes
+ *     colors: [{ name, hex, variantId, image, images, sizes: [{ size, stock }] }]
+ *   }
+ * Cada color es una variante (product_variants) con sus propias fotos y stock.
  */
 
-import productsData from '../data/products.json'
+import { supabase } from '@/lib/supabaseClient'
 
-const SIMULATED_DELAY_MS = 350
+const PRODUCT_SELECT = `
+  id, legacy_id, slug, name, description, price, sale_price, is_new, created_at,
+  brands ( id, name ),
+  categories ( id, name ),
+  product_variants (
+    id, color_name, color_hex, version_name, images, is_default,
+    variant_sizes ( size_eur, stock )
+  )
+`
 
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+const CACHE_TTL_MS = 60 * 1000
+let cache = { at: 0, promise: null }
+
+export function mapProduct (row) {
+  const variants = [...(row.product_variants || [])].sort(
+    (a, b) => Number(b.is_default) - Number(a.is_default)
+  )
+
+  const colors = variants.map((v) => ({
+    name: v.color_name,
+    hex: v.color_hex,
+    variantId: v.id,
+    image: v.images?.[0] ?? null,
+    images: v.images ?? [],
+    sizes: [...(v.variant_sizes || [])]
+      .map((s) => ({ size: Number(s.size_eur), stock: s.stock }))
+      .sort((a, b) => a.size - b.size)
+  }))
+
+  const sizes = [...new Set(colors.flatMap((c) => c.sizes.map((s) => s.size)))].sort(
+    (a, b) => a - b
+  )
+
+  const hasSale = row.sale_price !== null && row.sale_price !== undefined
+  const price = Number(hasSale ? row.sale_price : row.price)
+  const originalPrice = hasSale ? Number(row.price) : null
+  const images = colors[0]?.images ?? []
+
+  return {
+    id: row.slug,
+    legacyId: row.legacy_id,
+    name: row.name,
+    brand: row.brands?.name ?? '',
+    brandId: row.brands?.id ?? null,
+    category: row.categories?.id ?? '',
+    categoryId: row.categories?.id ?? null,
+    description: row.description ?? '',
+    price,
+    originalPrice,
+    discountPercent: originalPrice ? Math.round((1 - price / originalPrice) * 100) : 0,
+    image: images[0] ?? null,
+    images,
+    isNew: row.is_new,
+    createdAt: row.created_at,
+    sizes,
+    colors
+  }
+}
 
 /**
- * Obtiene lista paginada y filtrada de productos.
- * Contrato requerido: { items, total, hasMore }
+ * Todos los productos activos. Cacheado 60s en memoria para no repetir la
+ * consulta al navegar entre Home, Catálogo y Producto.
+ */
+export function getAllProducts ({ force = false } = {}) {
+  const fresh = cache.promise && Date.now() - cache.at < CACHE_TTL_MS
+  if (fresh && !force) return cache.promise
+
+  const promise = supabase
+    .from('products')
+    .select(PRODUCT_SELECT)
+    .eq('is_active', true)
+    .order('legacy_id', { ascending: true, nullsFirst: false })
+    .then(({ data, error }) => {
+      if (error) throw error
+      return (data || []).map(mapProduct)
+    })
+
+  cache = { at: Date.now(), promise }
+  // Si falla, no cachear el error.
+  promise.catch(() => {
+    if (cache.promise === promise) cache = { at: 0, promise: null }
+  })
+  return promise
+}
+
+/**
+ * Obtiene un producto por slug o por id numérico antiguo (/producto/2).
+ * Devuelve null si no existe.
+ */
+export async function getProductBySlug (slugOrLegacyId) {
+  const key = String(slugOrLegacyId ?? '')
+  const products = await getAllProducts()
+  const isLegacy = /^\d+$/.test(key)
+  return (
+    products.find((p) => (isLegacy ? p.legacyId === Number(key) : p.id === key)) || null
+  )
+}
+
+/** Productos con precio de oferta real (sale_price definido). */
+export async function getOffers () {
+  const products = await getAllProducts()
+  return products.filter((p) => p.originalPrice !== null)
+}
+
+/** Últimos productos añadidos. */
+export async function getNewProducts (limit = 8) {
+  const products = await getAllProducts()
+  return [...products]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || (b.legacyId ?? 0) - (a.legacyId ?? 0))
+    .slice(0, limit)
+}
+
+/**
+ * Lista filtrada/ordenada/paginada. Contrato: { items, total, hasMore }.
+ * (Mantenido por compatibilidad con el catálogo legacy.)
  */
 export async function getProducts ({
   filters = {},
@@ -22,90 +141,37 @@ export async function getProducts ({
   page = 1,
   pageSize = 12
 } = {}) {
-  await delay(SIMULATED_DELAY_MS)
+  let result = [...(await getAllProducts())]
 
-  let result = [...productsData]
-
-  // 1. Filtro por marcas (array)
-  if (filters.brands && filters.brands.length > 0) {
-    result = result.filter((p) => filters.brands.includes(p.brandId))
-  }
-
-  // 2. Filtro por categorías (array)
-  if (filters.categories && filters.categories.length > 0) {
-    result = result.filter((p) => filters.categories.includes(p.categoryId))
-  }
-
-  // 3. Filtro por tallas (array de números)
-  if (filters.sizes && filters.sizes.length > 0) {
+  if (filters.brands?.length) result = result.filter((p) => filters.brands.includes(p.brandId))
+  if (filters.categories?.length) result = result.filter((p) => filters.categories.includes(p.categoryId))
+  if (filters.sizes?.length) {
     result = result.filter((p) =>
-      p.sizes.some((s) => filters.sizes.includes(s.size) && s.stock > 0)
+      p.colors.some((c) => c.sizes.some((s) => filters.sizes.includes(s.size) && s.stock > 0))
     )
   }
+  if (filters.onlyOffers) result = result.filter((p) => p.originalPrice !== null)
+  if (typeof filters.priceRange?.min === 'number') result = result.filter((p) => p.price >= filters.priceRange.min)
+  if (typeof filters.priceRange?.max === 'number') result = result.filter((p) => p.price <= filters.priceRange.max)
 
-  // 4. Filtro por rango de precio
-  if (filters.priceRange) {
-    const { min, max } = filters.priceRange
-    if (typeof min === 'number') {
-      result = result.filter((p) => (p.salePrice || p.price) >= min)
-    }
-    if (typeof max === 'number') {
-      result = result.filter((p) => (p.salePrice || p.price) <= max)
-    }
-  }
+  if (sort === 'price-asc') result.sort((a, b) => a.price - b.price)
+  else if (sort === 'price-desc') result.sort((a, b) => b.price - a.price)
+  else result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || (b.legacyId ?? 0) - (a.legacyId ?? 0))
 
-  // 5. Filtro solo ofertas
-  if (filters.onlyOffers) {
-    result = result.filter((p) => p.salePrice !== null && p.salePrice < p.price)
-  }
-
-  // 6. Ordenamiento
-  if (sort === 'price-asc') {
-    result.sort((a, b) => (a.salePrice || a.price) - (b.salePrice || b.price))
-  } else if (sort === 'price-desc') {
-    result.sort((a, b) => (b.salePrice || b.price) - (a.salePrice || a.price))
-  } else {
-    // 'newest' por defecto
-    result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-  }
-
-  // 7. Paginación para infinite scroll
   const total = result.length
-  const startIndex = (page - 1) * pageSize
-  const endIndex = startIndex + pageSize
-  const items = result.slice(startIndex, endIndex)
-  const hasMore = endIndex < total
-
-  return { items, total, hasMore }
+  const start = (page - 1) * pageSize
+  return { items: result.slice(start, start + pageSize), total, hasMore: start + pageSize < total }
 }
 
 /**
- * Obtiene un producto por su slug.
+ * Selección por defecto para "compra rápida": primer color que tenga alguna
+ * talla con stock, y la primera talla disponible de ese color.
+ * Devuelve null si el producto está agotado.
  */
-export async function getProductBySlug (slug) {
-  await delay(SIMULATED_DELAY_MS)
-  const product = productsData.find((p) => p.slug === slug)
-  if (!product) {
-    throw new Error(`Producto con slug "${slug}" no encontrado`)
+export function pickDefaultSelection (product) {
+  for (const color of product?.colors ?? []) {
+    const available = color.sizes.find((s) => s.stock > 0)
+    if (available) return { color, size: available.size }
   }
-  return product
-}
-
-/**
- * Obtiene los productos con precio de oferta.
- */
-export async function getOffers () {
-  await delay(SIMULATED_DELAY_MS)
-  return productsData.filter((p) => p.salePrice !== null && p.salePrice < p.price)
-}
-
-/**
- * Obtiene los últimos productos añadidos.
- */
-export async function getNewProducts (limit = 8) {
-  await delay(SIMULATED_DELAY_MS)
-  const sorted = [...productsData].sort(
-    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-  )
-  return sorted.slice(0, limit)
+  return null
 }

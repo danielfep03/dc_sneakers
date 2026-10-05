@@ -1,4 +1,5 @@
-import { SNEAKERS_DATA } from '@/data/sneakers'
+import { useProducts } from '@/hooks/useCatalog'
+import { pickDefaultSelection } from '@/services/productService'
 import { useCartStore } from '@/store/useCartStore'
 import { Link } from 'react-router-dom'
 import styles from './Hero2.module.css'
@@ -6,15 +7,15 @@ import styles from './Hero2.module.css'
 export default function Hero2 () {
   const { addItem, toggleCart } = useCartStore()
 
-  const featuredDrop = SNEAKERS_DATA[0]
+  const { products } = useProducts()
+  const featuredDrop = products[0]
 
   const handleQuickAdd = () => {
-    if (featuredDrop) {
-      const defaultSize = featuredDrop.sizes[0] || 40
-      const defaultColor = featuredDrop.colors[0] || { name: 'Default', hex: '#000000' }
-      addItem(featuredDrop, defaultSize, defaultColor, 1)
-      toggleCart(true)
-    }
+    if (!featuredDrop) return
+    const selection = pickDefaultSelection(featuredDrop)
+    if (!selection) return // agotado
+    addItem(featuredDrop, selection.size, selection.color, 1)
+    toggleCart(true)
   }
 
   const tickerPhrases = [

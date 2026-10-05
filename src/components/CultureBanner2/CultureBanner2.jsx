@@ -17,7 +17,7 @@ export default function CultureBanner2 () {
           {categoriesList.map((item) => (
             <Link
               key={item.num}
-              to={`/categorias?category=${item.tag}`}
+              to={`/categorias?category=${item.tag.toLowerCase()}`}
               className={styles.categoryItem}
             >
               <span className={styles.catNumber}>{item.num}</span>

@@ -44,3 +44,8 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Antigravity generated files (except .gemini)
+.antigravity*
+!.gemini/
+!.gemini/**

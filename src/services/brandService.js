@@ -1,13 +1,16 @@
 /**
  * brandService.js
- * Capa de abstracción para marcas.
+ * Marcas desde Supabase.
  */
 
-import brandsData from '../data/brands.json'
-
-const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+import { supabase } from '@/lib/supabaseClient'
 
 export async function getBrands () {
-  await delay(200)
-  return brandsData
+  const { data, error } = await supabase
+    .from('brands')
+    .select('id, name, slug, description, logo_url')
+    .order('name', { ascending: true })
+
+  if (error) throw error
+  return data || []
 }
