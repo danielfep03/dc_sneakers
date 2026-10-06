@@ -118,11 +118,33 @@ export default function Checkout2 () {
       const originUrl = window.location.origin
       const order = await createOrder({ contact, cart, paymentMethod, originUrl })
 
-      // 2. Si el método es Bold (Pagos en línea), redirigir al Checkout seguro de Bold
-      if (isBoldReal && order.boldCheckoutUrl) {
+      // 2. Si el método es Bold (Pagos en línea), abrir la pasarela oficial de Bold
+      if (isBoldReal && (order.boldCheckout || order.boldCheckoutUrl)) {
         clearCart()
-        window.location.href = order.boldCheckoutUrl
-        return
+        if (order.boldCheckout) {
+          if (!window.BoldCheckout) {
+            await new Promise((resolve, reject) => {
+              const existing = document.querySelector('script[src*="boldPaymentButton.js"]')
+              if (existing) {
+                existing.addEventListener('load', resolve)
+                existing.addEventListener('error', () => reject(new Error('No se pudo cargar el SDK de Bold')))
+              } else {
+                const s = document.createElement('script')
+                s.src = 'https://checkout.bold.co/library/boldPaymentButton.js'
+                s.onload = resolve
+                s.onerror = () => reject(new Error('No se pudo cargar el SDK de Bold'))
+                document.head.appendChild(s)
+              }
+            })
+          }
+          const checkout = new window.BoldCheckout(order.boldCheckout)
+          checkout.open()
+          return
+        }
+        if (order.boldCheckoutUrl) {
+          window.location.href = order.boldCheckoutUrl
+          return
+        }
       }
 
       // 3. Generar el mensaje de WhatsApp con el total calculado por el servidor

@@ -24,10 +24,10 @@ function json (body: unknown, status = 200) {
 
 const str = (v: unknown) => (typeof v === 'string' ? v.trim() : '')
 
-// Calcula firma SHA256 para Bold Integrity Signature: SHA256(orderId + totalAmountInCents + currency + secretKey)
+// Calcula firma SHA256 para Bold: SHA256(orderId + amount + currency + secretKey)
 async function generateBoldSignature (orderId: string, totalAmount: number, currency: string, secretKey: string): Promise<string> {
-  const amountInCents = Math.round(totalAmount * 100)
-  const concatenated = `${orderId}${amountInCents}${currency}${secretKey}`
+  const amountStr = String(Math.round(totalAmount))
+  const concatenated = `${orderId}${amountStr}${currency}${secretKey}`
   const encoder = new TextEncoder()
   const data = encoder.encode(concatenated)
   const hashBuffer = await crypto.subtle.digest('SHA-256', data)
@@ -118,9 +118,16 @@ Deno.serve(async (req) => {
 
   // --- Si el método de pago es Bold real, se construye la firma y URL de Redirección ---
   if (paymentMethod === 'bold') {
-    const boldSecretKey = Deno.env.get('BOLD_SECRET_KEY') || 'SANDBOX_SECRET_KEY'
-    const boldApiKey = Deno.env.get('BOLD_IDENTITY_KEY') || 'SANDBOX_IDENTITY_KEY'
-    const boldBaseUrl = Deno.env.get('BOLD_CHECKOUT_URL') || 'https://checkout.bold.co'
+    const boldSecretKey =
+      Deno.env.get('BOLD_SECRET_KEY')?.trim() ||
+      Deno.env.get('BOLD_SECRET')?.trim() ||
+      'SANDBOX_SECRET_KEY'
+
+    const boldApiKey =
+      Deno.env.get('BOLD_IDENTITY_KEY')?.trim() ||
+      Deno.env.get('BOLD_API_KEY')?.trim() ||
+      Deno.env.get('BOLD_KEY')?.trim() ||
+      'SANDBOX_IDENTITY_KEY'
 
     const signature = await generateBoldSignature(data.orderId, data.total, 'COP', boldSecretKey)
     
@@ -131,25 +138,21 @@ Deno.serve(async (req) => {
       redirectionBase = configuredReturn || 'https://dc-sneakers.vercel.app'
     }
 
-    // URL de Redirección con parámetros formateados según la API de Bold
-    const redirectParams = new URLSearchParams({
-      'api-key': boldApiKey,
-      'order-id': data.orderId,
-      amount: String(data.total),
+    const boldCheckout = {
+      orderId: data.orderId,
       currency: 'COP',
-      integrity_signature: signature,
+      amount: String(data.total),
+      apiKey: boldApiKey,
+      integritySignature: signature,
       description: `Pedido ${data.orderId} en DC SNEAKERS`,
-      'tax-amount': '0',
-      'redirection-url': `${redirectionBase}/checkout?orderId=${data.orderId}&bold=true`
-    })
-
-    const boldCheckoutUrl = `${boldBaseUrl}/payment?${redirectParams.toString()}`
+      taxAmount: '0',
+      redirectionUrl: `${redirectionBase}/checkout?orderId=${data.orderId}&bold=true`
+    }
 
     return json({
       ...data,
       paymentMethod: 'bold',
-      boldCheckoutUrl,
-      signature
+      boldCheckout
     }, 201)
   }
 
