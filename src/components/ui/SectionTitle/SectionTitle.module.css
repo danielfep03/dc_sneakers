@@ -15,7 +15,7 @@
 }
 
 .scriptSubtitle {
-  font-family: var(--font-script, 'Permanent Marker', cursive);
+  font-family: var(--font-script, 'Road Rage', 'Permanent Marker', cursive);
   font-size: var(--text-sm, 0.85rem);
   color: var(--color-script-gold, #e2b842);
   margin: 0 0 0.25rem 0;
@@ -37,7 +37,7 @@
 }
 
 .arrow {
-  color: var(--color-accent, #c6ff00);
+  color: var(--color-accent, #304FFE);
   font-size: 1.8rem;
   font-weight: 900;
 }

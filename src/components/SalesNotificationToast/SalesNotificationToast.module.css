@@ -28,12 +28,12 @@
   gap: 12px;
   background: rgba(14, 14, 18, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.12);
-  border-left: 3px solid #d4ff00;
+  border-left: 3px solid #304FFE;
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   padding: 12px 14px;
   border-radius: 4px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 15px rgba(212, 255, 0, 0.12);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), 0 0 15px rgba(48, 79, 254, 0.12);
   font-family: 'Space Grotesk', -apple-system, sans-serif;
   box-sizing: border-box;
 }
@@ -113,7 +113,7 @@
   font-size: 0.62rem;
   font-weight: 800;
   letter-spacing: 0.08em;
-  color: #d4ff00;
+  color: #304FFE;
   text-transform: uppercase;
   display: inline-flex;
   align-items: center;
@@ -123,9 +123,9 @@
 .verifiedDot {
   width: 5px;
   height: 5px;
-  background-color: #d4ff00;
+  background-color: #304FFE;
   border-radius: 50%;
-  box-shadow: 0 0 6px #d4ff00;
+  box-shadow: 0 0 6px #304FFE;
 }
 
 .timeAgo {
@@ -162,7 +162,7 @@
 }
 
 .productLink:hover {
-  color: #d4ff00;
+  color: #304FFE;
 }
 
 .priceRow {
@@ -175,7 +175,7 @@
 .price {
   font-size: 0.76rem;
   font-weight: 800;
-  color: #d4ff00;
+  color: #304FFE;
 }
 
 .freeShip {

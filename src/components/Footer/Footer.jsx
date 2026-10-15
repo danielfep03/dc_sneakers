@@ -1,44 +1,67 @@
+import { Link } from 'react-router-dom'
+import DcLogo from '../common/DcLogo'
 import styles from './Footer.module.css'
-import brandLogo from '/icon.jpeg'
 
 export default function Footer () {
   return (
-    <footer className={styles.footer}>
-      <div className={styles.footerMain}>
-        <div className={styles.footerBrand}>
-          <div className={styles.logoContainer}>
-            <img src={brandLogo} alt='DC SNEAKERS' className={styles.logoImg} />
-            <div className={styles.logoTextWrapper}>
-              <span className={styles.logoTextMain} style={{ color: '#ffffff' }}>DC</span>
-              <span className={styles.logoTextSub}>SNEAKERS</span>
+    <footer className={styles.footerContainer}>
+      <div className={styles.footerInner}>
+        <div className={styles.topGrid}>
+          <div className={styles.brandCol}>
+            <div className={styles.footerBrandHeader}>
+              <Link to='/' style={{ textDecoration: 'none' }}>
+                <DcLogo height={56} layout='stacked' />
+              </Link>
             </div>
+            <p className={styles.brandTagline}>
+              Curaduría exclusiva de siluetas icónicas y streetwear en Colombia. Envíos contraentrega y garantía directa.
+            </p>
           </div>
-          <p style={{ marginTop: '12px' }}>La tienda oficial para los verdaderos apasionados del sneaker culture, la cultura basket y el estilo urbano en Colombia.</p>
-          <div style={{ marginTop: '14px', fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-            <div>📱 <strong>WhatsApp:</strong> <a href='https://wa.me/573008625143' target='_blank' rel='noreferrer' style={{ color: '#25d366', textDecoration: 'none', fontWeight: '800' }}>300 862 5143</a></div>
-            <div>📸 <strong>Instagram:</strong> <a href='https://instagram.com/dc.sneakers_' target='_blank' rel='noreferrer' style={{ color: '#e1306c', textDecoration: 'none', fontWeight: '800' }}>@dc.sneakers_</a></div>
+
+          <div>
+            <h4 className={styles.colTitle}>COLECCIONES</h4>
+            <ul className={styles.linksList}>
+              <li><Link to='/categorias?category=basketball' className={styles.footerLink}>BASKETBALL</Link></li>
+              <li><Link to='/categorias?category=casual' className={styles.footerLink}>CASUAL & RETRO</Link></li>
+              <li><Link to='/categorias?category=running' className={styles.footerLink}>RUNNING</Link></li>
+              <li><Link to='/categorias?category=voleibol' className={styles.footerLink}>VOLEIBOL</Link></li>
+              <li><Link to='/categorias?tag=sale' className={styles.footerLink}>OFERTAS LIMITADAS</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className={styles.colTitle}>SOPORTE</h4>
+            <ul className={styles.linksList}>
+              <li><Link to='/checkout' className={styles.footerLink}>Estado del Pedido</Link></li>
+              <li><span className={styles.footerLink}>Envíos Contraentrega</span></li>
+              <li><span className={styles.footerLink}>Guía de Tallas EU</span></li>
+              <li><span className={styles.footerLink}>Garantía de 30 Días</span></li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className={styles.colTitle}>ALERTAS DE LANZAMIENTOS</h4>
+            <p className={styles.newsletterDesc}>
+              Recibe notificaciones prioritarias de los próximos lanzamientos exclusivos.
+            </p>
+            <form onSubmit={(e) => e.preventDefault()} className={styles.inputRow}>
+              <input
+                type='email'
+                placeholder='TU EMAIL...'
+                className={styles.newsletterInput}
+                required
+              />
+              <button type='submit' className={styles.subscribeBtn}>
+                UNIRME
+              </button>
+            </form>
           </div>
         </div>
-        <div className={styles.footerLinksGroup}>
-          <div className={styles.footerLinksCol}>
-            <h4>Soporte</h4>
-            <a href='#'>Ayuda y Contacto</a>
-            <a href='#'>Envíos a Colombia</a>
-            <a href='#'>Devoluciones</a>
-            <a href='#'>Garantía DC SNEAKERS</a>
-          </div>
-          <div className={styles.footerLinksCol}>
-            <h4>Tienda</h4>
-            <a href='#'>Drop Jordan</a>
-            <a href='#'>Colecciones Especiales</a>
-            <a href='#'>Outlets y Descuentos</a>
-            <a href='#'>Tarjetas de Regalo</a>
-          </div>
+
+        <div className={styles.bottomRow}>
+          <span>© {new Date().getFullYear()} DC SNEAKERS COLOMBIA. TODOS LOS DERECHOS RESERVADOS.</span>
+          <span>CULTURA URBANA Y ARCHIVO DE SNEAKERS // [01]</span>
         </div>
-      </div>
-      <div className={styles.footerBottom}>
-        <span>© 2026 DC SNEAKERS (@dc.sneakers_). Todos los derechos reservados.</span>
-        <span>El templo del sneakerhead & streetwear en Colombia 🇨🇴</span>
       </div>
     </footer>
   )

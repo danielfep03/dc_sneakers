@@ -1,0 +1,203 @@
+.section {
+  width: 100%;
+  background-color: var(--color-bg, #0d0d0d);
+  padding: 2.5rem 0 3.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.container {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+  box-sizing: border-box;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: clamp(520px, 68vh, 680px);
+  padding: 2rem 2.2rem;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: #111114;
+  overflow: hidden;
+  text-decoration: none;
+  cursor: pointer;
+  transition: border-color 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease;
+  box-sizing: border-box;
+}
+
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 14px 45px rgba(255, 255, 255, 0.05);
+  transform: translateY(-3px);
+}
+
+.imageWrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 18%;
+  display: block;
+  transition: transform 0.75s cubic-bezier(0.16, 1, 0.3, 1), filter 0.75s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+  filter: contrast(1.06) brightness(1.03);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(13, 13, 13, 0.25) 0%,
+    rgba(13, 13, 13, 0.05) 30%,
+    rgba(13, 13, 13, 0.65) 68%,
+    rgba(13, 13, 13, 0.95) 100%
+  );
+  transition: background 0.4s ease;
+}
+
+.card:hover .overlay {
+  background: linear-gradient(
+    180deg,
+    rgba(13, 13, 13, 0.15) 0%,
+    rgba(13, 13, 13, 0.02) 30%,
+    rgba(13, 13, 13, 0.6) 65%,
+    rgba(13, 13, 13, 0.92) 100%
+  );
+}
+
+.badgeTop {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.codeText {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #c4c4c9;
+  background: rgba(13, 13, 13, 0.75);
+  padding: 0.35rem 0.8rem;
+  border-radius: 2px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  text-transform: uppercase;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: auto;
+}
+
+.scriptBadge {
+  font-family: var(--font-script, 'Road Rage', 'Permanent Marker', cursive, sans-serif);
+  color: #e2b842;
+  font-size: clamp(1.15rem, 1.9vw, 1.45rem);
+  letter-spacing: 0.08em;
+  transform: rotate(-1.5deg);
+  margin-bottom: 0.35rem;
+  display: inline-block;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.7);
+}
+
+.title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4rem, 7vw, 6rem);
+  line-height: 0.88;
+  letter-spacing: 0.03em;
+  color: #ffffff;
+  margin: 0 0 1.25rem 0;
+  text-transform: uppercase;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.8);
+}
+
+.actionRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(18, 18, 22, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 0.7rem 1.6rem;
+  border-radius: 2px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.25s ease;
+}
+
+.card:hover .actionRow {
+  background: #304FFE;
+  border-color: #304FFE;
+  box-shadow: 0 0 25px rgba(48, 79, 254, 0.45);
+}
+
+.actionText {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  color: #ffffff;
+  text-transform: uppercase;
+}
+
+.actionArrow {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #304FFE;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+
+.card:hover .actionArrow {
+  color: #ffffff;
+  transform: translateX(4px);
+}
+
+@media (max-width: 900px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .card {
+    min-height: 480px;
+    padding: 1.5rem;
+  }
+
+  .container {
+    padding: 0 1.25rem;
+  }
+
+  .title {
+    font-size: clamp(3.5rem, 12vw, 4.8rem);
+  }
+}

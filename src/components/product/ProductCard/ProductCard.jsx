@@ -29,7 +29,7 @@ export default function ProductCard ({ product }) {
 
   const discountPercent = calcDiscount(product.price, product.salePrice)
   const primaryImage =
-    product.images?.[0] || product.image || 'https://placehold.co/600x600/141416/c6ff00?text=Sneaker'
+    product.images?.[0] || product.image || 'https://placehold.co/600x600/141416/0117ff?text=Sneaker'
 
   const handleFavoriteClick = (e) => {
     e.preventDefault()

@@ -1,31 +1,22 @@
 .ecommerceWrapper {
-  width: 100%;
+  --color-bg-dark: #0a0a0c;
+  --color-surface-dark: #121215;
+  --color-volt: #304FFE;
+  --color-volt-hover: #1a66ff;
+  --color-text-main: #ffffff;
+  --color-text-muted: #8e8e93;
+  --color-border: rgba(255, 255, 255, 0.08);
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #ffffff;
-  color: var(--color-dark);
-  font-family: var(--font-body);
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-main);
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  overflow-x: hidden;
 }
 
-.mainContainer {
+.ecommerceWrapper main {
   flex: 1;
   width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 4% 60px 4%;
-  box-sizing: border-box;
-}
-
-/* Modo Oscuro Global en el Wrapper */
-.darkTheme {
-  background-color: #0b0b0d;
-  color: #f2f2f7;
-}
-
-@media (max-width: 768px) {
-  .mainContainer {
-    padding: 0 4% 40px 4%;
-  }
 }

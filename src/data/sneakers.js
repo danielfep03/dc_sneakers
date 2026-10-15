@@ -124,4 +124,3 @@ export const SNEAKERS_DATA = [
 ]
 
 export const CATEGORIES = ['ALL', 'BASKETBALL', 'VOLEIBOL', 'CASUAL', 'RUNNING']
-

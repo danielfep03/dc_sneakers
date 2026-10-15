@@ -10,7 +10,7 @@ import styles from './ProductGallery.module.css'
 export default function ProductGallery ({ images = [], productName = '' }) {
   const [activeIdx, setActiveIdx] = useState(0)
 
-  const activeImage = images[activeIdx] || images[0] || 'https://placehold.co/800x800/141416/c6ff00?text=Sneaker'
+  const activeImage = images[activeIdx] || images[0] || 'https://placehold.co/800x800/141416/0117ff?text=Sneaker'
 
   return (
     <div className={styles.gallery}>

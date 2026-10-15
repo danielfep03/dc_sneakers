@@ -1,25 +1,27 @@
 /* ==========================================================================
    VARIABLES Y TOKENS DE DISEÑO - DC SNEAKERS
-   Inspirado en la estética Streetwear / Brutalista Urbana (URBANcode).
-   Paleta: Base negro profundo + Acento Verde Lima / Volt Neón (#C6FF00)
+   Paleta Oficial: Jet Black (#0D0D0D) + Soft White (#FAFAFA)
+   Acento Principal: Bold Blue (#304FFE)
+   Acento Secundario Luminoso: Light Blue (#304FFE)
    ========================================================================== */
 
 :root {
-  /* --- FONDOS --- */
-  --color-bg: #0a0a0c;            /* Negro base de la página */
-  --color-surface: #141416;       /* Tarjetas, paneles y modales */
-  --color-surface-2: #1c1c20;     /* Hover de tarjetas y controles secundarios */
+  /* --- FONDOS Y SUPERFICIES (Jet Black) --- */
+  --color-bg: #0d0d0d;            /* Jet Black oficial */
+  --color-surface: #141418;       /* Tarjetas, paneles y modales */
+  --color-surface-2: #1b1b22;     /* Hover de tarjetas y controles secundarios */
   --color-paper: #ececec;         /* Secciones tipo papel rasgado / claras */
 
-  /* --- TEXTO --- */
-  --color-text: #ffffff;          /* Texto principal */
-  --color-text-muted: #9a9a9f;    /* Texto secundario y etiquetas */
-  --color-text-on-accent: #0a0a0c;/* Texto oscuro sobre fondos verde lima */
+  /* --- TEXTO (Soft White) --- */
+  --color-text: #fafafa;          /* Soft White oficial */
+  --color-text-muted: #9e9ea7;    /* Texto secundario y etiquetas */
+  --color-text-on-accent: #fafafa;/* Texto blanco sobre fondos Bold Blue */
 
-  /* --- ACENTO LIMA / VOLT NEÓN --- */
-  --color-accent: #c6ff00;        /* Verde lima de la referencia */
-  --color-accent-hover: #d8ff4d;  /* Hover del botón principal */
-  --color-script-gold: #e2b842;   /* Acento caligráfico dorado (RULE THE STREETS) */
+  /* --- AZUL EXCLUSIVO DE RESALTE (#304FFE) --- */
+  --color-accent: #304FFE;        /* Azul exclusivo para resaltar todo lo que tenga color */
+  --color-accent-hover: #536DFE;  /* Hover del botón principal y enlaces */
+  --color-accent-glow: rgba(48, 79, 254, 0.4);
+  --color-script-gold: #e2b842;   /* Acento caligráfico secundario */
 
   /* --- ESTADOS Y BORDES --- */
   --color-danger: #ff4d4d;        /* Etiqueta de oferta / errores de formulario */
@@ -28,7 +30,7 @@
 
   /* --- TIPOGRAFÍA (Google Fonts) --- */
   --font-display: 'Bebas Neue', sans-serif;
-  --font-script: 'Permanent Marker', cursive, sans-serif;
+  --font-script: 'Road Rage', 'Permanent Marker', cursive, sans-serif;
   --font-body: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
 
   /* --- ESCALA DE TAMAÑOS --- */
@@ -56,15 +58,8 @@
   --radius-md: 4px;
   --radius-full: 9999px;
 
-  /* --- SOMBRAS --- */
-  --shadow-neon: 0 0 25px rgba(198, 255, 0, 0.25);
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.5);
-
-  /* --- BREAKPOINTS DOCUMENTADOS (Para uso en @media) ---
-     Móvil grande: 640px
-     Tablet: 900px
-     Escritorio: 1200px
-     Contenedor máximo: 1440px
-  */
-  --container-max: 1440px;
+  /* --- SOMBRAS Y RESPLANDORES --- */
+  --shadow-neon: 0 0 25px rgba(48, 79, 254, 0.4);
+  --shadow-neon-light: 0 0 20px rgba(48, 79, 254, 0.35);
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.6);
 }

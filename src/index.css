@@ -1,17 +1,14 @@
-/* Premium E-commerce Styling System */
+/* DC SNEAKERS Base Styling System */
 :root {
-  --color-brand: #e5383b;
-  --color-brand-hover: #c92a2a;
-  --color-accent-gold: #e9d8a6;
-  --color-dark: #0f0f11;
-  --color-dark-light: #18181c;
-  --color-grey-light: #f2f2f7;
-  --color-border: #e5e5ea;
-  --color-text-muted: #8e8e93;
-  --font-display: 'Outfit', 'Plus Jakarta Sans', sans-serif;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
-  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.03);
-  --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.08);
+  --color-brand: #304FFE;
+  --color-brand-light: #304FFE;
+  --color-dark: #0d0d0d;
+  --color-dark-light: #141418;
+  --color-text: #fafafa;
+  --color-text-muted: #9e9ea7;
+  --font-display: 'Bebas Neue', 'Outfit', sans-serif;
+  --font-body: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+  --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.6);
 }
 
 * {
@@ -22,8 +19,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Space Grotesk', 'Plus Jakarta Sans', 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #0a0a0c;
-  color: #ffffff;
+  background-color: #0d0d0d;
+  color: #fafafa;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

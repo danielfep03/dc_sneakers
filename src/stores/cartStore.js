@@ -1,9 +1,9 @@
 /**
  * cartStore.js
- * Store de Zustand para la gestión del carrito de compras.
- * Sigue fielmente la especificación del plan (Sección 7):
- * - Clave única por ítem: productId + size (misma talla suma cantidad).
- * - Persistido en localStorage con 'persist'.
+ * Store de Zustand para la gestión del carrito de compras integrado con Supabase.
+ * - Soporta variantes por color y talla (variantId) requeridas por orderService y create-order.
+ * - Controla apertura y cierre del drawer del carrito (isCartOpen).
+ * - Persistido en localStorage con clave 'dc-sneakers-cart-storage'.
  */
 
 import { create } from 'zustand'
@@ -12,91 +12,95 @@ import { persist } from 'zustand/middleware'
 export const useCartStore = create(
   persist(
     (set, get) => ({
-      items: [],
+      cart: [],
+      isCartOpen: false,
 
       /**
-       * Agrega un producto al carrito. Si la misma talla ya existe, suma cantidad.
-       * @param {Object} product - Objeto del producto
-       * @param {number} size - Talla seleccionada
-       * @param {number} quantity - Cantidad a agregar (default 1)
+       * Abre o cierra el drawer lateral del carrito.
+       * @param {boolean} [open] - Estado forzado; si se omite, alterna el estado actual.
        */
-      addItem: (product, size, quantity = 1) =>
-        set((state) => {
-          const unitPrice = product.salePrice || product.price
-          const existingIndex = state.items.findIndex(
-            (i) => i.productId === product.id && i.size === size
-          )
-
-          if (existingIndex > -1) {
-            const updated = [...state.items]
-            updated[existingIndex].quantity += quantity
-            return { items: updated }
-          }
-
-          const newItem = {
-            productId: product.id,
-            slug: product.slug,
-            name: product.name,
-            image: product.images?.[0] || product.image || '',
-            size,
-            unitPrice,
-            originalPrice: product.price,
-            quantity
-          }
-
-          return { items: [...state.items, newItem] }
-        }),
-
-      /**
-       * Elimina un ítem específico del carrito por productId y talla.
-       */
-      removeItem: (productId, size) =>
+      toggleCart: (open) =>
         set((state) => ({
-          items: state.items.filter(
-            (i) => !(i.productId === productId && i.size === size)
-          )
+          isCartOpen: open !== undefined ? open : !state.isCartOpen
         })),
 
       /**
-       * Actualiza la cantidad de un ítem. Si llega a 0, se remueve.
+       * Agrega un producto al carrito con su talla y variante de color.
+       * Si ya existe la misma combinación, incrementa la cantidad.
        */
-      updateQuantity: (productId, size, delta) =>
+      addItem: (product, size, color, quantity = 1) =>
         set((state) => {
-          const updated = state.items
-            .map((item) => {
-              if (item.productId === productId && item.size === size) {
-                const newQty = item.quantity + delta
-                return newQty > 0 ? { ...item, quantity: newQty } : null
-              }
-              return item
-            })
-            .filter(Boolean)
+          const existingIndex = state.cart.findIndex(
+            (item) =>
+              item.product.id === product.id &&
+              item.size === size &&
+              item.color.name === color.name
+          )
 
-          return { items: updated }
+          if (existingIndex > -1) {
+            const newCart = [...state.cart]
+            newCart[existingIndex].quantity += quantity
+            return { cart: newCart, isCartOpen: true }
+          }
+
+          return {
+            cart: [...state.cart, { product, size, color, quantity }],
+            isCartOpen: true
+          }
+        }),
+
+      /**
+       * Remueve un ítem del carrito por su índice.
+       */
+      removeItem: (index) =>
+        set((state) => {
+          const newCart = [...state.cart]
+          newCart.splice(index, 1)
+          return { cart: newCart }
+        }),
+
+      /**
+       * Actualiza la cantidad de un ítem por delta (+1 o -1).
+       */
+      updateQuantity: (index, delta) =>
+        set((state) => {
+          const newCart = [...state.cart]
+          const newQty = newCart[index].quantity + delta
+          if (newQty > 0) {
+            newCart[index].quantity = newQty
+          }
+          return { cart: newCart }
         }),
 
       /**
        * Vacía completamente el carrito.
        */
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ cart: [] }),
 
       /**
-       * Cantidad total de pares/prendas en el carrito.
+       * Total de unidades de calzado en el carrito.
        */
-      getTotalItems: () =>
-        get().items.reduce((sum, item) => sum + item.quantity, 0),
+      getTotalItems: () => {
+        return get().cart.reduce((sum, item) => sum + item.quantity, 0)
+      },
 
       /**
-       * Subtotal a pagar en COP.
+       * Subtotal calculado en COP.
        */
-      getSubtotal: () =>
-        get().items.reduce(
-          (sum, item) => sum + item.unitPrice * item.quantity,
+      getSubtotal: () => {
+        return get().cart.reduce(
+          (sum, item) => sum + item.product.price * item.quantity,
           0
         )
+      }
     }),
     {
-      name: 'dc_sneakers_cart'
+      name: 'dc-sneakers-cart-storage',
+      version: 1,
+      migrate: (persistedState, version) =>
+        version < 1 ? { ...persistedState, cart: [] } : persistedState
     }
   )
 )
+
+export default useCartStore

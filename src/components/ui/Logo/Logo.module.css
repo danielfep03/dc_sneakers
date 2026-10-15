@@ -16,8 +16,8 @@
 }
 
 .scriptText {
-  font-family: var(--font-script, 'Permanent Marker', cursive);
-  color: var(--color-accent, #c6ff00);
+  font-family: var(--font-script, 'Road Rage', 'Permanent Marker', cursive);
+  color: var(--color-accent, #304FFE);
   font-weight: 400;
   display: inline-block;
   transform: rotate(-3deg);

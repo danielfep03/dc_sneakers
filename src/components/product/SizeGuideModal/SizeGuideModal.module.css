@@ -13,7 +13,7 @@
 
 .table th {
   background-color: #0b0b0d;
-  color: var(--color-accent, #c6ff00);
+  color: var(--color-accent, #304FFE);
   font-weight: 800;
   padding: 0.75rem 0.5rem;
   border-bottom: 2px solid var(--color-border, #242428);
@@ -28,8 +28,8 @@
 }
 
 .tipBox {
-  background-color: rgba(198, 255, 0, 0.06);
-  border: 1px solid rgba(198, 255, 0, 0.2);
+  background-color: rgba(48, 79, 254, 0.06);
+  border: 1px solid rgba(48, 79, 254, 0.2);
   padding: var(--space-3, 0.75rem) var(--space-4, 1rem);
   border-radius: var(--radius-sm, 2px);
   margin-top: var(--space-4, 1rem);
@@ -39,7 +39,7 @@
 }
 
 .tipTitle {
-  color: var(--color-accent, #c6ff00);
+  color: var(--color-accent, #304FFE);
   font-weight: 800;
   margin-bottom: 0.2rem;
   text-transform: uppercase;

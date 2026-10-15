@@ -1,0 +1,288 @@
+.heroSection {
+  position: relative;
+  width: 100%;
+  min-height: clamp(560px, 82vh, 760px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #08080a;
+  background-image:
+    linear-gradient(to right, #08080a 0%, rgba(8, 8, 10, 0.95) 35%, rgba(8, 8, 10, 0.45) 55%, transparent 75%),
+    url('/hero_bg.jpg');
+  background-size: contain;
+  background-position: right center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.heroContent {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 4.5rem 2.5rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  box-sizing: border-box;
+  flex: 1;
+}
+
+.leftColumn {
+  max-width: 620px;
+}
+
+.scriptBadge {
+  font-family: var(--font-script, 'Road Rage', 'Permanent Marker', cursive, sans-serif);
+  color: #e2b842;
+  font-size: clamp(1.4rem, 2.8vw, 1.95rem);
+  letter-spacing: 0.1em;
+  margin: 0 0 0.8rem 0;
+  text-transform: uppercase;
+  transform: rotate(-1.5deg);
+  display: inline-block;
+}
+
+.heroTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(4.5rem, 9.5vw, 8rem);
+  line-height: 0.88;
+  color: #ffffff;
+  letter-spacing: 0.02em;
+  margin: 0 0 1.5rem 0;
+  text-transform: uppercase;
+}
+
+.voltDot {
+  color: #304FFE;
+  display: inline-block;
+  margin-left: 4px;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 0.7em;
+  line-height: 1;
+}
+
+.heroSubtitle {
+  font-family: 'Space Grotesk', sans-serif;
+  color: #c4c4c9;
+  font-size: 1.05rem;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  max-width: 440px;
+  margin: 0 0 2rem 0;
+}
+
+.ctaRow {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.5rem 0;
+}
+
+.ctaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background-color: #304FFE;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.8rem;
+  text-decoration: none;
+  border: none;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 25px rgba(48, 79, 254, 0.25);
+  flex-shrink: 0;
+}
+
+.ctaBtn:hover {
+  background-color: #536DFE;
+  color: #ffffff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px rgba(48, 79, 254, 0.45);
+}
+
+.ctaArrow {
+  font-size: 1.1rem;
+  font-weight: 900;
+  transition: transform 0.2s ease;
+}
+
+.ctaBtn:hover .ctaArrow {
+  transform: translateX(4px);
+}
+
+.dropCard {
+  background: rgba(18, 18, 22, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding: 0.5rem 0.85rem 0.5rem 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  max-width: 280px;
+  border-radius: 4px;
+  transition: border-color 0.2s ease, transform 0.2s ease;
+}
+
+.dropCard:hover {
+  border-color: #304FFE;
+  transform: translateY(-1px);
+}
+
+.dropThumb {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.dropInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.dropTag {
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #304FFE;
+  text-transform: uppercase;
+  display: block;
+}
+
+.dropTitle {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 2px 0 0 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropAddBtn {
+  width: 30px;
+  height: 30px;
+  background: #304FFE;
+  border: none;
+  border-radius: 3px;
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.dropAddBtn:hover {
+  background: #536DFE;
+  transform: scale(1.05);
+}
+
+.scrollIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #8e8e93;
+  text-transform: uppercase;
+  margin-top: 1rem;
+}
+
+.bottomTicker {
+  width: 100%;
+  background: #000000;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 0.75rem 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.tickerTrack {
+  display: inline-flex;
+  gap: 2.5rem;
+  animation: scrollTicker 20s linear infinite;
+  align-items: center;
+}
+
+.tickerItem {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #d1d1d6;
+  display: inline-flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.tickerPlus {
+  color: #304FFE;
+  font-weight: 900;
+  font-size: 0.85rem;
+}
+
+@keyframes scrollTicker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@media (max-width: 900px) {
+  .heroSection {
+    min-height: auto;
+    background-size: cover;
+    background-position: 78% center;
+    background-image:
+      linear-gradient(to bottom, rgba(8, 8, 10, 0.92) 0%, rgba(8, 8, 10, 0.72) 45%, #08080a 100%),
+      url('/hero_bg.jpg');
+    padding-bottom: 1.5rem;
+  }
+
+  .heroContent {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 3rem 1.25rem 1.5rem;
+    gap: 2rem;
+  }
+
+  .ctaRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .ctaBtn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .dropCard {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .scrollIndicator {
+    margin-top: 1rem;
+  }
+}

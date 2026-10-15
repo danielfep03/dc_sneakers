@@ -1,0 +1,47 @@
+.container {
+  min-height: 60vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 1.5rem;
+}
+
+.code {
+  font-family: var(--font-display, 'Bebas Neue', sans-serif);
+  font-size: 6rem;
+  color: var(--color-accent, #304FFE);
+  line-height: 1;
+  letter-spacing: 2px;
+}
+
+.title {
+  font-family: var(--font-display, 'Bebas Neue', sans-serif);
+  font-size: 2rem;
+  margin: 1rem 0 0.5rem;
+  letter-spacing: 1px;
+}
+
+.text {
+  color: var(--color-text-muted, #9a9a9f);
+  margin-bottom: 2rem;
+}
+
+.btn {
+  background: var(--color-accent, #304FFE);
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.85rem 1.8rem;
+  text-decoration: none;
+  letter-spacing: 1px;
+  font-size: 0.9rem;
+  display: inline-block;
+  transition: opacity 0.2s ease;
+}
+
+.btn:hover {
+  background: #536DFE;
+  color: #ffffff;
+  opacity: 1;
+}

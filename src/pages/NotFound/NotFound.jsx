@@ -1,11 +1,15 @@
-import styles from './NotFound2.module.css'
+import { Link } from 'react-router-dom'
+import styles from './NotFound.module.css'
 
-function NotFound () {
+export default function NotFound () {
   return (
     <div className={styles.container}>
-      NotFound
+      <span className={styles.code}>404</span>
+      <h1 className={styles.title}>SILUETA NO ENCONTRADA</h1>
+      <p className={styles.text}>La página o producto que buscas no existe o fue movido.</p>
+      <Link to='/' className={styles.btn}>
+        VOLVER AL INICIO →
+      </Link>
     </div>
   )
 }
-
-export default NotFound

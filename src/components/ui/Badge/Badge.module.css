@@ -18,9 +18,9 @@
 }
 
 .new {
-  background-color: var(--color-accent, #c6ff00);
+  background-color: var(--color-accent, #304FFE);
   color: var(--color-text-on-accent, #0a0a0c);
-  box-shadow: 0 0 10px rgba(198, 255, 0, 0.3);
+  box-shadow: 0 0 10px rgba(48, 79, 254, 0.3);
 }
 
 .soldOut {

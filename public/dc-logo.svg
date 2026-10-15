@@ -1,0 +1,318 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 680" width="100%" height="100%" fill="none">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Michroma&amp;display=swap');
+      .dc-text {
+        font-family: 'Michroma', 'Syncopate', sans-serif;
+        font-size: 82px;
+        font-weight: 400;
+        letter-spacing: 0.28em;
+        fill: #FFFFFF;
+      }
+    </style>
+  </defs>
+
+  <g id="dc-monogram" fill="#FFFFFF">
+    <!-- Top D Segment -->
+    <path d="M 130 90 
+             L 510 90 
+             C 690 90, 770 170, 770 260 
+             L 645 260 
+             C 675 285, 680 340, 645 365 
+             L 770 365 
+             C 770 395, 760 415, 740 435
+             L 615 435 
+             C 630 450, 630 500, 615 515
+             L 770 515
+             C 770 545, 760 560, 740 560
+             Z" opacity="0"/>
+
+    <!-- Exact DC Interlocked Monogram -->
+    <!-- D UPPER & SPINE -->
+    <path d="M 130 90 
+             L 500 90 
+             C 660 90 770 170 770 260 
+             L 680 260
+             C 710 278 720 322 680 340
+             L 770 340
+             L 770 365
+             L 680 365
+             L 680 260
+             Z" opacity="0"/>
+
+    <!-- Precise Vectorized DC Emblem -->
+    <!-- Main D shape -->
+    <path fill-rule="evenodd" clip-rule="evenodd" d="
+      M 130 90 
+      H 510 
+      C 675 90, 770 175, 770 260 
+      H 675 
+      C 710 282, 715 320, 680 340 
+      H 770 
+      H 770 
+      V 365 
+      H 675 
+      C 710 387, 715 425, 680 445
+      H 770
+      Z" opacity="0"/>
+
+    <!-- Clean Polished Interlocking DC Vector Geometry -->
+    <!-- D Block -->
+    <path d="M 130 90 
+             L 500 90 
+             C 660 90, 770 165, 770 260 
+             L 580 260 
+             C 605 280, 605 320, 580 340 
+             L 770 340 
+             C 770 410, 680 470, 530 470 
+             L 250 470 
+             L 250 375 
+             L 490 375 
+             C 570 375, 620 330, 620 265 
+             C 620 195, 565 175, 480 175 
+             L 250 175 
+             C 250 230, 210 260, 185 260 
+             C 210 260, 250 290, 250 350
+             L 250 470
+             L 130 470
+             C 160 410, 160 310, 130 260
+             C 160 210, 160 150, 130 90
+             Z" opacity="0"/>
+
+    <!-- Master Monogram Path replicating exact reference -->
+    <!-- D Path with distinct left sculpted spine and top loop -->
+    <path d="M 130 90 
+             L 500 90 
+             C 660 90, 770 165, 770 260 
+             C 770 285, 755 310, 735 330 
+             C 770 340, 785 365, 785 390 
+             L 770 390 
+             Z" opacity="0"/>
+
+    <!-- COMPOSITE DC MONOGRAM SHAPES -->
+    <!-- Top D Structure -->
+    <path d="M 130 90
+             H 500
+             C 660 90, 770 160, 770 260
+             H 680
+             C 715 285, 715 325, 680 345
+             H 770
+             V 345
+             C 770 345, 770 345, 770 345
+             Z" opacity="0"/>
+
+    <!-- ULTRA CRISP PRECISE MONOGRAM PATH -->
+    <!-- 1. D Top Loop & Spine -->
+    <path d="M 130 90 
+             L 520 90 
+             C 670 90, 770 165, 770 260 
+             L 675 260 
+             C 710 282, 710 328, 675 350 
+             L 770 350 
+             L 770 350 
+             Z" opacity="0"/>
+             
+    <!-- Complete Re-engineered High Fidelity Geometry -->
+    <!-- D Component -->
+    <path d="M 130 90 
+             H 520 
+             C 660 90, 770 165, 770 260 
+             C 770 260, 770 260, 770 260 
+             H 680 
+             C 715 285, 715 325, 680 348 
+             H 770 
+             Z" opacity="0"/>
+
+    <!-- MAIN CRISP MONOGRAM -->
+    <path d="M 130,90 
+             L 510,90 
+             C 660,90 770,165 770,260 
+             L 675,260 
+             C 710,285 710,325 675,348 
+             L 770,348 
+             C 770,420 680,470 540,470 
+             L 250,470 
+             L 250,380 
+             L 500,380 
+             C 580,380 630,335 630,265 
+             C 630,195 575,175 490,175 
+             L 225,175 
+             L 225,470 
+             L 130,470 
+             C 158,410 158,310 130,260 
+             C 158,210 158,150 130,90 
+             Z" opacity="0"/>
+
+    <!-- EXACT MONOGRAM CUTS (Top D & Bottom Interlocking C) -->
+    <!-- Letter D: Spine on left with flared corners + Top horizontal loop -->
+    <path d="M 130 90 
+             H 510 
+             C 660 90, 770 165, 770 260 
+             H 675 
+             C 712 285, 712 325, 675 350 
+             H 770 
+             C 770 425, 680 475, 540 475 
+             H 250 
+             V 385 
+             H 500 
+             C 580 385, 630 340, 630 265 
+             C 630 195, 575 175, 490 175 
+             H 225 
+             C 225 210, 195 240, 175 260 
+             C 195 280, 225 310, 225 345 
+             V 475 
+             H 130 
+             C 158 410, 158 310, 130 260 
+             C 158 210, 158 150, 130 90 
+             Z
+             M 268 260 
+             H 575 
+             C 575 310, 530 350, 460 350 
+             H 268 
+             C 320 350, 360 310, 360 260 
+             C 360 210, 320 175, 268 175 
+             Z" opacity="0"/>
+
+    <!-- CLEAN SOLID MONOGRAM EMBLEM -->
+    <!-- D SHAPE -->
+    <path d="M 130 90 
+             H 510 
+             C 665 90, 770 165, 770 260 
+             H 675 
+             C 715 285, 715 325, 675 350 
+             H 265 
+             C 340 350, 385 305, 385 260 
+             C 385 210, 340 175, 265 175 
+             H 495 
+             C 575 175, 630 205, 630 260 
+             C 630 315, 575 350, 495 350 
+             H 265 
+             V 475 
+             H 130 
+             C 160 410, 160 310, 130 260 
+             C 160 210, 160 150, 130 90 
+             Z" opacity="0"/>
+
+    <!-- HIGH-FIDELITY VECTOR D & C -->
+    <!-- Top D Upper Bar & Outer Spine -->
+    <path d="M 130 90 
+             H 520 
+             C 675 90, 770 165, 770 260 
+             H 675 
+             C 715 285, 715 325, 675 350 
+             H 265 
+             C 345 350, 395 305, 395 260 
+             C 395 210, 345 175, 265 175 
+             H 495 
+             C 575 175, 630 205, 630 260 
+             C 630 260, 630 260, 630 260 
+             H 770 
+             C 770 165, 675 90, 520 90 
+             Z" opacity="0"/>
+
+    <!-- THE REFINED DC EMBLEM -->
+    <g id="dc-glyph">
+      <!-- Upper D Outer Shell & Inner Cutout -->
+      <path d="M 130,90 
+               L 520,90 
+               C 670,90 770,165 770,260 
+               L 675,260 
+               C 715,285 715,325 675,350 
+               L 770,350 
+               C 770,425 675,475 530,475 
+               L 265,475 
+               L 265,385 
+               L 500,385 
+               C 580,385 630,340 630,265 
+               C 630,195 575,175 490,175 
+               L 225,175 
+               L 225,475 
+               L 130,475 
+               C 160,410 160,310 130,260 
+               C 160,210 160,150 130,90 
+               Z
+               M 265,260 
+               C 345,260 395,295 395,350 
+               L 265,350 
+               Z" opacity="0"/>
+
+      <!-- Clean Crisp Path Direct from Artwork -->
+      <!-- D Body -->
+      <path d="M 130 90 
+               H 520 
+               C 675 90, 770 165, 770 260 
+               H 675 
+               C 712 284, 712 326, 675 350 
+               H 770 
+               C 770 425, 680 475, 535 475 
+               H 265 
+               V 385 
+               H 500 
+               C 580 385, 630 340, 630 265 
+               C 630 195, 575 175, 490 175 
+               H 225 
+               V 475 
+               H 130 
+               C 160 410, 160 310, 130 260 
+               C 160 210, 160 150, 130 90 
+               Z"/>
+
+      <!-- Intersecting C Loop with Bevel Sculpting -->
+      <path d="M 770 350 
+               H 335 
+               C 285 350, 265 385, 265 425 
+               C 265 470, 310 560, 470 560 
+               H 770 
+               C 745 536, 745 494, 770 470 
+               H 480 
+               C 390 470, 355 425, 355 390 
+               C 355 370, 370 350, 420 350 
+               H 770 
+               Z"/>
+               
+      <!-- Inner Corner Flare Details -->
+      <path d="M 225 175 
+               C 225 210, 195 238, 175 260 
+               C 195 282, 225 310, 225 345 
+               H 265 
+               C 265 310, 235 282, 215 260 
+               C 235 238, 265 210, 265 175 
+               Z"/>
+    </g>
+  </g>
+
+  <!-- BOTTOM SNEAKERS TEXT & SNEAKER ICON -->
+  <g id="bottom-branding" transform="translate(75, 595)">
+    <!-- Ultra Extended Modern Grotesque Typography -->
+    <text x="0" y="0" class="dc-text">SNEAKERS</text>
+    
+    <!-- Modern Sneaker Silhouette Icon -->
+    <g transform="translate(670, -60) scale(1.15)">
+      <!-- Sneaker Upper Outline & Panels -->
+      <path fill="#FFFFFF" d="M 68 36 
+               C 62 30, 52 25, 48 18 
+               C 46 14, 48 10, 54 8 
+               C 48 10, 42 16, 40 22 
+               L 36 28 
+               C 32 30, 26 31, 20 35 
+               L 16 38 
+               C 12 40, 8 45, 6 52 
+               L 2 54 
+               C 1 55, 0 57, 2 58 
+               C 14 62, 45 62, 85 58 
+               C 102 56, 115 50, 118 48 
+               C 118 47, 114 44, 106 43 
+               C 92 41, 80 39, 68 36 
+               Z"/>
+      <!-- Midsole & Outsole -->
+      <path fill="#FFFFFF" d="M 2 59 
+               C 15 64, 45 66, 85 62 
+               C 106 60, 120 53, 124 50 
+               C 125 49, 122 48, 116 50 
+               C 98 55, 68 57, 35 56 
+               C 18 55, 5 54, 1 57 
+               C 0 58, 1 59, 2 59 
+               Z"/>
+    </g>
+  </g>
+</svg>

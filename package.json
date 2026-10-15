@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "npx standard --fix",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,5 +26,10 @@
     "globals": "^17.7.0",
     "standard": "^17.1.2",
     "vite": "^8.2.0"
+  },
+  "standard": {
+    "env": [
+      "browser"
+    ]
   }
 }

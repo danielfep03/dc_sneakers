@@ -58,7 +58,7 @@
 }
 
 .closeBtn:hover {
-  color: var(--color-accent, #c6ff00);
+  color: var(--color-accent, #304FFE);
 }
 
 .content {

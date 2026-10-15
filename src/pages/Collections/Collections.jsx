@@ -1,272 +1,468 @@
+/**
+ * Collections.jsx
+ * Vista de Catálogo V2 con filtros completos y ordenamiento:
+ * - Filtros por Marcas (Nike, Jordan, Adidas, Asics...)
+ * - Filtros por Categorías (Basketball, Casual, Running, Voleibol...)
+ * - Filtros por Tallas (36 a 45)
+ * - Toggle "Solo ofertas"
+ * - Ordenamiento (Más nuevos, Menor precio, Mayor precio)
+ * - Chips de filtros activos con botón remover '✕' y 'Limpiar todo'
+ * - Layout responsivo: Sidebar lateral en Desktop y Modal en Móvil
+ * - Tarjetas interactivas con compra rápida '+' conectada a useCartStore
+ * - Copys 100% en español.
+ */
+
+import Modal from '@/components/ui/Modal'
+import { useCategories, useProducts } from '@/hooks/useCatalog'
+import { pickDefaultSelection } from '@/services/productService'
+import { useCartStore } from '@/stores/cartStore'
+import { capitalize } from '@/utils/capitalize'
+import { formatPrice } from '@/utils/formatPrice'
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CATEGORIES, SNEAKERS_DATA } from '../../data/sneakers'
-import { useUIStore } from '../../store/useUIStore'
+import { Link, useSearchParams } from 'react-router-dom'
 import styles from './Collections.module.css'
 
-function Collections ({
-  onSelectProduct,
-  initialCategory = 'ALL'
-}) {
-  const navigate = useNavigate()
-  const [searchParams] = useSearchParams()
-  const { searchQuery, setSearchQuery } = useUIStore()
+// Las categorías viven en minúscula en la BD; las URLs antiguas (?category=BASKETBALL) siguen funcionando.
+const normalizeCategory = (value) => (value ? value.toLowerCase() : 'all')
 
-  const categoryFromUrl = searchParams.get('category') || initialCategory
+export default function Collections () {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const { addItem, toggleCart } = useCartStore()
+  const { products, loading, error, retry } = useProducts()
+  const { categories } = useCategories()
 
-  const [selectedCategory, setSelectedCategory] = useState(categoryFromUrl)
-  const [selectedBrand, setSelectedBrand] = useState('ALL')
-  const [selectedSize, setSelectedSize] = useState('ALL')
-  const [maxPrice, setMaxPrice] = useState(300)
-  const [sortBy, setSortBy] = useState('featured')
-  const [showFiltersMobile, setShowFiltersMobile] = useState(false)
+  // Inicializar estado desde URL params
+  const [selectedBrands, setSelectedBrands] = useState(() => {
+    const brand = searchParams.get('brand')
+    return brand ? [brand] : []
+  })
 
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    return normalizeCategory(searchParams.get('category'))
+  })
+
+  const [selectedGender, setSelectedGender] = useState(() => {
+    return searchParams.get('gender')?.toLowerCase() || null
+  })
+
+  const [selectedSizes, setSelectedSizes] = useState([])
+  const [onlyOffers, setOnlyOffers] = useState(() => searchParams.get('tag') === 'sale')
+  const [sortBy, setSortBy] = useState('newest')
+  const [isMobileModalOpen, setIsMobileModalOpen] = useState(false)
+
+  // Marcas, categorías y tallas disponibles salen de los datos reales
+  const availableBrands = useMemo(
+    () => [...new Set(products.map((p) => p.brand).filter(Boolean))].sort(),
+    [products]
+  )
+  const availableCategories = useMemo(
+    () => [
+      { id: 'all', label: 'TODAS' },
+      ...categories.map((c) => ({ id: c.slug, label: c.name.toUpperCase() }))
+    ],
+    [categories]
+  )
+  const availableSizes = useMemo(
+    () => [...new Set(products.flatMap((p) => p.sizes))].sort((a, b) => a - b),
+    [products]
+  )
+
+  // Actualizar filtros cuando cambie la URL
   useEffect(() => {
-    if (categoryFromUrl) {
-      setSelectedCategory(categoryFromUrl)
-    }
-  }, [categoryFromUrl])
+    const cat = searchParams.get('category')
+    const brand = searchParams.get('brand')
+    const tag = searchParams.get('tag')
+    const gender = searchParams.get('gender')
 
-  const handleSelectProduct = (product) => {
-    if (onSelectProduct) {
-      onSelectProduct(product)
-    } else {
-      navigate(`/product/${product.id}`)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
-  }
+    if (cat) setSelectedCategory(normalizeCategory(cat))
+    if (brand) setSelectedBrands([brand])
+    if (tag === 'sale') setOnlyOffers(true)
+    if (gender) setSelectedGender(gender.toLowerCase())
+  }, [searchParams])
 
-  // Extract unique brands and sizes across catalog
-  const availableBrands = useMemo(() => {
-    const brands = SNEAKERS_DATA.map(p => p.brand)
-    return ['ALL', ...Array.from(new Set(brands))]
-  }, [])
-
-  const availableSizes = useMemo(() => {
-    const sizes = new Set()
-    SNEAKERS_DATA.forEach(p => p.sizes.forEach(s => sizes.add(s)))
-    return ['ALL', ...Array.from(sizes).sort((a, b) => a - b)]
-  }, [])
-
-  // Filter & Sort Logic
+  // Filtrado y Ordenamiento
   const filteredProducts = useMemo(() => {
-    const result = SNEAKERS_DATA.filter((product) => {
-      const matchesCat = selectedCategory === 'ALL' || product.category === selectedCategory
-      const matchesBrand = selectedBrand === 'ALL' || product.brand === selectedBrand
-      const matchesSize = selectedSize === 'ALL' || product.sizes.includes(Number(selectedSize))
-      const matchesPrice = product.price <= maxPrice
-      const matchesSearch = !searchQuery ||
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        product.category.toLowerCase().includes(searchQuery.toLowerCase())
+    let list = [...products]
 
-      return matchesCat && matchesBrand && matchesSize && matchesPrice && matchesSearch
-    })
-
-    if (sortBy === 'price-low') {
-      result.sort((a, b) => a.price - b.price)
-    } else if (sortBy === 'price-high') {
-      result.sort((a, b) => b.price - a.price)
-    } else if (sortBy === 'rating') {
-      result.sort((a, b) => b.rating - a.rating)
+    // 1. Filtro por Categoría
+    if (selectedCategory && selectedCategory !== 'all') {
+      list = list.filter((p) => p.category === selectedCategory)
     }
 
-    return result
-  }, [selectedCategory, selectedBrand, selectedSize, maxPrice, searchQuery, sortBy])
+    // 2. Filtro por Marcas
+    if (selectedBrands.length > 0) {
+      list = list.filter((p) => selectedBrands.includes(p.brand))
+    }
 
-  const handleResetFilters = () => {
-    setSelectedCategory('ALL')
-    setSelectedBrand('ALL')
-    setSelectedSize('ALL')
-    setMaxPrice(300)
-    setSortBy('featured')
-    if (setSearchQuery) setSearchQuery('')
+    // 3. Filtro por Tallas (solo cuenta si hay stock en alguna variante)
+    if (selectedSizes.length > 0) {
+      list = list.filter((p) =>
+        p.colors.some((c) =>
+          c.sizes.some((s) => selectedSizes.includes(s.size) && s.stock > 0)
+        )
+      )
+    }
+
+    // 4. Filtro por Género
+    if (selectedGender === 'hombre') {
+      list = list.filter((p) => p.sizes.some((s) => s >= 39))
+    } else if (selectedGender === 'mujer') {
+      list = list.filter((p) => p.sizes.some((s) => s <= 40))
+    }
+
+    // 5. Filtro por Ofertas (productos con precio de oferta real)
+    if (onlyOffers) {
+      list = list.filter((p) => p.originalPrice !== null)
+    }
+
+    // 6. Ordenamiento
+    if (sortBy === 'price-asc') {
+      list.sort((a, b) => a.price - b.price)
+    } else if (sortBy === 'price-desc') {
+      list.sort((a, b) => b.price - a.price)
+    } else {
+      // 'newest' por defecto
+      list.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt) || (b.legacyId ?? 0) - (a.legacyId ?? 0))
+    }
+
+    return list
+  }, [products, selectedCategory, selectedBrands, selectedSizes, selectedGender, onlyOffers, sortBy])
+
+  // Manejadores de Filtros
+  const toggleBrand = (brand) => {
+    setSelectedBrands((prev) =>
+      prev.includes(brand) ? prev.filter((b) => b !== brand) : [...prev, brand]
+    )
   }
 
-  return (
-    <div className={styles.collectionsContainer}>
-      {/* Header Banner */}
-      <div className={styles.collectionsHeader}>
-        <span className={styles.collectionsSubtitle}>CATÁLOGO COMPLETO DC SNEAKERS</span>
-        <h1 className={styles.collectionsTitle}>COLECCIONES EXCLUSIVAS</h1>
-        <p className={styles.collectionsDesc}>
-          Explora la colección completa de zapatillas urbanas, baloncesto y voleibol. Filtra por talla, marca, categoría o precio para encontrar tu par perfecto.
-        </p>
+  const toggleSize = (size) => {
+    setSelectedSizes((prev) =>
+      prev.includes(size) ? prev.filter((s) => s !== size) : [...prev, size]
+    )
+  }
+
+  const clearAllFilters = () => {
+    setSelectedBrands([])
+    setSelectedCategory('all')
+    setSelectedSizes([])
+    setSelectedGender(null)
+    setOnlyOffers(false)
+    setSearchParams({})
+  }
+
+  const handleQuickAdd = (product, e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const selection = pickDefaultSelection(product)
+    if (!selection) return // producto agotado
+    addItem(product, selection.size, selection.color, 1)
+    toggleCart(true)
+  }
+
+  // Componente Sidebar de Filtros reutilizable
+  const FilterSidebarContent = () => (
+    <div className={styles.sidebar}>
+      <div className={styles.sidebarHeader}>
+        <h3 className={styles.sidebarTitle}>FILTRAR ARCHIVO</h3>
+        <button
+          type='button'
+          className={styles.clearAllBtn}
+          onClick={clearAllFilters}
+        >
+          Limpiar
+        </button>
       </div>
 
-      {/* Main Grid: Sidebar Filters + Products Grid */}
-      <div className={styles.collectionsContent}>
-        {/* Toggle Filters for Mobile */}
-        <button
-          className={styles.mobileFilterToggle}
-          onClick={() => setShowFiltersMobile(!showFiltersMobile)}
-        >
-          <svg viewBox='0 0 24 24' width='20' height='20' fill='none' stroke='currentColor' strokeWidth='2'>
-            <polygon points='22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3' />
-          </svg>
-          <span>{showFiltersMobile ? 'Ocultar Filtros' : 'Filtrar Productos'}</span>
-          <span className={styles.filterBadgeCount}>{filteredProducts.length}</span>
-        </button>
+      {/* Solo Ofertas */}
+      <div className={styles.toggleRow}>
+        <span style={{ fontSize: '0.85rem', fontWeight: 800 }}>Solo ofertas</span>
+        <input
+          type='checkbox'
+          className={styles.checkbox}
+          checked={onlyOffers}
+          onChange={(e) => setOnlyOffers(e.target.checked)}
+        />
+      </div>
 
-        {/* Sidebar Filters */}
-        <aside className={`${styles.filterSidebar} ${showFiltersMobile ? styles.mobileFiltersActive : ''}`}>
-          <div className={styles.filterSidebarHeader}>
-            <h3>Filtros de Búsqueda</h3>
-            <button className={styles.resetFiltersBtn} onClick={handleResetFilters}>
-              Limpiar Todo
-            </button>
-          </div>
-
-          {/* Categoría */}
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Categoría</label>
-            <div className={styles.filterOptionsStack}>
-              {CATEGORIES.map(cat => (
-                <button
-                  key={cat}
-                  className={`${styles.filterChip} ${selectedCategory === cat ? styles.filterChipActive : ''}`}
-                  onClick={() => setSelectedCategory(cat)}
-                >
-                  {cat === 'ALL' ? 'Todas las Categorías' : cat}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Marca */}
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Marca</label>
-            <div className={styles.filterOptionsGrid}>
-              {availableBrands.map(brand => (
-                <button
-                  key={brand}
-                  className={`${styles.filterChip} ${selectedBrand === brand ? styles.filterChipActive : ''}`}
-                  onClick={() => setSelectedBrand(brand)}
-                >
-                  {brand === 'ALL' ? 'Todas' : brand}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Tallas EU */}
-          <div className={styles.filterGroup}>
-            <label className={styles.filterLabel}>Talla EU</label>
-            <div className={styles.sizesGrid}>
-              {availableSizes.map(size => (
-                <button
-                  key={size}
-                  className={`${styles.sizeBox} ${selectedSize === size ? styles.sizeBoxActive : ''}`}
-                  onClick={() => setSelectedSize(size)}
-                >
-                  {size === 'ALL' ? 'Todas' : `EU ${size}`}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Rango de Precio */}
-          <div className={styles.filterGroup}>
-            <div className={styles.priceLabelRow}>
-              <label className={styles.filterLabel}>Precio Máximo</label>
-              <span className={styles.priceValue}>${maxPrice} USD</span>
-            </div>
+      {/* Marcas */}
+      <div className={styles.filterGroup}>
+        <h4 className={styles.groupTitle}>Marcas</h4>
+        {availableBrands.map((brand) => (
+          <label key={brand} className={styles.checkboxItem}>
             <input
-              type='range'
-              min='50'
-              max='300'
-              step='10'
-              value={maxPrice}
-              onChange={(e) => setMaxPrice(Number(e.target.value))}
-              className={styles.priceRangeInput}
+              type='checkbox'
+              className={styles.checkbox}
+              checked={selectedBrands.includes(brand)}
+              onChange={() => toggleBrand(brand)}
             />
-          </div>
-        </aside>
+            <span>{brand}</span>
+          </label>
+        ))}
+      </div>
 
-        {/* Right Section: Toolbar + Products Grid */}
-        <div className={styles.productsMainArea}>
-          {/* Top Bar: Count & Sorting */}
-          <div className={styles.collectionsToolbar}>
-            <span className={styles.resultsCount}>
-              Mostrando <strong>{filteredProducts.length}</strong> de {SNEAKERS_DATA.length} tenis
-            </span>
+      {/* Categorías */}
+      <div className={styles.filterGroup}>
+        <h4 className={styles.groupTitle}>Categoría</h4>
+        {availableCategories.map((cat) => (
+          <label key={cat.id} className={styles.checkboxItem}>
+            <input
+              type='radio'
+              name='cat-radio'
+              className={styles.checkbox}
+              checked={selectedCategory === cat.id}
+              onChange={() => setSelectedCategory(cat.id)}
+            />
+            <span>{cat.label}</span>
+          </label>
+        ))}
+      </div>
 
-            <div className={styles.sortWrapper}>
-              <label htmlFor='sortBy'>Ordenar por:</label>
-              <select
-                id='sortBy'
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className={styles.sortSelect}
+      {/* Tallas */}
+      <div className={styles.filterGroup}>
+        <h4 className={styles.groupTitle}>Talla (COL / EU)</h4>
+        <div className={styles.sizesGrid}>
+          {availableSizes.map((sz) => {
+            const isSelected = selectedSizes.includes(sz)
+            return (
+              <button
+                key={sz}
+                type='button'
+                className={`${styles.sizeBtn} ${isSelected ? styles.sizeBtnActive : ''}`}
+                onClick={() => toggleSize(sz)}
               >
-                <option value='featured'>Destacados</option>
-                <option value='price-low'>Precio: Menor a Mayor</option>
-                <option value='price-high'>Precio: Mayor a Menor</option>
-                <option value='rating'>Mejor Valorados ⭐</option>
-              </select>
-            </div>
-          </div>
-
-          {/* Grid de Productos */}
-          {filteredProducts.length > 0
-            ? (
-              <div className={styles.collectionsGrid}>
-                {filteredProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    className={styles.productCard}
-                    onClick={() => handleSelectProduct(product)}
-                  >
-                    <div className={styles.cardTop}>
-                      <span className={styles.cardBrand}>{product.brand}</span>
-                      <span className={styles.cardCategoryBadge}>{product.category}</span>
-                    </div>
-
-                    <div className={styles.cardImageWrapper}>
-                      <img src={product.image} alt={product.name} className={styles.cardImg} />
-                    </div>
-
-                    <div className={styles.cardInfo}>
-                      <h4 className={styles.cardName}>{product.name}</h4>
-                      <p className={styles.cardSizesMeta}>
-                        Tallas: {product.sizes.map(s => `EU ${s}`).join(', ')}
-                      </p>
-
-                      <div className={styles.cardFooter}>
-                        <span className={styles.cardPrice}>${product.price.toFixed(2)} USD</span>
-                        <div className={styles.ratingBadge}>
-                          <svg viewBox='0 0 24 24' width='12' height='12' fill='currentColor'>
-                            <polygon points='12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2' />
-                          </svg>
-                          <span>{product.rating.toFixed(1)}</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className={styles.quickAddOverlay}>
-                      <span>VER DETALLES & COMPRAR</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              )
-            : (
-              <div className={styles.noResultsBox}>
-                <svg viewBox='0 0 24 24' width='64' height='64' fill='none' stroke='currentColor' strokeWidth='1.5'>
-                  <circle cx='11' cy='11' r='8' />
-                  <line x1='21' y1='21' x2='16.65' y2='16.65' />
-                </svg>
-                <h3>No encontramos zapatillas con estos filtros</h3>
-                <p>Prueba ajustando el rango de precio, cambiando la talla o eliminando términos de búsqueda.</p>
-                <button className={styles.resetFiltersBtnLarge} onClick={handleResetFilters}>
-                  Restablecer Filtros
-                </button>
-              </div>
-              )}
+                {sz}
+              </button>
+            )
+          })}
         </div>
       </div>
     </div>
   )
-}
 
-export default Collections
+  const hasActiveFilters =
+    selectedBrands.length > 0 ||
+    selectedCategory !== 'all' ||
+    selectedSizes.length > 0 ||
+    selectedGender !== null ||
+    onlyOffers
+
+  return (
+    <div className={styles.collectionsPage}>
+      {/* Encabezado */}
+      <header className={styles.pageHeader}>
+        <div>
+          <h1 className={styles.pageTitle}>CATÁLOGO DE SNEAKERS</h1>
+        </div>
+        <span className={styles.resultsCount}>
+          [{filteredProducts.length} SILUETAS DISPONIBLES]
+        </span>
+      </header>
+
+      {/* Chips de Filtros Activos */}
+      {hasActiveFilters && (
+        <div className={styles.activeChipsBar}>
+          <span className={styles.chipsLabel}>Filtros activos:</span>
+
+          {selectedGender && (
+            <span className={styles.chip}>
+              Género: {capitalize(selectedGender)}
+              <button
+                type='button'
+                className={styles.chipRemoveBtn}
+                onClick={() => setSelectedGender(null)}
+              >
+                ✕
+              </button>
+            </span>
+          )}
+
+          {selectedCategory !== 'all' && (
+            <span className={styles.chip}>
+              Categoría: {capitalize(selectedCategory)}
+              <button
+                type='button'
+                className={styles.chipRemoveBtn}
+                onClick={() => setSelectedCategory('all')}
+              >
+                ✕
+              </button>
+            </span>
+          )}
+
+          {selectedBrands.map((b) => (
+            <span key={b} className={styles.chip}>
+              {b}
+              <button
+                type='button'
+                className={styles.chipRemoveBtn}
+                onClick={() => toggleBrand(b)}
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+
+          {selectedSizes.map((s) => (
+            <span key={s} className={styles.chip}>
+              Talla: {s}
+              <button
+                type='button'
+                className={styles.chipRemoveBtn}
+                onClick={() => toggleSize(s)}
+              >
+                ✕
+              </button>
+            </span>
+          ))}
+
+          {onlyOffers && (
+            <span className={styles.chip}>
+              Solo Ofertas
+              <button
+                type='button'
+                className={styles.chipRemoveBtn}
+                onClick={() => setOnlyOffers(false)}
+              >
+                ✕
+              </button>
+            </span>
+          )}
+
+          <button
+            type='button'
+            className={styles.clearAllBtn}
+            onClick={clearAllFilters}
+          >
+            Limpiar todo
+          </button>
+        </div>
+      )}
+
+      {/* Controles de Orden y Filtro Móvil */}
+      <div className={styles.controlsRow}>
+        <button
+          type='button'
+          className={styles.mobileFilterBtn}
+          onClick={() => setIsMobileModalOpen(true)}
+        >
+          <span>Filtros</span>
+          <span>⚙</span>
+        </button>
+
+        <div className={styles.sortSelectWrap}>
+          <span className={styles.sortLabel}>Ordenar por:</span>
+          <select
+            className={styles.sortSelect}
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+          >
+            <option value='newest'>Más nuevos</option>
+            <option value='price-asc'>Precio: menor a mayor</option>
+            <option value='price-desc'>Precio: mayor a menor</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Layout Principal */}
+      <div className={styles.catalogLayout}>
+        {/* Sidebar en Desktop */}
+        <div className={styles.desktopSidebar}>
+          <FilterSidebarContent />
+        </div>
+
+        {/* Grid de Productos */}
+        <div>
+          {loading
+            ? (
+              <div className={styles.emptyState}>
+                <h2 style={{ fontFamily: 'Bebas Neue', fontSize: '2.2rem', margin: 0 }}>
+                  CARGANDO CATÁLOGO...
+                </h2>
+              </div>
+              )
+            : error
+              ? (
+                <div className={styles.emptyState}>
+                  <h2 style={{ fontFamily: 'Bebas Neue', fontSize: '2.2rem', margin: 0 }}>
+                    NO PUDIMOS CARGAR EL CATÁLOGO
+                  </h2>
+                  <p style={{ color: '#8e8e93', fontSize: '0.9rem' }}>
+                    Revisa tu conexión e intenta de nuevo.
+                  </p>
+                  <button
+                    type='button'
+                    className={styles.clearAllBtn}
+                    onClick={retry}
+                    style={{ fontSize: '0.85rem' }}
+                  >
+                    REINTENTAR
+                  </button>
+                </div>
+                )
+              : filteredProducts.length === 0
+                ? (
+                  <div className={styles.emptyState}>
+                    <h2 style={{ fontFamily: 'Bebas Neue', fontSize: '2.2rem', margin: 0 }}>
+                      NO HAY RESULTADOS
+                    </h2>
+                    <p style={{ color: '#8e8e93', fontSize: '0.9rem' }}>
+                      No encontramos sneakers que coincidan con los filtros seleccionados.
+                    </p>
+                    <button
+                      type='button'
+                      className={styles.clearAllBtn}
+                      onClick={clearAllFilters}
+                      style={{ fontSize: '0.85rem' }}
+                    >
+                      LIMPIAR TODOS LOS FILTROS
+                    </button>
+                  </div>
+                  )
+                : (
+                  <div className={styles.grid}>
+                    {filteredProducts.map((product) => (
+                      <Link
+                        key={product.id}
+                        to={`/product/${product.id}`}
+                        className={styles.card}
+                      >
+                        <div className={styles.imageWrap}>
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className={styles.productImg}
+                            loading='lazy'
+                          />
+                          <span className={styles.brandBadge}>{product.brand}</span>
+                          <button
+                            type='button'
+                            className={styles.quickAddBtn}
+                            onClick={(e) => handleQuickAdd(product, e)}
+                            title='Añadir al carrito'
+                            aria-label={`Añadir ${product.name}`}
+                          >
+                            +
+                          </button>
+                        </div>
+                        <div className={styles.cardInfo}>
+                          <h3 className={styles.productName}>{product.name}</h3>
+                          <span className={styles.price}>{formatPrice(product.price)}</span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                  )}
+        </div>
+      </div>
+
+      {/* Modal de Filtros para Móviles */}
+      <Modal
+        isOpen={isMobileModalOpen}
+        onClose={() => setIsMobileModalOpen(false)}
+        title='FILTRAR CATÁLOGO'
+      >
+        <FilterSidebarContent />
+      </Modal>
+    </div>
+  )
+}

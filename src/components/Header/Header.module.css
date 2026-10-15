@@ -1,332 +1,286 @@
-/* Top Ticker Bar */
-.topTicker {
-  background-color: #0f0f11;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  text-align: center;
-  padding: 8px 16px;
-  letter-spacing: 1.5px;
-  border-bottom: 2px solid #e5383b;
-}
+.headerContainer {
+  --color-bg: rgba(10, 10, 12, 0.75);
+  --color-text: #ffffff;
+  --color-muted: #9e9ea7;
+  --color-volt: #304FFE;
+  --color-volt: #304FFE;
+  --color-border: rgba(255, 255, 255, 0.08);
 
-.topTickerHighlight {
-  color: #e9d8a6;
-}
-
-/* Navbar Styling */
-.navbar {
-  height: 80px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 4%;
-  background-color: #ffffff;
-  border-bottom: 1px solid #e5e5ea;
   position: sticky;
   top: 0;
-  z-index: 50;
-  box-sizing: border-box;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+  background: var(--color-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-border);
+  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-.mobileBurgerBtn {
-  display: none;
-  background: none;
-  border: none;
-  color: #0f0f11;
-  cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  align-items: center;
-  justify-content: center;
-}
-
-.mobileBurgerBtn:hover {
-  background-color: #f2f2f7;
-}
-
-.navLeft {
+.navRow {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 1.1rem 2.5rem;
   display: flex;
   align-items: center;
-  gap: 40px;
+  justify-content: space-between;
 }
 
-.logoContainer {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* 1. Logo / Brand Izquierda */
+.brandLink {
   text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  transition: opacity 0.2s ease, transform 0.2s ease;
 }
 
-.logoImg {
-  height: 46px;
+.brandLink:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.brandLogo {
+  height: 36px;
   width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15));
-  transition: transform 0.2s ease;
+  display: block;
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
 }
 
-.logoContainer:hover .logoImg {
-  transform: scale(1.05);
+.brandTextWrapper {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 2px;
 }
 
-.logoTextWrapper {
-  display: flex;
-  flex-direction: column;
-  line-height: 1;
-}
-
-.logoTextMain {
-  font-family: 'Outfit', sans-serif;
-  font-size: 22px;
-  font-weight: 900;
-  color: #0f0f11;
-  letter-spacing: -0.5px;
-}
-
-.logoTextSub {
-  font-family: 'Outfit', sans-serif;
-  font-size: 9px;
+.brandText {
+  font-family: 'Space Grotesk', sans-serif;
   font-weight: 800;
-  color: #e5383b;
-  letter-spacing: 2px;
-  margin-top: 2px;
+  font-size: 1.35rem;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-transform: uppercase;
 }
 
-.navLinks {
+.brandScript {
+  font-family: var(--font-script, 'Road Rage', 'Permanent Marker', cursive, sans-serif);
+  font-size: 1.15rem;
+  color: #ffffff;
+  margin-left: 2px;
+  font-weight: 400;
+  transform: rotate(-3deg);
+  display: inline-block;
+}
+
+/* 2. Navegación Central Desktop */
+.navCenter {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 2.8rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .navLink {
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: #0f0f11;
+  color: var(--color-text);
   text-decoration: none;
-  transition: color 0.2s ease;
-  position: relative;
-  padding: 6px 0;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
+  transition: color 0.2s ease, opacity 0.2s ease;
+  position: relative;
+  padding: 0.35rem 0;
+  opacity: 0.9;
 }
 
 .navLink:hover {
-  color: #e5383b;
+  color: #304FFE;
+  opacity: 1;
 }
 
-.navLink::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background-color: #e5383b;
-  transition: width 0.2s ease;
-}
-
-.navLink:hover::after {
-  width: 100%;
-}
-
-.activeLink {
-  color: #e5383b;
-}
-
-.activeLink::after {
-  width: 100%;
-}
-
-.navCenter {
-  flex: 0 1 400px;
-  margin: 0 20px;
-}
-
-.searchWrapper {
-  position: relative;
+/* 3. Acciones Derecha (Search, Bag, Burger) */
+.navActions {
   display: flex;
   align-items: center;
+  gap: 1.4rem;
 }
 
-.searchIcon {
-  position: absolute;
-  left: 16px;
-  color: #8e8e93;
-  pointer-events: none;
-}
-
-.searchInput {
-  width: 100%;
-  height: 44px;
-  background-color: #f2f2f7;
+.iconBtn {
+  background: transparent;
   border: none;
-  border-radius: 14px;
-  padding: 0 40px 0 46px;
-  font-family: inherit;
-  font-size: 13px;
-  color: #0f0f11;
-  font-weight: 500;
-  transition: all 0.25s ease;
-  box-sizing: border-box;
-}
-
-.searchInput:focus {
-  outline: none;
-  background-color: #ffffff;
-  box-shadow: 0 0 0 2px #0f0f11;
-}
-
-.clearSearch {
-  position: absolute;
-  right: 16px;
-  background: none;
-  border: none;
-  color: #8e8e93;
+  color: #ffffff;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   padding: 4px;
-  border-radius: 50%;
-}
-
-.clearSearch:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.navRight {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  border-right: 1px solid #e5e5ea;
-  padding-right: 20px;
-}
-
-.avatarWrapper {
-  position: relative;
-}
-
-.avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ffffff;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-}
-
-.verifiedDot {
-  width: 10px;
-  height: 10px;
-  background-color: #34c759;
-  border: 1.5px solid #ffffff;
-  border-radius: 50%;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-}
-
-.userText {
-  display: flex;
-  flex-direction: column;
-}
-
-.welcomeText {
-  font-size: 10px;
-  color: #8e8e93;
-  text-transform: uppercase;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-
-.userName {
-  font-size: 13px;
-  font-weight: 800;
-  margin: 0;
-}
-
-.navActionBtn {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: none;
-  border: 1px solid #e5e5ea;
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #0f0f11;
-  cursor: pointer;
   position: relative;
-  transition: all 0.2s ease;
+  transition: transform 0.15s ease, color 0.2s ease;
 }
 
-.navActionBtn:hover {
-  background-color: #f2f2f7;
-  transform: scale(1.05);
-}
-
-.notificationBadge {
-  width: 8px;
-  height: 8px;
-  background-color: #e5383b;
-  border-radius: 50%;
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  box-shadow: 0 0 0 2px #ffffff;
+.iconBtn:hover {
+  color: #304FFE;
+  transform: translateY(-1px);
 }
 
 .cartBadge {
-  background-color: #e5383b;
-  color: #ffffff;
-  font-size: 10px;
-  font-weight: 800;
-  padding: 2px 6px;
-  border-radius: 10px;
   position: absolute;
-  top: -6px;
+  top: -4px;
   right: -6px;
-  box-shadow: 0 2px 6px rgba(255, 59, 48, 0.3);
+  background: var(--color-volt);
+  color: #000000;
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.burgerBtn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 6px;
+  padding: 4px;
+  width: 26px;
+  height: 26px;
+  transition: opacity 0.2s ease;
+}
+
+.burgerLineTop,
+.burgerLineBottom {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background: #ffffff;
+  transition: transform 0.25s ease, background 0.2s ease;
+}
+
+.burgerBtn:hover .burgerLineTop,
+.burgerBtn:hover .burgerLineBottom {
+  background: var(--color-volt);
+}
+
+.burgerBtnActive .burgerLineTop {
+  transform: translateY(4px) rotate(45deg);
+  background: var(--color-volt);
+}
+
+.burgerBtnActive .burgerLineBottom {
+  transform: translateY(-4px) rotate(-45deg);
+  background: var(--color-volt);
+}
+
+/* 4. Barra de Búsqueda Desplegable */
+.searchBar {
+  padding: 0.75rem 2.5rem;
+  background: #111113;
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  justify-content: center;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.searchInner {
+  max-width: 600px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: #000000;
+  border: 1px solid var(--color-border);
+  padding: 0.5rem 1rem;
+}
+
+.searchInner:focus-within {
+  border-color: #304FFE;
+}
+
+.searchInput {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #ffffff;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  font-family: inherit;
+}
+
+.searchInput::placeholder {
+  color: var(--color-muted);
+}
+
+.searchClose {
+  background: none;
+  border: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.searchClose:hover {
+  color: #ffffff;
+}
+
+/* 5. Mobile Drawer */
+.mobileDrawer {
+  display: none;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @media (max-width: 900px) {
-  .navbar {
-    padding: 0 12px;
-    height: 66px;
+  .navRow {
+    padding: 0.9rem 1.25rem;
   }
-  .mobileBurgerBtn {
-    display: flex;
-    z-index: 2;
-  }
-  .navLeft {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  .navLinks {
-    display: none;
-  }
+
   .navCenter {
     display: none;
   }
-  .navRight {
-    gap: 6px !important;
+
+  .mobileDrawer {
+    display: flex;
+    flex-direction: column;
+    background: #0d0d0f;
+    border-top: 1px solid var(--color-border);
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
+    animation: fadeIn 0.2s ease-out;
   }
-  .userInfo {
-    display: none !important;
+
+  .mobileNavLink {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   }
-  .navActionBtn {
-    width: 36px !important;
-    height: 36px !important;
+
+  .mobileNavLink:hover {
+    color: #304FFE;
   }
 }
+

@@ -1,77 +1,101 @@
-import { useNavigate } from 'react-router-dom'
-import { useCartStore } from '../../store/useCartStore'
-import styles from '../../pages/Home/Home.module.css'
+import { useCartStore } from '@/stores/cartStore'
+import { formatPrice } from '@/utils/formatPrice'
+import { Link } from 'react-router-dom'
+import styles from './CartDrawer.module.css'
 
 export default function CartDrawer () {
-  const navigate = useNavigate()
-  const { cart, isCartOpen, toggleCart, updateQuantity, getTotalItems, getSubtotal } = useCartStore()
-  const cartCount = getTotalItems()
-  const subtotal = getSubtotal()
+  const { isCartOpen, toggleCart, cart, updateQuantity, getSubtotal } = useCartStore()
 
   if (!isCartOpen) return null
 
-  const handleGoToCheckout = () => {
-    toggleCart(false)
-    navigate('/checkout')
-  }
+  const subtotal = getSubtotal()
 
   return (
     <div className={styles.cartOverlay} onClick={() => toggleCart(false)}>
-      <div className={styles.cartSidebar} onClick={(e) => e.stopPropagation()}>
-        <div className={styles.cartHeader}>
-          <h3>Tu Carrito ({cartCount})</h3>
-          <button className={styles.closeCartBtn} onClick={() => toggleCart(false)} aria-label='Cerrar Carrito'>✕</button>
+      <aside
+        className={styles.drawer}
+        onClick={(e) => e.stopPropagation()}
+        aria-label='Carrito de compras'
+      >
+        <div className={styles.header}>
+          <h2 className={styles.title}>TU BOLSA [{cart.length}]</h2>
+          <button
+            type='button'
+            className={styles.closeBtn}
+            onClick={() => toggleCart(false)}
+            aria-label='Cerrar carrito'
+          >
+            ✕
+          </button>
         </div>
 
-        <div className={styles.cartItemsWrapper}>
-          {cart.length > 0 ? (
-            cart.map((item, index) => (
-              <div key={`${item.product.id}-${item.size}-${item.color?.name || 'color'}`} className={styles.cartItem}>
-                <img src={item.product.image} alt={item.product.name} className={styles.cartItemImg} />
-                <div className={styles.cartItemDetails}>
-                  <h4>{item.product.name}</h4>
-                  <span className={styles.cartItemMeta}>Talla: {item.size} | {item.color?.name}</span>
-                  <div className={styles.cartItemPriceRow}>
-                    <span className={styles.cartItemPrice}>${(item.product.price * item.quantity).toFixed(2)}</span>
-                    <div className={styles.quantityControls}>
-                      <button onClick={() => updateQuantity(index, -1)} aria-label='Disminuir cantidad'>-</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(index, 1)} aria-label='Aumentar cantidad'>+</button>
+        {cart.length === 0
+          ? (
+            <div className={styles.emptyState}>
+              <p className={styles.emptyTitle}>TU BOLSA ESTÁ VACÍA</p>
+              <p style={{ fontSize: '0.85rem' }}>Explora nuestras siluetas y agrega tu par favorito.</p>
+            </div>
+            )
+          : (
+            <div className={styles.itemsList}>
+              {cart.map((item, index) => (
+                <div key={`${item.product.id}-${item.size}-${index}`} className={styles.cartItem}>
+                  <img
+                    src={item.product.image}
+                    alt={item.product.name}
+                    className={styles.itemThumb}
+                  />
+                  <div className={styles.itemInfo}>
+                    <div>
+                      <h4 className={styles.itemTitle}>{item.product.name}</h4>
+                      <p className={styles.itemVariant}>
+                        Talla: EU {item.size} {item.color?.name ? `• ${item.color.name}` : ''}
+                      </p>
+                    </div>
+                    <div className={styles.itemRow}>
+                      <span className={styles.itemPrice}>
+                        {formatPrice(item.product.price * item.quantity)}
+                      </span>
+                      <div className={styles.qtyControls}>
+                        <button
+                          type='button'
+                          className={styles.qtyBtn}
+                          onClick={() => updateQuantity(index, -1)}
+                        >
+                          -
+                        </button>
+                        <span className={styles.qtyNum}>{item.quantity}</span>
+                        <button
+                          type='button'
+                          className={styles.qtyBtn}
+                          onClick={() => updateQuantity(index, 1)}
+                        >
+                          +
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <div className={styles.emptyCart}>
-              <p>Aún no has agregado tenis a tu bolsa.</p>
-              <button className={styles.startShoppingBtn} onClick={() => toggleCart(false)}>
-                Empezar a comprar
-              </button>
+              ))}
             </div>
-          )}
-        </div>
+            )}
 
         {cart.length > 0 && (
-          <div className={styles.cartFooter}>
-            <div className={styles.subtotalRow}>
-              <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)} USD</span>
-            </div>
-            <div className={styles.shippingRow}>
-              <span>Envío (Colombia)</span>
-              <span className={styles.freeLabel}>GRATIS</span>
-            </div>
+          <div className={styles.footer}>
             <div className={styles.totalRow}>
-              <span>Total</span>
-              <span>${subtotal.toFixed(2)} USD</span>
+              <span className={styles.totalLabel}>SUBTOTAL:</span>
+              <span className={styles.totalAmount}>{formatPrice(subtotal)}</span>
             </div>
-            <button className={styles.checkoutBtn} onClick={handleGoToCheckout}>
-              FINALIZAR COMPRA
-            </button>
+            <Link
+              to='/checkout'
+              className={styles.checkoutBtn}
+              onClick={() => toggleCart(false)}
+            >
+              FINALIZAR PEDIDO
+            </Link>
           </div>
         )}
-      </div>
+      </aside>
     </div>
   )
 }
