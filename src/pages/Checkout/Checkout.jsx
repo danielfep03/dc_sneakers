@@ -10,6 +10,7 @@
  */
 
 import { storeConfig } from '@/config/storeConfig'
+import { validateDiscountCode } from '@/data/discountCodes'
 import { confirmBoldPayment, createOrder, OrderError } from '@/services/orderService'
 import { useCartStore } from '@/stores/cartStore'
 import { buildWhatsappMessage } from '@/utils/buildWhatsappMessage'
@@ -21,7 +22,16 @@ import styles from './Checkout.module.css'
 export default function Checkout () {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const { cart, getSubtotal, clearCart } = useCartStore()
+  const {
+    cart,
+    getSubtotal,
+    clearCart,
+    appliedCoupon,
+    applyCoupon,
+    removeCoupon,
+    getDiscountAmount,
+    getTotal
+  } = useCartStore()
 
   const [contact, setContact] = useState({
     name: '',
@@ -37,6 +47,8 @@ export default function Checkout () {
   const [copiedBank, setCopiedBank] = useState(false)
   const [completedOrder, setCompletedOrder] = useState(null)
   const [submitError, setSubmitError] = useState(null)
+  const [couponCodeInput, setCouponCodeInput] = useState('')
+  const [couponMessage, setCouponMessage] = useState({ text: '', type: '' })
 
   // Detectar si el usuario regresa de la pasarela Bold con orden completada
   useEffect(() => {
@@ -68,6 +80,31 @@ export default function Checkout () {
   }, [searchParams, clearCart])
 
   const subtotal = getSubtotal()
+  const discountAmount = getDiscountAmount()
+  const total = getTotal()
+
+  const handleApplyCoupon = (e) => {
+    e.preventDefault()
+    setCouponMessage({ text: '', type: '' })
+
+    const result = validateDiscountCode(couponCodeInput, subtotal)
+    if (!result.valid) {
+      setCouponMessage({ text: result.error, type: 'error' })
+      return
+    }
+
+    applyCoupon(result.coupon)
+    setCouponMessage({
+      text: `¡Cupón ${result.coupon.code} aplicado con éxito (-${formatPrice(result.discountAmount)})!`,
+      type: 'success'
+    })
+    setCouponCodeInput('')
+  }
+
+  const handleRemoveCoupon = () => {
+    removeCoupon()
+    setCouponMessage({ text: '', type: '' })
+  }
 
   const handleFieldChange = (field, value) => {
     setContact((prev) => ({ ...prev, [field]: value }))
@@ -147,13 +184,16 @@ export default function Checkout () {
         }
       }
 
-      // 3. Generar el mensaje de WhatsApp con el total calculado por el servidor
+      // 3. Generar el mensaje de WhatsApp con el total calculado y descuento
+      const finalAmount = order.total ? Math.max(0, order.total - discountAmount) : total
       const whatsappUrl = buildWhatsappMessage({
         orderId: order.orderId,
         contact,
         items: cart,
-        total: order.total,
-        paymentMethod
+        total: finalAmount,
+        paymentMethod,
+        discountAmount,
+        couponCode: appliedCoupon?.code
       })
 
       if (waWindow) waWindow.location.href = whatsappUrl
@@ -162,7 +202,7 @@ export default function Checkout () {
       setCompletedOrder({
         orderId: order.orderId,
         name: contact.name,
-        total: order.total,
+        total: finalAmount,
         whatsappUrl,
         whatsappOpened: Boolean(waWindow)
       })
@@ -504,10 +544,70 @@ export default function Checkout () {
             </span>
           </div>
 
+          {/* Sección de Cupón de Descuento */}
+          <div className={styles.couponSection}>
+            <span className={styles.couponSectionLabel}>¿TIENES UN CÓDIGO DE DESCUENTO?</span>
+            {appliedCoupon
+              ? (
+                <div className={styles.appliedCouponBox}>
+                  <div className={styles.appliedCouponInfo}>
+                    <span className={styles.couponTagIcon}>🏷️</span>
+                    <div>
+                      <span className={styles.appliedCouponCode}>{appliedCoupon.code}</span>
+                      <span className={styles.appliedCouponLabel}>{appliedCoupon.label}</span>
+                    </div>
+                  </div>
+                  <button
+                    type='button'
+                    className={styles.removeCouponBtn}
+                    onClick={handleRemoveCoupon}
+                    aria-label='Remover código de descuento'
+                  >
+                    ✕ REMOVER
+                  </button>
+                </div>
+                )
+              : (
+                <form onSubmit={handleApplyCoupon} className={styles.couponForm}>
+                  <input
+                    type='text'
+                    value={couponCodeInput}
+                    onChange={(e) => {
+                      setCouponCodeInput(e.target.value.toUpperCase())
+                      if (couponMessage.text) setCouponMessage({ text: '', type: '' })
+                    }}
+                    placeholder='CÓDIGO (EJ: DC10)'
+                    className={styles.couponInput}
+                    aria-label='Código de descuento'
+                  />
+                  <button type='submit' className={styles.applyCouponBtn}>
+                    APLICAR
+                  </button>
+                </form>
+                )}
+
+            {couponMessage.text && (
+              <p className={couponMessage.type === 'error' ? styles.couponError : styles.couponSuccess}>
+                {couponMessage.text}
+              </p>
+            )}
+          </div>
+
           <div className={styles.summaryRow}>
             <span>Subtotal</span>
             <strong style={{ color: '#fff' }}>{formatPrice(subtotal)}</strong>
           </div>
+
+          {discountAmount > 0 && (
+            <div className={styles.summaryRow}>
+              <span className={styles.discountRowLabel}>
+                Descuento ({appliedCoupon?.code})
+              </span>
+              <strong className={styles.discountAmount}>
+                -{formatPrice(discountAmount)}
+              </strong>
+            </div>
+          )}
 
           <div className={styles.summaryRow}>
             <span>Envío nacional</span>
@@ -521,7 +621,7 @@ export default function Checkout () {
 
           <div className={styles.summaryTotal}>
             <span>TOTAL:</span>
-            <span className={styles.totalAmount}>{formatPrice(subtotal)}</span>
+            <span className={styles.totalAmount}>{formatPrice(total)}</span>
           </div>
         </div>
       </div>

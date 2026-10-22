@@ -72,7 +72,7 @@
 }
 
 .lookCard:hover {
-  border-color: #304FFE;
+  border-color: rgba(255, 255, 255, 0.5);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
 

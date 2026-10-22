@@ -6,12 +6,13 @@
  * Copys 100% en español.
  */
 
+import addi from '../../../../../../../../../addi.png'
 import styles from './AddiBadge.module.css'
 
 export default function AddiBadge () {
   return (
     <div className={styles.badge} aria-label='Información de pago con Addi'>
-      <span className={styles.logo}>addi</span>
+      <img src={addi} alt='Logo de Addi' className={styles.logo} />
       <div className={styles.textGroup}>
         <span className={styles.mainText}>Compra ahora y paga a cuotas con 0% de interés</span>
         <span className={styles.subText}>Sin tarjetas de crédito ni papeleos. Sujeto a aprobación de Addi.</span>

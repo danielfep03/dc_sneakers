@@ -2,78 +2,97 @@ import { Link } from 'react-router-dom'
 import styles from './CultureBanner.module.css'
 
 export default function CultureBanner () {
-  const categoriesList = [
-    { num: '01', label: 'TENIS BASKETBALL', tag: 'BASKETBALL' },
-    { num: '02', label: 'TENIS CASUAL / RETRO', tag: 'CASUAL' },
-    { num: '03', label: 'TENIS RUNNING', tag: 'RUNNING' },
-    { num: '04', label: 'TENIS VOLEIBOL', tag: 'VOLEIBOL' },
-    { num: '05', label: 'TODAS LAS SILUETAS', tag: 'ALL' }
+  const benefits = [
+    {
+      title: 'SIN TARJETA DE CRÉDITO',
+      desc: 'Solo necesitas tu cédula y número de WhatsApp para iniciar.'
+    },
+    {
+      title: 'APROBACIÓN EN MINUTOS',
+      desc: 'Proceso 100% digital e inmediato, sin papeleos ni filas.'
+    },
+    {
+      title: 'PAGO A TU RITMO',
+      desc: 'Elige el plan de cuotas que mejor se adapte a tu bolsillo.'
+    }
   ]
 
   return (
-    <section className={styles.cultureSection}>
-      <div className={styles.cultureGrid}>
-        <nav className={styles.categoriesNav} aria-label='Categorías de tenis'>
-          {categoriesList.map((item) => (
-            <Link
-              key={item.num}
-              to={`/categorias?category=${item.tag.toLowerCase()}`}
-              className={styles.categoryItem}
-            >
-              <span className={styles.catNumber}>{item.num}</span>
-              <span className={styles.catName}>{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-
-        <div className={styles.cultureCenter}>
-          <svg className={styles.crownIcon} viewBox='0 0 48 36' fill='none'>
-            <path
-              d='M4 30L10 10L24 24L38 10L44 30H4Z'
-              stroke='#304FFE'
-              strokeWidth='2.8'
-              strokeLinejoin='round'
-              strokeLinecap='round'
-            />
-            <circle cx='10' cy='8' r='2' fill='#304FFE' />
-            <circle cx='24' cy='22' r='2' fill='#304FFE' />
-            <circle cx='38' cy='8' r='2' fill='#304FFE' />
-          </svg>
-
-          <h2 className={styles.cultureTitle}>
-            PASIÓN POR<br />
-            LOS SNEAKERS
-          </h2>
-
-          <div className={styles.titleUnderline} />
-
-          <p className={styles.cultureDesc}>
-            Más que calzado, coleccionamos historia y rendimiento. Siluetas de tenis seleccionadas para dominar la cancha y el asfalto.
-          </p>
-        </div>
-
-        <div className={styles.photoWrapper}>
-          <div className={styles.tapeTopLeft} />
-
-          <img
-            src='https://images.unsplash.com/photo-1600185365926-3a2ce3cdb9eb?auto=format&fit=crop&w=1000&q=80'
-            alt='Tenis icónicos DC Sneakers'
-            className={styles.streetPhoto}
-            loading='lazy'
-          />
-
-          <div className={styles.technicalOverlay}>
-            <div className={styles.verticalTag}>
-              DC SNEAKERS // TIENDA DE TENIS
+    <section className={styles.addiSection} aria-label='Financia con Addi'>
+      <div className={styles.container}>
+        <div className={styles.bannerCard}>
+          <div className={styles.contentSide}>
+            <div className={styles.partnerBadge}>
+              <img src='/addi.png' alt='Logo de Addi' className={styles.addiLogo} />
+              <span className={styles.badgeDivider} aria-hidden='true' />
+              <span className={styles.badgeText}>PAGA A CUOTAS</span>
             </div>
-            <div className={styles.barcode}>
-              <span className={styles.barcodeLineThick} />
-              <span className={styles.barcodeLine} />
-              <span className={styles.barcodeLine} />
-              <span className={styles.barcodeLineThick} />
-              <span className={styles.barcodeLine} />
-              <span className={styles.barcodeLineThick} />
-              <span className={styles.barcodeLine} />
+
+            <h2 className={styles.headline}>
+              COMPRA AHORA,<br />
+              PAGA DESPUÉS<span className={styles.accentDot}>.</span>
+            </h2>
+
+            <p className={styles.subheadline}>
+              Financia tu compra en minutos con Addi, sin necesidad de tarjeta de crédito y con aprobación al instante.
+            </p>
+
+            <div className={styles.benefitsGrid}>
+              {benefits.map((b, idx) => (
+                <div key={idx} className={styles.benefitItem}>
+                  <div className={styles.benefitDot} />
+                  <div>
+                    <h3 className={styles.benefitTitle}>{b.title}</h3>
+                    <p className={styles.benefitDesc}>{b.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className={styles.ctaWrapper}>
+              <Link to='/categorias' className={styles.ctaButton}>
+                <span>COMPRA CON ADDI</span>
+                <span className={styles.ctaArrow}>→</span>
+              </Link>
+              <span className={styles.ctaSubtext}>Aplica en todas las siluetas del catálogo</span>
+            </div>
+          </div>
+
+          <div className={styles.visualSide}>
+            <div className={styles.imageOverlay} />
+            <img
+              src='https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=1000&q=80'
+              alt='Sneakers con financiamiento Addi'
+              className={styles.bannerImage}
+              loading='lazy'
+            />
+
+            <div className={styles.simulatorCard}>
+              <div className={styles.simulatorHeader}>
+                <span className={styles.simulatorLogo}>addi</span>
+                <span className={styles.simulatorBadge}>0% INTERÉS*</span>
+              </div>
+              <p className={styles.simulatorTitle}>LLEVA TUS SNEAKERS FAVORITOS</p>
+              <div className={styles.installmentsRow}>
+                <div className={styles.installmentStep}>
+                  <span className={styles.stepNum}>1</span>
+                  <span className={styles.stepLabel}>Hoy</span>
+                </div>
+                <div className={styles.installmentDivider} />
+                <div className={styles.installmentStep}>
+                  <span className={styles.stepNum}>2</span>
+                  <span className={styles.stepLabel}>Mes 1</span>
+                </div>
+                <div className={styles.installmentDivider} />
+                <div className={styles.installmentStep}>
+                  <span className={styles.stepNum}>3</span>
+                  <span className={styles.stepLabel}>Mes 2</span>
+                </div>
+              </div>
+              <div className={styles.simulatorFooter}>
+                <span className={styles.checkIcon}>✓</span>
+                <span>Aprobación 100% digital en minutos</span>
+              </div>
             </div>
           </div>
         </div>

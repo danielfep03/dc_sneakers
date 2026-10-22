@@ -36,10 +36,12 @@ function normalizeItem (item) {
  * @param {string} params.orderId - ej: "ORD-1001"
  * @param {Object} params.contact - { name, phone, address, city, notes }
  * @param {Array} params.items - ítems del carrito
- * @param {number} params.total - total a pagar en COP (el calculado por el servidor)
+ * @param {number} params.total - total a pagar en COP
  * @param {string} params.paymentMethod - "transfer" | "cash-on-delivery" | "bold-demo"
+ * @param {number} [params.discountAmount] - monto de descuento aplicado
+ * @param {string} [params.couponCode] - código de descuento aplicado
  */
-export function buildWhatsappText ({ orderId, contact, items, total, paymentMethod }) {
+export function buildWhatsappText ({ orderId, contact, items, total, paymentMethod, discountAmount = 0, couponCode = null }) {
   const productLines = items
     .map(normalizeItem)
     .map((item) => {
@@ -49,6 +51,9 @@ export function buildWhatsappText ({ orderId, contact, items, total, paymentMeth
     .join('\n\n')
 
   const location = `${contact.address}${contact.city ? `, ${contact.city}` : ''}`
+  const discountLine = discountAmount > 0 && couponCode
+    ? `🏷️ *Cupón aplicado:* ${couponCode} (-${formatPrice(discountAmount)})\n`
+    : ''
 
   return `👋 *¡Hola ${storeConfig.displayName}!* Quiero confirmar mi pedido *#${orderId}*
 
@@ -62,7 +67,7 @@ ${productLines}
 
 🎁 *Cortesía:* ${storeConfig.giftText}
 🚚 *Envío:* ${storeConfig.freeShipping ? '¡Gratis a toda Colombia!' : '$ 15.000'}
-💳 *Método de pago:* ${PAYMENT_LABELS[paymentMethod] ?? paymentMethod}
+${discountLine}💳 *Método de pago:* ${PAYMENT_LABELS[paymentMethod] ?? paymentMethod}
 💰 *TOTAL A PAGAR:* ${formatPrice(total)}
 
 _Quedo atento/a para coordinar el despacho. ¡Gracias!_`

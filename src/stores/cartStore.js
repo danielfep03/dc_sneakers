@@ -14,6 +14,17 @@ export const useCartStore = create(
     (set, get) => ({
       cart: [],
       isCartOpen: false,
+      appliedCoupon: null,
+
+      /**
+       * Guarda o actualiza el cupón aplicado.
+       */
+      applyCoupon: (coupon) => set({ appliedCoupon: coupon }),
+
+      /**
+       * Remueve el cupón activo.
+       */
+      removeCoupon: () => set({ appliedCoupon: null }),
 
       /**
        * Abre o cierra el drawer lateral del carrito.
@@ -73,9 +84,9 @@ export const useCartStore = create(
         }),
 
       /**
-       * Vacía completamente el carrito.
+       * Vacía completamente el carrito y remueve el cupón.
        */
-      clearCart: () => set({ cart: [] }),
+      clearCart: () => set({ cart: [], appliedCoupon: null }),
 
       /**
        * Total de unidades de calzado en el carrito.
@@ -92,6 +103,32 @@ export const useCartStore = create(
           (sum, item) => sum + item.product.price * item.quantity,
           0
         )
+      },
+
+      /**
+       * Monto total de descuento en COP según el cupón aplicado.
+       */
+      getDiscountAmount: () => {
+        const { appliedCoupon, getSubtotal } = get()
+        if (!appliedCoupon) return 0
+        const subtotal = getSubtotal()
+        if (appliedCoupon.minSubtotal && subtotal < appliedCoupon.minSubtotal) return 0
+        if (appliedCoupon.type === 'percentage') {
+          return Math.round((subtotal * appliedCoupon.value) / 100)
+        }
+        if (appliedCoupon.type === 'fixed') {
+          return Math.min(appliedCoupon.value, subtotal)
+        }
+        return 0
+      },
+
+      /**
+       * Total a pagar efectivo (Subtotal - Descuento).
+       */
+      getTotal: () => {
+        const subtotal = get().getSubtotal()
+        const discount = get().getDiscountAmount()
+        return Math.max(0, subtotal - discount)
       }
     }),
     {

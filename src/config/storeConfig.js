@@ -9,7 +9,8 @@ export const storeConfig = {
   name: 'dc_sneakers',
   displayName: 'DC SNEAKERS',
   tagline: 'Street Culture & Sneaker Archive',
-  whatsappNumber: '573000000000', // PENDIENTE: número real entregado por el cliente (con indicativo 57, sin +)
+  whatsappNumber: '573008625143', // PENDIENTE: número real entregado por el cliente (con indicativo 57, sin +)
+  whatsappChannelUrl: '', // PENDIENTE: link al canal oficial de WhatsApp (si está vacío, abre chat de alertas)
   freeShipping: true,
   freeShippingThreshold: 0,
   giftText: 'Par de medias de regalo',

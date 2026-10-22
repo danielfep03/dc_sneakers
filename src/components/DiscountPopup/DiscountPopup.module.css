@@ -1,0 +1,359 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  box-sizing: border-box;
+  animation: backdropFade 0.3s ease forwards;
+}
+
+.dialog {
+  position: relative;
+  max-width: 840px;
+  width: 100%;
+  background: #111115;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  box-shadow:
+    0 25px 60px rgba(0, 0, 0, 0.85),
+    0 0 40px rgba(48, 79, 254, 0.18);
+  animation: popupScale 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  box-sizing: border-box;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  color: #ffffff;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: rotate(90deg);
+}
+
+/* Visual Side */
+.visualSide {
+  position: relative;
+  overflow: hidden;
+  background: #08080a;
+  min-height: 440px;
+}
+
+.visualImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 15%;
+  display: block;
+}
+
+.visualOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    transparent 50%,
+    rgba(17, 17, 21, 0.85) 90%,
+    #111115 100%
+  ),
+  linear-gradient(
+    to top,
+    rgba(17, 17, 21, 0.9) 0%,
+    transparent 40%
+  );
+}
+
+.visualBadge {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(13, 13, 13, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #fafafa;
+  letter-spacing: 0.14em;
+  backdrop-filter: blur(8px);
+}
+
+.badgePulse {
+  width: 6px;
+  height: 6px;
+  background: #304FFE;
+  border-radius: 50%;
+  box-shadow: 0 0 8px #304FFE;
+}
+
+.discountFloatingTag {
+  position: absolute;
+  bottom: 24px;
+  left: 20px;
+  z-index: 2;
+  background: #304FFE;
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 3px;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  box-shadow: 0 8px 24px rgba(48, 79, 254, 0.4);
+}
+
+.discountNum {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  line-height: 0.85;
+  letter-spacing: 0.04em;
+}
+
+.discountOff {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+}
+
+/* Content Side */
+.contentSide {
+  padding: 3rem 2.4rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  z-index: 2;
+}
+
+.scriptBadge {
+  font-family: var(--font-script, 'Road Rage', 'Permanent Marker', cursive, sans-serif);
+  color: #e2b842;
+  font-size: 1.15rem;
+  letter-spacing: 0.08em;
+  transform: rotate(-1.5deg);
+  margin-bottom: 0.4rem;
+  display: inline-block;
+}
+
+.title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.3rem, 3.8vw, 3.2rem);
+  line-height: 0.92;
+  color: #ffffff;
+  letter-spacing: 0.03em;
+  margin: 0 0 1rem 0;
+  text-transform: uppercase;
+}
+
+.accentDot {
+  color: #304FFE;
+  font-family: -apple-system, sans-serif;
+}
+
+.description {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.88rem;
+  color: #a0a0a8;
+  line-height: 1.5;
+  margin: 0 0 1.5rem 0;
+}
+
+/* Coupon Box */
+.couponContainer {
+  display: flex;
+  align-items: stretch;
+  background: #0b0b0e;
+  border: 1px dashed rgba(48, 79, 254, 0.55);
+  border-radius: 4px;
+  margin-bottom: 1.25rem;
+  overflow: hidden;
+}
+
+.couponBox {
+  flex: 1;
+  padding: 0.65rem 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.couponLabel {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.62rem;
+  color: #72727a;
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+
+.couponCode {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.35rem;
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  color: #304FFE;
+}
+
+.copyBtn {
+  background: rgba(48, 79, 254, 0.15);
+  border: none;
+  border-left: 1px dashed rgba(48, 79, 254, 0.5);
+  color: #304FFE;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  padding: 0 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.copyBtn:hover {
+  background: #304FFE;
+  color: #ffffff;
+}
+
+.copyBtnSuccess {
+  background: #00d1b2 !important;
+  color: #0b0b0e !important;
+  border-color: #00d1b2 !important;
+}
+
+/* Actions */
+.claimBtn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  background-color: #304FFE;
+  color: #ffffff;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.4rem;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(48, 79, 254, 0.35);
+  margin-bottom: 0.85rem;
+}
+
+.claimBtn:hover {
+  background-color: #536DFE;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 26px rgba(48, 79, 254, 0.5);
+}
+
+.claimArrow {
+  font-size: 1.1rem;
+  font-weight: 900;
+  transition: transform 0.2s ease;
+}
+
+.claimBtn:hover .claimArrow {
+  transform: translateX(4px);
+}
+
+.dismissLink {
+  background: transparent;
+  border: none;
+  color: #72727a;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.75rem;
+  text-align: center;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+  margin-bottom: 1.25rem;
+}
+
+.dismissLink:hover {
+  color: #a0a0a8;
+  text-decoration: underline;
+}
+
+.perksRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 1rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #8e8e93;
+  letter-spacing: 0.04em;
+}
+
+/* Animations */
+@keyframes backdropFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popupScale {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .dialog {
+    grid-template-columns: 1fr;
+    max-width: 440px;
+  }
+
+  .visualSide {
+    display: none;
+  }
+
+  .contentSide {
+    padding: 2.5rem 1.5rem 1.8rem;
+  }
+
+  .title {
+    font-size: clamp(2rem, 8vw, 2.7rem);
+  }
+
+  .perksRow {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+}

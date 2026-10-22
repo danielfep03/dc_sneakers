@@ -94,36 +94,61 @@
   margin: 0 0 1rem 0;
 }
 
-.inputRow {
-  display: flex;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  background: #111114;
-}
-
-.newsletterInput {
-  flex: 1;
-  background: transparent;
-  border: none;
-  outline: none;
-  padding: 0.75rem 1rem;
-  color: #ffffff;
-  font-family: inherit;
+.whatsappChannelBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  background-color: #25D366;
+  color: #08080a;
+  padding: 0.85rem 1.4rem;
+  border-radius: 3px;
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
   font-size: 0.82rem;
-}
-
-.subscribeBtn {
-  background-color: #304FFE;
-  color: #000000;
-  border: none;
-  padding: 0 1.2rem;
-  font-family: inherit;
   font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(37, 211, 102, 0.25);
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.subscribeBtn:hover {
-  background-color: #ffffff;
+.whatsappChannelBtn:hover {
+  background-color: #2bf075;
+  color: #000000;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 22px rgba(37, 211, 102, 0.4);
+}
+
+.waBtnIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  fill: currentColor;
+}
+
+.btnArrow {
+  font-size: 1rem;
+  font-weight: 900;
+  transition: transform 0.2s ease;
+}
+
+.whatsappChannelBtn:hover .btnArrow {
+  transform: translateX(4px);
+}
+
+.channelBadge {
+  display: block;
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #636366;
+  letter-spacing: 0.14em;
+  margin-top: 0.75rem;
+  text-transform: uppercase;
 }
 
 .bottomRow {

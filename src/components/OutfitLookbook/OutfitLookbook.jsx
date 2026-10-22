@@ -5,35 +5,31 @@ export default function OutfitLookbook () {
   const sneakersOnFeet = [
     {
       id: 1,
-      tag: 'SILUETA 01 // BASKETBALL',
-      title: 'RETRO HIGH TOPS',
+      title: 'Puma',
       subtitle: 'VER MODELOS RETRO',
       link: '/categorias?category=basketball',
-      image: 'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=800&q=80'
+      image: 'https://i.pinimg.com/1200x/eb/3d/92/eb3d9271a91f7b264fdfe02a58d410e9.jpg'
     },
     {
       id: 2,
-      tag: 'SILUETA 02 // CASUAL',
-      title: 'DUNK LOW & COURT',
+      title: 'Adidas',
       subtitle: 'VER MODELOS CASUAL',
       link: '/categorias?category=casual',
-      image: 'https://images.unsplash.com/photo-1525966222134-fcfa99b8ae77?auto=format&fit=crop&w=800&q=80'
+      image: '/adidas.jpeg'
     },
     {
       id: 3,
-      tag: 'SILUETA 03 // RUNNING',
-      title: 'TECH RUNNER & SPORT',
+      title: 'JORDAN',
       subtitle: 'VER MODELOS RUNNING',
       link: '/categorias?category=running',
-      image: 'https://images.unsplash.com/photo-1514989940723-e8e51635b782?auto=format&fit=crop&w=800&q=80'
+      image: 'https://i.pinimg.com/736x/59/ac/c9/59acc94b564ceccb7e5404a627ccb5a2.jpg'
     },
     {
       id: 4,
-      tag: 'SILUETA 04 // DUELA & CANCHA',
-      title: 'PRO PERFORMANCE',
+      title: 'New Balance',
       subtitle: 'VER MODELOS DE CANCHA',
       link: '/categorias?category=basketball',
-      image: 'https://images.unsplash.com/photo-1579338559194-a162d19bf842?auto=format&fit=crop&w=800&q=80'
+      image: 'https://i.pinimg.com/1200x/92/b7/e6/92b7e609148e54637fb1a6d5b17c4783.jpg'
     }
   ]
 
@@ -64,7 +60,6 @@ export default function OutfitLookbook () {
               loading='lazy'
             />
             <div className={styles.cardOverlay}>
-              <span className={styles.lookTag}>{item.tag}</span>
               <h3 className={styles.lookTitle}>{item.title}</h3>
               <span className={styles.lookSub}>{item.subtitle} →</span>
             </div>
