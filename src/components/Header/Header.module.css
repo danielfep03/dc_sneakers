@@ -186,27 +186,55 @@
 
 /* 4. Barra de Búsqueda Desplegable */
 .searchBar {
-  padding: 0.75rem 2.5rem;
-  background: #111113;
+  padding: 0.85rem 2rem;
+  background: #0d0d0f;
   border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   display: flex;
   justify-content: center;
+  position: relative;
+  z-index: 50;
   animation: fadeIn 0.2s ease-out;
 }
 
+.searchWrapper {
+  max-width: 680px;
+  width: 100%;
+  position: relative;
+}
+
 .searchInner {
-  max-width: 600px;
   width: 100%;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  background: #000000;
-  border: 1px solid var(--color-border);
-  padding: 0.5rem 1rem;
+  background: #141418;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+  padding: 0.6rem 1rem;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
 .searchInner:focus-within {
   border-color: #304FFE;
+  box-shadow: 0 0 16px rgba(48, 79, 254, 0.25);
+}
+
+.searchSubmitBtn {
+  background: none;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  color: #8e8e93;
+  cursor: pointer;
+  transition: color 0.2s ease, transform 0.15s ease;
+}
+
+.searchSubmitBtn:hover {
+  color: #304FFE;
+  transform: scale(1.1);
 }
 
 .searchInput {
@@ -215,26 +243,237 @@
   border: none;
   outline: none;
   color: #ffffff;
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   letter-spacing: 0.05em;
-  font-family: inherit;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
 }
 
 .searchInput::placeholder {
-  color: var(--color-muted);
+  color: #6c6c74;
+  font-size: 0.8rem;
+  letter-spacing: 0.06em;
+}
+
+.searchClearBtn {
+  background: none;
+  border: none;
+  color: #6c6c74;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 2px;
+  transition: all 0.2s ease;
+}
+
+.searchClearBtn:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .searchClose {
   background: none;
   border: none;
-  color: var(--color-muted);
+  color: #8e8e93;
   cursor: pointer;
   display: flex;
   align-items: center;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 0.2rem 0.5rem;
+  transition: color 0.2s ease;
 }
 
 .searchClose:hover {
+  color: #ff4757;
+}
+
+/* Dropdown de Live Search */
+.searchDropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #111116;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 6px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.75), 0 0 25px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 100;
+  animation: fadeIn 0.15s ease-out;
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.15rem;
+  background: #09090c;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.dropdownTitle {
+  font-family: 'Space Grotesk', monospace;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: #8e8e93;
+}
+
+.dropdownViewAllBtn {
+  background: none;
+  border: none;
+  color: #304FFE;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.dropdownViewAllBtn:hover {
   color: #ffffff;
+  text-decoration: underline;
+}
+
+.previewList {
+  display: flex;
+  flex-direction: column;
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.previewItem {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.8rem 1.15rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.previewItem:last-child {
+  border-bottom: none;
+}
+
+.previewItem:hover {
+  background: rgba(48, 79, 254, 0.12);
+}
+
+.previewThumb {
+  width: 46px;
+  height: 46px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: #050505;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  flex-shrink: 0;
+}
+
+.previewInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.previewBrand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  color: #304FFE;
+  text-transform: uppercase;
+  margin-bottom: 0.15rem;
+}
+
+.previewName {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.previewPriceGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  flex-shrink: 0;
+}
+
+.previewPrice {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.previewOldPrice {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.72rem;
+  color: #71717a;
+  text-decoration: line-through;
+}
+
+.dropdownFooter {
+  padding: 0.65rem 1.15rem;
+  background: #09090c;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.viewAllResultsBtn {
+  width: 100%;
+  background: #304FFE;
+  color: #ffffff;
+  border: none;
+  border-radius: 3px;
+  padding: 0.65rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.viewAllResultsBtn:hover {
+  background: #2538c9;
+}
+
+.emptyPreview {
+  padding: 1.75rem 1.15rem;
+  text-align: center;
+}
+
+.emptyPreviewText {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.85rem;
+  color: #a0a0a8;
+  margin: 0 0 0.85rem 0;
+}
+
+.emptyPreviewBtn {
+  background: none;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  padding: 0.4rem 0.9rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.74rem;
+  font-weight: 700;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.emptyPreviewBtn:hover {
+  border-color: #304FFE;
+  color: #304FFE;
 }
 
 /* 5. Mobile Drawer */

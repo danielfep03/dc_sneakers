@@ -34,7 +34,7 @@ const GENERIC_MESSAGE = 'Hubo un inconveniente al generar tu orden. Por favor in
  * @returns {Promise<{ orderId: string, total: number, createdAt: string }>}
  * @throws {OrderError}
  */
-export async function createOrder ({ contact, cart, paymentMethod, originUrl }) {
+export async function createOrder ({ contact, cart, paymentMethod, originUrl, couponCode = null }) {
   const items = cart.map((item) => ({
     variantId: item.color?.variantId,
     size: item.size,
@@ -47,7 +47,7 @@ export async function createOrder ({ contact, cart, paymentMethod, originUrl }) 
   }
 
   const { data, error } = await supabase.functions.invoke('create-order', {
-    body: { contact, items, paymentMethod, originUrl }
+    body: { contact, items, paymentMethod, originUrl, couponCode }
   })
 
   if (error) {

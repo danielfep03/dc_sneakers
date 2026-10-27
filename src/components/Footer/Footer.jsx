@@ -1,5 +1,5 @@
-import { Link } from 'react-router-dom'
 import { storeConfig } from '@/config/storeConfig'
+import { Link } from 'react-router-dom'
 import DcLogo from '../common/DcLogo'
 import styles from './Footer.module.css'
 
@@ -18,7 +18,8 @@ export default function Footer () {
               </Link>
             </div>
             <p className={styles.brandTagline}>
-              Curaduría exclusiva de siluetas icónicas y streetwear en Colombia. Envíos contraentrega y garantía directa.
+              Los pares que buscas para marcar tu estilo están en DC SNEAKERS Tus marcas favoritas en un solo lugar.
+              Cali, Colombia | Envíos a toda Colombia 🇨🇴
             </p>
           </div>
 

@@ -47,6 +47,9 @@ export default function Collections () {
 
   const [selectedSizes, setSelectedSizes] = useState([])
   const [onlyOffers, setOnlyOffers] = useState(() => searchParams.get('tag') === 'sale')
+  const [searchTerm, setSearchTerm] = useState(() => {
+    return searchParams.get('q') || searchParams.get('search') || ''
+  })
   const [sortBy, setSortBy] = useState('newest')
   const [isMobileModalOpen, setIsMobileModalOpen] = useState(false)
 
@@ -73,11 +76,13 @@ export default function Collections () {
     const brand = searchParams.get('brand')
     const tag = searchParams.get('tag')
     const gender = searchParams.get('gender')
+    const q = searchParams.get('q') || searchParams.get('search')
 
     if (cat) setSelectedCategory(normalizeCategory(cat))
     if (brand) setSelectedBrands([brand])
     if (tag === 'sale') setOnlyOffers(true)
     if (gender) setSelectedGender(gender.toLowerCase())
+    setSearchTerm(q || '')
   }, [searchParams])
 
   // Filtrado y Ordenamiento
@@ -115,7 +120,18 @@ export default function Collections () {
       list = list.filter((p) => p.originalPrice !== null)
     }
 
-    // 6. Ordenamiento
+    // 6. Filtro por Búsqueda (Texto libre en nombre, marca, categoría o descripción)
+    if (searchTerm.trim()) {
+      const term = searchTerm.trim().toLowerCase()
+      list = list.filter((p) =>
+        p.name.toLowerCase().includes(term) ||
+        (p.brand && p.brand.toLowerCase().includes(term)) ||
+        (p.category && p.category.toLowerCase().includes(term)) ||
+        (p.description && p.description.toLowerCase().includes(term))
+      )
+    }
+
+    // 7. Ordenamiento
     if (sortBy === 'price-asc') {
       list.sort((a, b) => a.price - b.price)
     } else if (sortBy === 'price-desc') {
@@ -126,7 +142,7 @@ export default function Collections () {
     }
 
     return list
-  }, [products, selectedCategory, selectedBrands, selectedSizes, selectedGender, onlyOffers, sortBy])
+  }, [products, selectedCategory, selectedBrands, selectedSizes, selectedGender, onlyOffers, searchTerm, sortBy])
 
   // Manejadores de Filtros
   const toggleBrand = (brand) => {
@@ -147,7 +163,16 @@ export default function Collections () {
     setSelectedSizes([])
     setSelectedGender(null)
     setOnlyOffers(false)
+    setSearchTerm('')
     setSearchParams({})
+  }
+
+  const clearSearch = () => {
+    setSearchTerm('')
+    const nextParams = new URLSearchParams(searchParams)
+    nextParams.delete('q')
+    nextParams.delete('search')
+    setSearchParams(nextParams)
   }
 
   const handleQuickAdd = (product, e) => {
@@ -244,24 +269,41 @@ export default function Collections () {
     selectedCategory !== 'all' ||
     selectedSizes.length > 0 ||
     selectedGender !== null ||
-    onlyOffers
+    onlyOffers ||
+    Boolean(searchTerm.trim())
 
   return (
     <div className={styles.collectionsPage}>
       {/* Encabezado */}
       <header className={styles.pageHeader}>
         <div>
-          <h1 className={styles.pageTitle}>CATÁLOGO DE SNEAKERS</h1>
+          <h1 className={styles.pageTitle}>
+            {searchTerm.trim() ? `BÚSQUEDA: "${searchTerm.trim().toUpperCase()}"` : 'CATÁLOGO DE SNEAKERS'}
+          </h1>
         </div>
-        <span className={styles.resultsCount}>
+        {/* <span className={styles.resultsCount}>
           [{filteredProducts.length} SILUETAS DISPONIBLES]
-        </span>
+        </span> */}
       </header>
 
       {/* Chips de Filtros Activos */}
       {hasActiveFilters && (
         <div className={styles.activeChipsBar}>
           <span className={styles.chipsLabel}>Filtros activos:</span>
+
+          {searchTerm.trim() && (
+            <span className={styles.chip}>
+              Búsqueda: "{searchTerm.trim()}"
+              <button
+                type='button'
+                className={styles.chipRemoveBtn}
+                onClick={clearSearch}
+                aria-label='Quitar búsqueda'
+              >
+                ✕
+              </button>
+            </span>
+          )}
 
           {selectedGender && (
             <span className={styles.chip}>
@@ -406,7 +448,9 @@ export default function Collections () {
                       NO HAY RESULTADOS
                     </h2>
                     <p style={{ color: '#8e8e93', fontSize: '0.9rem' }}>
-                      No encontramos sneakers que coincidan con los filtros seleccionados.
+                      {searchTerm.trim()
+                        ? `No encontramos sneakers que coincidan con "${searchTerm.trim()}".`
+                        : 'No encontramos sneakers que coincidan con los filtros seleccionados.'}
                     </p>
                     <button
                       type='button'
@@ -414,7 +458,7 @@ export default function Collections () {
                       onClick={clearAllFilters}
                       style={{ fontSize: '0.85rem' }}
                     >
-                      LIMPIAR TODOS LOS FILTROS
+                      VER TODO EL CATÁLOGO
                     </button>
                   </div>
                   )

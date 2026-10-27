@@ -112,7 +112,8 @@ export const useCartStore = create(
         const { appliedCoupon, getSubtotal } = get()
         if (!appliedCoupon) return 0
         const subtotal = getSubtotal()
-        if (appliedCoupon.minSubtotal && subtotal < appliedCoupon.minSubtotal) return 0
+        const minSub = appliedCoupon.min_subtotal ?? appliedCoupon.minSubtotal ?? 0
+        if (minSub > 0 && subtotal < minSub) return 0
         if (appliedCoupon.type === 'percentage') {
           return Math.round((subtotal * appliedCoupon.value) / 100)
         }

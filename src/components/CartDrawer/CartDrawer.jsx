@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { validateDiscountCode } from '@/data/discountCodes'
+import { validateCoupon } from '@/services/couponService'
 import { useCartStore } from '@/stores/cartStore'
 import { formatPrice } from '@/utils/formatPrice'
 import styles from './CartDrawer.module.css'
@@ -22,6 +22,7 @@ export default function CartDrawer () {
   const [couponInput, setCouponInput] = useState('')
   const [couponError, setCouponError] = useState('')
   const [isCouponFormOpen, setIsCouponFormOpen] = useState(false)
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
 
   if (!isCartOpen) return null
 
@@ -29,17 +30,24 @@ export default function CartDrawer () {
   const discountAmount = getDiscountAmount()
   const total = getTotal()
 
-  const handleApplyCoupon = (e) => {
+  const handleApplyCoupon = async (e) => {
     e.preventDefault()
+    if (!couponInput.trim() || isValidatingCoupon) return
     setCouponError('')
-    const result = validateDiscountCode(couponInput, subtotal)
-    if (!result.valid) {
-      setCouponError(result.error)
-      return
+    setIsValidatingCoupon(true)
+
+    try {
+      const result = await validateCoupon(couponInput, subtotal)
+      if (!result.valid) {
+        setCouponError(result.error)
+        return
+      }
+      applyCoupon(result.coupon)
+      setCouponInput('')
+      setIsCouponFormOpen(false)
+    } finally {
+      setIsValidatingCoupon(false)
     }
-    applyCoupon(result.coupon)
-    setCouponInput('')
-    setIsCouponFormOpen(false)
   }
 
   return (
@@ -148,8 +156,12 @@ export default function CartDrawer () {
                           className={styles.couponDrawerInput}
                           autoFocus
                         />
-                        <button type='submit' className={styles.couponDrawerBtn}>
-                          APLICAR
+                        <button
+                          type='submit'
+                          className={styles.couponDrawerBtn}
+                          disabled={isValidatingCoupon}
+                        >
+                          {isValidatingCoupon ? '...' : 'APLICAR'}
                         </button>
                       </div>
                       {couponError && <p className={styles.couponDrawerError}>{couponError}</p>}

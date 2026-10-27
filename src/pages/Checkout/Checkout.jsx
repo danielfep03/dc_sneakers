@@ -10,7 +10,7 @@
  */
 
 import { storeConfig } from '@/config/storeConfig'
-import { validateDiscountCode } from '@/data/discountCodes'
+import { validateCoupon } from '@/services/couponService'
 import { confirmBoldPayment, createOrder, OrderError } from '@/services/orderService'
 import { useCartStore } from '@/stores/cartStore'
 import { buildWhatsappMessage } from '@/utils/buildWhatsappMessage'
@@ -49,6 +49,7 @@ export default function Checkout () {
   const [submitError, setSubmitError] = useState(null)
   const [couponCodeInput, setCouponCodeInput] = useState('')
   const [couponMessage, setCouponMessage] = useState({ text: '', type: '' })
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
 
   // Detectar si el usuario regresa de la pasarela Bold con orden completada
   useEffect(() => {
@@ -83,22 +84,28 @@ export default function Checkout () {
   const discountAmount = getDiscountAmount()
   const total = getTotal()
 
-  const handleApplyCoupon = (e) => {
+  const handleApplyCoupon = async (e) => {
     e.preventDefault()
+    if (!couponCodeInput.trim() || isValidatingCoupon) return
     setCouponMessage({ text: '', type: '' })
+    setIsValidatingCoupon(true)
 
-    const result = validateDiscountCode(couponCodeInput, subtotal)
-    if (!result.valid) {
-      setCouponMessage({ text: result.error, type: 'error' })
-      return
+    try {
+      const result = await validateCoupon(couponCodeInput, subtotal)
+      if (!result.valid) {
+        setCouponMessage({ text: result.error, type: 'error' })
+        return
+      }
+
+      applyCoupon(result.coupon)
+      setCouponMessage({
+        text: `¡Cupón ${result.coupon.code} aplicado con éxito (-${formatPrice(result.discountAmount)})!`,
+        type: 'success'
+      })
+      setCouponCodeInput('')
+    } finally {
+      setIsValidatingCoupon(false)
     }
-
-    applyCoupon(result.coupon)
-    setCouponMessage({
-      text: `¡Cupón ${result.coupon.code} aplicado con éxito (-${formatPrice(result.discountAmount)})!`,
-      type: 'success'
-    })
-    setCouponCodeInput('')
   }
 
   const handleRemoveCoupon = () => {
@@ -153,7 +160,13 @@ export default function Checkout () {
     try {
       // 1. Crear la orden en Supabase (Edge Function: precios y stock se validan en servidor)
       const originUrl = window.location.origin
-      const order = await createOrder({ contact, cart, paymentMethod, originUrl })
+      const order = await createOrder({
+        contact,
+        cart,
+        paymentMethod,
+        originUrl,
+        couponCode: appliedCoupon?.code
+      })
 
       // 2. Si el método es Bold (Pagos en línea), abrir la pasarela oficial de Bold
       if (isBoldReal && (order.boldCheckout || order.boldCheckoutUrl)) {
@@ -407,6 +420,10 @@ export default function Checkout () {
                 </div>
               </div>
 
+              <div>
+                <button id='addi-pay-btn' className='addi-pay-btn-md addi-pay-btn-dark' />
+              </div>
+
               {/* Opción 2: Transferencia */}
               <div
                 className={`${styles.paymentOption} ${
@@ -580,8 +597,12 @@ export default function Checkout () {
                     className={styles.couponInput}
                     aria-label='Código de descuento'
                   />
-                  <button type='submit' className={styles.applyCouponBtn}>
-                    APLICAR
+                  <button
+                    type='submit'
+                    className={styles.applyCouponBtn}
+                    disabled={isValidatingCoupon}
+                  >
+                    {isValidatingCoupon ? '...' : 'APLICAR'}
                   </button>
                 </form>
                 )}

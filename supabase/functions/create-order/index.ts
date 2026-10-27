@@ -135,7 +135,7 @@ Deno.serve(async (req) => {
     let redirectionBase = payload?.originUrl || ''
     if (!redirectionBase || redirectionBase.includes('localhost') || redirectionBase.includes('127.0.0.1')) {
       const configuredReturn = Deno.env.get('BOLD_RETURN_URL')
-      redirectionBase = configuredReturn || 'https://dc-sneakers.vercel.app'
+      redirectionBase = configuredReturn || 'https://dcsneakers.shop'
     }
 
     const boldCheckout = {

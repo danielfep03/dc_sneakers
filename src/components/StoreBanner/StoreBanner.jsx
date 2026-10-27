@@ -28,13 +28,13 @@ export default function StoreBanner () {
         </div>
 
         <div className={styles.textSide}>
-          <span className={styles.tagline}>Experiencia Física</span>
+          <span className={styles.tagline}>Nuestro punto Física</span>
           <h2 className={styles.storeTitle}>
             NUESTRO SHOWROOM & SEDE PRINCIPAL
           </h2>
 
           <p className={styles.storeDescription}>
-            Vive la cultura sneakerhead en persona. Conoce nuestro showroom con las siluetas más exclusivas, asesoría personalizada de tallas y entrega inmediata.
+            Vive la cultura sneakerhead en persona. Conoce nuestro showroom con los estilos más exclusivas, asesoría personalizada de tallas y entrega inmediata.
           </p>
 
           <div className={styles.featuresGrid}>

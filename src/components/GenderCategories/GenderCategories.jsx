@@ -6,7 +6,6 @@ export default function GenderCategories () {
     {
       id: 'hombre',
       title: 'HOMBRE',
-      scriptLabel: 'STREETWEAR MASCULINO',
       code: '// 01 MASCULINO',
       image: '/men.png',
       alt: 'Streetwear Masculino - DC SNEAKERS',
@@ -15,9 +14,8 @@ export default function GenderCategories () {
     {
       id: 'mujer',
       title: 'MUJER',
-      scriptLabel: 'STREETWEAR FEMENINO',
       code: '// 02 FEMENINO',
-      image: '/women.jpg',
+      image: '/women.png',
       alt: 'Streetwear Femenino - DC SNEAKERS',
       path: '/categorias?gender=mujer'
     }
@@ -49,7 +47,6 @@ export default function GenderCategories () {
               </div>
 
               <div className={styles.content}>
-                <span className={styles.scriptBadge}>{cat.scriptLabel}</span>
                 <h2 className={styles.title}>{cat.title}</h2>
                 <div className={styles.actionRow}>
                   <span className={styles.actionText}>VER COLECCIÓN</span>

@@ -37,7 +37,7 @@ export default function OutfitLookbook () {
     <section className={styles.lookbookSection}>
       <div className={styles.sectionHeader}>
         <div className={styles.titleGroup}>
-          <h2 className={styles.sectionTitle}>SNEAKERS EN LA CALLE // ON-FEET</h2>
+          <h2 className={styles.sectionTitle}>Marcas Disponibles</h2>
           <span className={styles.titleArrow}>→</span>
         </div>
         <Link to='/categorias' className={styles.viewAllLink}>
