@@ -32,11 +32,13 @@ export default function Hero () {
         <div className={styles.leftColumn}>
           <p className={styles.scriptBadge}>DOMINA LAS CALLES</p>
           <h1 className={styles.heroTitle}>
-            HECHOS<br />
-            DIFERENTE<span className={styles.voltDot}>.</span>
+            MARCA LA DIFERENCIA <br />
+            SIN LÍMITES<span className={styles.voltDot}>.</span>
           </h1>
           <p className={styles.heroSubtitle}>
-            Moda urbana que rompe las reglas y marca tendencia. Descubre las siluetas más exclusivas con envíos y pago contraentrega en toda Colombia.
+            Tus marcas favoritas en un solo lugar.
+            Encuentra ese par que tienes en mente y dale otro nivel a tu outfit.
+            Escribenos y pide el tuyo.
           </p>
 
           <div className={styles.ctaRow}>

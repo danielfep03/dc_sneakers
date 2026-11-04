@@ -19,7 +19,9 @@ export default function Footer () {
             </div>
             <p className={styles.brandTagline}>
               Los pares que buscas para marcar tu estilo están en DC SNEAKERS Tus marcas favoritas en un solo lugar.
-              Cali, Colombia | Envíos a toda Colombia 🇨🇴
+              <br />
+              Envíos a toda Colombia 🇨🇴
+              <br /> Cali, Colombia
             </p>
           </div>
 
