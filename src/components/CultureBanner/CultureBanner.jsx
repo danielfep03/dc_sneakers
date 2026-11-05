@@ -18,7 +18,7 @@ export default function CultureBanner () {
   ]
 
   return (
-    <section className={styles.addiSection} aria-label='Financia con Addi'>
+    <section id='addi-financiacion' className={styles.addiSection} aria-label='Financia con Addi'>
       <div className={styles.container}>
         <div className={styles.bannerCard}>
           <div className={styles.contentSide}>

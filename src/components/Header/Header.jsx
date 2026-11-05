@@ -88,6 +88,16 @@ export default function Header () {
     navigate(`/producto/${productId}`)
   }
 
+  const handleScrollToAddi = (e) => {
+    const el = document.getElementById('addi-financiacion')
+    if (el) {
+      e.preventDefault()
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    setIsMenuOpen(false)
+    setIsSearchOpen(false)
+  }
+
   const navLinks = [
     { label: 'CATÁLOGO', path: '/categorias' },
     { label: 'NOVEDADES', path: '/categorias?tag=new' },
@@ -98,14 +108,42 @@ export default function Header () {
 
   return (
     <header className={styles.headerContainer}>
+      {/* Barra superior de financiamiento Addi (Visible en versión mobile) */}
+      <Link
+        to='/#addi-financiacion'
+        onClick={handleScrollToAddi}
+        className={styles.mobileTopBar}
+        aria-label='Financiación Addi: Paga a cuotas'
+      >
+        <div className={styles.mobileTopBarInner}>
+          <img src='/addi.png' alt='Addi' className={styles.addiTopLogo} />
+          <span className={styles.mobileTopBarText}>Paga a cuotas con Addi</span>
+          <span className={styles.mobileTopBarBadge}>0% INTERÉS</span>
+          <span className={styles.mobileTopBarArrow}>→</span>
+        </div>
+      </Link>
+
       <div className={styles.navRow}>
+        {/* Mobile Left: Botón Menú Hamburguesa */}
+        <div className={styles.navMobileLeft}>
+          <button
+            type='button'
+            className={`${styles.burgerBtn} ${isMenuOpen ? styles.burgerBtnActive : ''}`}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label='Menú'
+          >
+            <span className={styles.burgerLineTop} />
+            <span className={styles.burgerLineBottom} />
+          </button>
+        </div>
+
         {/* 1. Logotipo oficial DC SNEAKERS */}
         <Link to='/' className={styles.brandLink} aria-label='DC SNEAKERS Inicio'>
           <DcLogo height={42} layout='stacked' />
         </Link>
 
         {/* 2. Menú Central Desktop */}
-        <nav aria-label='Navegación principal'>
+        <nav className={styles.desktopNav} aria-label='Navegación principal'>
           <ul className={styles.navCenter}>
             {navLinks.map((link) => (
               <li key={link.label}>
@@ -117,7 +155,7 @@ export default function Header () {
           </ul>
         </nav>
 
-        {/* 3. Acciones Derecha (Search, Cart Bag con badge neón, Menú Hamburguesa de dos líneas) */}
+        {/* 3. Acciones Derecha (Buscar, luego Carrito) */}
         <div className={styles.navActions}>
           {/* Botón Buscar */}
           <button
@@ -164,17 +202,6 @@ export default function Header () {
             {cartCount > 0 && (
               <span className={styles.cartBadge}>{cartCount}</span>
             )}
-          </button>
-
-          {/* Botón Menú Hamburguesa de dos líneas paralelas horizontales (idéntico a la imagen) */}
-          <button
-            type='button'
-            className={`${styles.burgerBtn} ${isMenuOpen ? styles.burgerBtnActive : ''}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label='Menú'
-          >
-            <span className={styles.burgerLineTop} />
-            <span className={styles.burgerLineBottom} />
           </button>
         </div>
       </div>

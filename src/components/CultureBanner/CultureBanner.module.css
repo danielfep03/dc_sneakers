@@ -3,6 +3,7 @@
   padding: 2.5rem 0 4.5rem;
   background-color: var(--color-bg, #0d0d0d);
   box-sizing: border-box;
+  scroll-margin-top: 5.5rem;
 }
 
 .container {
