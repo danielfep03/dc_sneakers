@@ -3,6 +3,16 @@
   margin: var(--space-4, 1rem) 0;
 }
 
+.sectionTitle {
+  font-family: var(--font-display, 'Space Grotesk', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;

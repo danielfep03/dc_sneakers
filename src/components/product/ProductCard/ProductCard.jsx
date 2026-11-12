@@ -30,6 +30,7 @@ export default function ProductCard ({ product }) {
   const discountPercent = calcDiscount(product.price, product.salePrice)
   const primaryImage =
     product.images?.[0] || product.image || 'https://placehold.co/600x600/141416/0117ff?text=Sneaker'
+  const secondaryImage = product.images?.[1]
 
   const handleFavoriteClick = (e) => {
     e.preventDefault()
@@ -54,9 +55,17 @@ export default function ProductCard ({ product }) {
         <img
           src={primaryImage}
           alt={product.name}
-          className={styles.productImage}
+          className={`${styles.productImage} ${secondaryImage ? styles.productImagePrimary : ''}`}
           loading='lazy'
         />
+        {secondaryImage && (
+          <img
+            src={secondaryImage}
+            alt={`${product.name} vista alternativa`}
+            className={styles.productImageHover}
+            loading='lazy'
+          />
+        )}
 
         {/* Badges superiores */}
         <div className={styles.badgeArea}>

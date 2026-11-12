@@ -10,11 +10,42 @@ export default function Header () {
   const [isSearchOpen, setIsSearchOpen] = useState(false)
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState('')
+  const [openSections, setOpenSections] = useState({})
 
   const navigate = useNavigate()
   const { products } = useProducts()
   const searchContainerRef = useRef(null)
   const searchInputRef = useRef(null)
+
+  const toggleSection = (key) => {
+    setOpenSections((prev) => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
+  }
+
+  // Marcas dinámicas del catálogo
+  const availableBrands = useMemo(() => {
+    const brandsSet = new Set(products.map((p) => p.brand).filter(Boolean))
+    return [...brandsSet].sort()
+  }, [products])
+
+  const handleBrandClick = (gender, brand) => {
+    setIsMenuOpen(false)
+    const params = new URLSearchParams()
+    if (gender) params.set('gender', gender)
+    if (brand) params.set('brand', brand)
+    navigate(`/categorias?${params.toString()}`)
+  }
+
+  const handleAllClick = (gender) => {
+    setIsMenuOpen(false)
+    if (gender) {
+      navigate(`/categorias?gender=${gender}`)
+    } else {
+      navigate('/categorias')
+    }
+  }
 
   const { toggleCart, getTotalItems } = useCartStore()
   const cartCount = getTotalItems()
@@ -99,11 +130,10 @@ export default function Header () {
   }
 
   const navLinks = [
-    { label: 'CATÁLOGO', path: '/categorias' },
-    { label: 'NOVEDADES', path: '/categorias?tag=new' },
-    { label: 'MARCAS', path: '/categorias?tag=brands' },
-    { label: 'OFERTAS', path: '/categorias?tag=sale' },
-    { label: 'LOOKBOOK', path: '/categorias?tag=lookbook' }
+    { label: 'VER TODO', path: '/categorias' },
+    { label: 'HOMBRE', path: '/categorias?gender=hombre' },
+    { label: 'MUJER', path: '/categorias?gender=mujer' },
+    { label: 'OFERTAS', path: '/categorias?tag=sale', isSale: true }
   ]
 
   return (
@@ -147,7 +177,10 @@ export default function Header () {
           <ul className={styles.navCenter}>
             {navLinks.map((link) => (
               <li key={link.label}>
-                <Link to={link.path} className={styles.navLink}>
+                <Link
+                  to={link.path}
+                  className={`${styles.navLink} ${link.isSale ? styles.navLinkSale : ''}`}
+                >
                   {link.label}
                 </Link>
               </li>
@@ -330,20 +363,163 @@ export default function Header () {
         </div>
       )}
 
-      {/* Drawer de Navegación en Mobile */}
+      {/* Drawer de Navegación en Mobile estilo Accordion */}
       {isMenuOpen && (
         <div className={styles.mobileDrawer}>
-          {navLinks.map((link) => (
-            <Link
-              key={link.label}
-              to={link.path}
-              className={styles.mobileNavLink}
+          <div className={styles.drawerHeader}>
+            <span className={styles.drawerTitle}>MENÚ</span>
+            <button
+              type='button'
+              className={styles.drawerCloseBtn}
               onClick={() => setIsMenuOpen(false)}
+              aria-label='Cerrar menú'
             >
-              <span>{link.label}</span>
-              <span style={{ color: '#304FFE' }}>→</span>
-            </Link>
-          ))}
+              ✕
+            </button>
+          </div>
+
+          <div className={styles.drawerBody}>
+            {/* VER TODO */}
+            <button
+              type='button'
+              className={styles.menuItemBtn}
+              onClick={() => handleAllClick(null)}
+            >
+              <span className={styles.menuItemLabel}>VER TODO</span>
+              <span className={styles.menuItemArrow}>→</span>
+            </button>
+
+            {/* HOMBRES */}
+            <div className={styles.accordionGroup}>
+              <button
+                type='button'
+                className={`${styles.accordionToggle} ${openSections.hombres ? styles.accordionToggleActive : ''}`}
+                onClick={() => toggleSection('hombres')}
+              >
+                <span className={styles.accordionLabel}>HOMBRES</span>
+                <span className={styles.accordionIconWrap}>
+                  {openSections.hombres ? '✕' : '+'}
+                </span>
+              </button>
+
+              {openSections.hombres && (
+                <div className={styles.accordionSubContent}>
+                  <div className={styles.brandsList}>
+                    {availableBrands.map((brand) => (
+                      <button
+                        key={`hombre-${brand}`}
+                        type='button'
+                        className={styles.brandItemBtn}
+                        onClick={() => handleBrandClick('hombre', brand)}
+                      >
+                        {brand}
+                      </button>
+                    ))}
+                    <button
+                      type='button'
+                      className={styles.brandItemBtn}
+                      onClick={() => handleAllClick('hombre')}
+                      style={{ fontWeight: 800, color: '#304FFE' }}
+                    >
+                      Ver todo Hombres →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* MUJER */}
+            <div className={styles.accordionGroup}>
+              <button
+                type='button'
+                className={`${styles.accordionToggle} ${openSections.mujer ? styles.accordionToggleActive : ''}`}
+                onClick={() => toggleSection('mujer')}
+              >
+                <span className={styles.accordionLabel}>MUJER</span>
+                <span className={styles.accordionIconWrap}>
+                  {openSections.mujer ? '✕' : '+'}
+                </span>
+              </button>
+
+              {openSections.mujer && (
+                <div className={styles.accordionSubContent}>
+                  <div className={styles.brandsList}>
+                    {availableBrands.map((brand) => (
+                      <button
+                        key={`mujer-${brand}`}
+                        type='button'
+                        className={styles.brandItemBtn}
+                        onClick={() => handleBrandClick('mujer', brand)}
+                      >
+                        {brand}
+                      </button>
+                    ))}
+                    <button
+                      type='button'
+                      className={styles.brandItemBtn}
+                      onClick={() => handleAllClick('mujer')}
+                      style={{ fontWeight: 800, color: '#304FFE' }}
+                    >
+                      Ver todo Mujer →
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* OFERTAS */}
+            <div className={styles.accordionGroup}>
+              <button
+                type='button'
+                className={`${styles.accordionToggle} ${openSections.ofertas ? styles.accordionToggleActive : ''}`}
+                onClick={() => toggleSection('ofertas')}
+              >
+                <span className={styles.accordionLabel} style={{ color: '#ff453a' }}>OFERTAS</span>
+                <span className={styles.accordionIconWrap}>
+                  {openSections.ofertas ? '✕' : '+'}
+                </span>
+              </button>
+
+              {openSections.ofertas && (
+                <div className={styles.accordionSubContent}>
+                  {/* Ofertas hombre */}
+                  <button
+                    type='button'
+                    className={styles.brandItemBtn}
+                    onClick={() => {
+                      setIsMenuOpen(false)
+                      navigate('/categorias?gender=hombre&tag=sale')
+                    }}
+                  >
+                    Ofertas Hombre
+                  </button>
+                  {/* Ofertas mujer */}
+                  <button
+                    type='button'
+                    className={styles.brandItemBtn}
+                    onClick={() => {
+                      setIsMenuOpen(false)
+                      navigate('/categorias?gender=mujer&tag=sale')
+                    }}
+                  >
+                    Ofertas Mujer
+                  </button>
+                  {/* Todas las ofertas */}
+                  <button
+                    type='button'
+                    className={styles.brandItemBtn}
+                    onClick={() => {
+                      setIsMenuOpen(false)
+                      navigate('/categorias?tag=sale')
+                    }}
+                    style={{ fontWeight: 800, color: '#ff453a' }}
+                  >
+                    Ver todas las Ofertas →
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
     </header>

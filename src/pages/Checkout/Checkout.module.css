@@ -151,6 +151,106 @@
   background: #141418;
 }
 
+.paymentOptionDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+.paymentOptionDisabled:hover {
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.addiContentWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.addiTitleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.addiOptionLogo {
+  height: 18px;
+  width: auto;
+  object-fit: contain;
+  display: inline-block;
+}
+
+.addiZeroBadge {
+  background: rgba(48, 79, 254, 0.18);
+  border: 1px solid rgba(48, 79, 254, 0.45);
+  color: #82b1ff;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.addiDiscountBadge {
+  background: rgba(0, 230, 118, 0.15);
+  border: 1px solid rgba(0, 230, 118, 0.4);
+  color: #00e676;
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+
+.addiDisclaimer {
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  background: rgba(255, 179, 0, 0.08);
+  border: 1px solid rgba(255, 179, 0, 0.28);
+  border-radius: 2px;
+  color: #ffd54f;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.addiPolicyNote {
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.65rem;
+  background: rgba(0, 230, 118, 0.07);
+  border: 1px solid rgba(0, 230, 118, 0.25);
+  border-radius: 2px;
+  color: #69f0ae;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.addiStatusBanner {
+  margin-bottom: 1.5rem;
+  padding: 0.9rem 1.2rem;
+  background: rgba(48, 79, 254, 0.12);
+  border: 1px solid rgba(48, 79, 254, 0.4);
+  border-radius: 2px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.addiAlertBanner {
+  margin-bottom: 1.5rem;
+  padding: 0.9rem 1.2rem;
+  background: rgba(255, 69, 58, 0.12);
+  border: 1px solid rgba(255, 69, 58, 0.4);
+  border-radius: 2px;
+  color: #ff8a80;
+  font-size: 0.85rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
 .paymentHeader {
   display: flex;
   align-items: center;

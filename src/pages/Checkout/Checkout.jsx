@@ -10,8 +10,9 @@
  */
 
 import { storeConfig } from '@/config/storeConfig'
+import { getAddiConfig, isAmountValidForAddi } from '@/services/addiService'
 import { validateCoupon } from '@/services/couponService'
-import { confirmBoldPayment, createOrder, OrderError } from '@/services/orderService'
+import { checkOrderStatus, confirmBoldPayment, createOrder, OrderError } from '@/services/orderService'
 import { useCartStore } from '@/stores/cartStore'
 import { buildWhatsappMessage } from '@/utils/buildWhatsappMessage'
 import { formatPrice } from '@/utils/formatPrice'
@@ -38,7 +39,9 @@ export default function Checkout () {
     phone: '',
     city: '',
     address: '',
-    notes: ''
+    notes: '',
+    email: '',
+    documentId: ''
   })
 
   const [paymentMethod, setPaymentMethod] = useState('cash-on-delivery')
@@ -50,10 +53,21 @@ export default function Checkout () {
   const [couponCodeInput, setCouponCodeInput] = useState('')
   const [couponMessage, setCouponMessage] = useState({ text: '', type: '' })
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false)
+  const [addiConfig, setAddiConfig] = useState({
+    minAmount: 50000,
+    maxAmount: 10000000,
+    isActiveAlly: true,
+    isActivePayNow: true,
+    discount: 0,
+    isDiscountVisible: false
+  })
+  const [addiReturnNotice, setAddiReturnNotice] = useState(null)
+  const [isCheckingAddiOrder, setIsCheckingAddiOrder] = useState(false)
 
-  // Detectar si el usuario regresa de la pasarela Bold con orden completada
+  // Detectar si el usuario regresa de la pasarela Bold o Addi
   useEffect(() => {
     const boldReturn = searchParams.get('bold')
+    const addiReturn = searchParams.get('addi')
     const orderId = searchParams.get('orderId')
     const boldStatus = searchParams.get('bold-status') || searchParams.get('status') || 'approved'
     const txId = searchParams.get('txId') || searchParams.get('bold-tx-id') || null
@@ -67,7 +81,6 @@ export default function Checkout () {
         isBoldPayment: true
       })
 
-      // Actualizar orden en Supabase directamente (sin requerir webhooks de Bold)
       confirmBoldPayment({ orderId, boldStatus, txId }).then((res) => {
         if (res?.order) {
           setCompletedOrder((prev) => ({
@@ -77,12 +90,93 @@ export default function Checkout () {
           }))
         }
       })
+      return
+    }
+
+    if (addiReturn && orderId) {
+      let cancelled = false
+      const urlStatus = (searchParams.get('status') || '').toLowerCase().trim()
+
+      const verifyAddiOrder = async () => {
+        setIsCheckingAddiOrder(true)
+        setAddiReturnNotice(null)
+
+        // Consultar estado en BD (con breves reintentos si sigue pending mientras llega el callback de Addi)
+        let orderData = null
+        for (let attempt = 0; attempt < 5; attempt++) {
+          if (cancelled) return
+          orderData = await checkOrderStatus(orderId)
+          const pStatus = (orderData?.latest_payment_status || orderData?.payment_status || '').toLowerCase()
+          if (pStatus && pStatus !== 'pending') break
+          if (urlStatus && urlStatus !== 'pending') break
+          await new Promise((resolve) => setTimeout(resolve, 2500))
+        }
+
+        if (cancelled) return
+        setIsCheckingAddiOrder(false)
+
+        const finalStatus = (
+          orderData?.latest_payment_status ||
+          orderData?.payment_status ||
+          urlStatus ||
+          'pending'
+        ).toLowerCase()
+
+        if (finalStatus === 'approved' || finalStatus === 'paid') {
+          clearCart()
+          setCompletedOrder({
+            orderId,
+            name: orderData?.customer_name || 'Cliente',
+            total: orderData?.total || 0,
+            isAddiPayment: true
+          })
+        } else if (finalStatus === 'rejected' || finalStatus === 'declined' || finalStatus === 'abandoned' || finalStatus === 'failed') {
+          // Regla docs/addi.md Sección 4: Para cualquier estado distinto a approved,
+          // mantener al cliente en el carrito/checkout para permitir un nuevo intento con Addi u otro medio.
+          setPaymentMethod('addi')
+          setAddiReturnNotice(
+            finalStatus === 'abandoned'
+              ? `Tu solicitud en Addi (Orden #${orderId}) no fue finalizada. Tu bolsa sigue intacta por si deseas intentar de nuevo con Addi o elegir otro método de pago.`
+              : `Tu solicitud de crédito con Addi (Orden #${orderId}) no fue aprobada (${finalStatus.toUpperCase()}). Puedes intentar nuevamente o elegir otro método de pago.`
+          )
+        } else {
+          setAddiReturnNotice(
+            `Estamos recibiendo la confirmación de Addi para tu orden #${orderId}. Si tu crédito fue aprobado, te notificaremos en breve.`
+          )
+        }
+      }
+
+      verifyAddiOrder()
+      return () => {
+        cancelled = true
+      }
     }
   }, [searchParams, clearCart])
 
   const subtotal = getSubtotal()
   const discountAmount = getDiscountAmount()
   const total = getTotal()
+
+  // Consultar el endpoint de configuración de Addi cuando cambia el total del carrito (docs/addi.md Sección 1)
+  useEffect(() => {
+    let active = true
+    if (total > 0) {
+      getAddiConfig(total).then((cfg) => {
+        if (active) setAddiConfig(cfg)
+      })
+    }
+    return () => {
+      active = false
+    }
+  }, [total])
+
+  const isAddiAllowed = isAmountValidForAddi(total, addiConfig)
+
+  useEffect(() => {
+    if (paymentMethod === 'addi' && !isAddiAllowed) {
+      setPaymentMethod('cash-on-delivery')
+    }
+  }, [paymentMethod, isAddiAllowed])
 
   const handleApplyCoupon = async (e) => {
     e.preventDefault()
@@ -133,6 +227,16 @@ export default function Checkout () {
     if (!contact.address || contact.address.trim().length < 5) {
       errs.address = 'Ingresa tu dirección completa de entrega.'
     }
+    if (paymentMethod === 'addi') {
+      const docClean = (contact.documentId || '').replace(/\D/g, '')
+      if (!docClean || docClean.length < 5 || docClean.length > 12) {
+        errs.documentId = 'Ingresa tu número de Cédula de Ciudadanía (CC) válido para pagar con Addi.'
+      }
+      const emailClean = (contact.email || '').trim()
+      if (!emailClean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailClean)) {
+        errs.email = 'Ingresa un correo electrónico válido para tu solicitud en Addi.'
+      }
+    }
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
@@ -153,9 +257,10 @@ export default function Checkout () {
     setSubmitError(null)
     setIsSubmitting(true)
 
-    // Si es Bold Checkout en línea, no abrimos WhatsApp popup
+    // Si es pasarela en línea (Bold o Addi), no abrimos WhatsApp popup
     const isBoldReal = paymentMethod === 'bold'
-    const waWindow = !isBoldReal ? window.open('', '_blank') : null
+    const isAddiReal = paymentMethod === 'addi'
+    const waWindow = (!isBoldReal && !isAddiReal) ? window.open('', '_blank') : null
 
     try {
       // 1. Crear la orden en Supabase (Edge Function: precios y stock se validan en servidor)
@@ -168,7 +273,14 @@ export default function Checkout () {
         couponCode: appliedCoupon?.code
       })
 
-      // 2. Si el método es Bold (Pagos en línea), abrir la pasarela oficial de Bold
+      // 2A. Si el método es Addi, redirigir manualmente a la URL obtenida del header Location (301)
+      // No vaciamos el carrito antes de ir a Addi para permitir reintentos si el cliente abandona o es rechazado.
+      if (isAddiReal && order.addiRedirectUrl) {
+        window.location.href = order.addiRedirectUrl
+        return
+      }
+
+      // 2B. Si el método es Bold (Pagos en línea), abrir la pasarela oficial de Bold
       if (isBoldReal && (order.boldCheckout || order.boldCheckoutUrl)) {
         clearCart()
         if (order.boldCheckout) {
@@ -247,11 +359,13 @@ export default function Checkout () {
           </p>
           <p style={{ color: '#a0a0a5', lineHeight: '1.6', maxWidth: '480px' }}>
             Gracias por tu compra, <strong>{completedOrder.name}</strong>.{' '}
-            {completedOrder.isBoldPayment
-              ? 'Hemos recibido la confirmación de tu pago en línea con Bold. Procesaremos tu envío de inmediato.'
-              : completedOrder.whatsappOpened
-                ? 'Se ha abierto una ventana de WhatsApp para coordinar la entrega directamente con nuestro equipo.'
-                : 'Toca el botón de abajo para enviarnos tu pedido por WhatsApp y coordinar la entrega.'}
+            {completedOrder.isAddiPayment
+              ? 'Tu crédito con Addi fue aprobado exitosamente. Procesaremos el envío de tus sneakers de inmediato.'
+              : completedOrder.isBoldPayment
+                ? 'Hemos recibido la confirmación de tu pago en línea con Bold. Procesaremos tu envío de inmediato.'
+                : completedOrder.whatsappOpened
+                  ? 'Se ha abierto una ventana de WhatsApp para coordinar la entrega directamente con nuestro equipo.'
+                  : 'Toca el botón de abajo para enviarnos tu pedido por WhatsApp y coordinar la entrega.'}
           </p>
           {completedOrder.whatsappUrl && (
             <a
@@ -304,7 +418,19 @@ export default function Checkout () {
   // 3. Vista Principal del Checkout
   return (
     <div className={styles.checkoutPage}>
-      <h1 className={styles.title}>FINALIZAR PEDIDO // CHECKOUT</h1>
+      <h1 className={styles.title}>FINALIZAR PEDIDO</h1>
+
+      {isCheckingAddiOrder && (
+        <div className={styles.addiStatusBanner} role='status'>
+          <span>⏳ Verificando el estado de tu solicitud con Addi...</span>
+        </div>
+      )}
+
+      {addiReturnNotice && (
+        <div className={styles.addiAlertBanner} role='alert'>
+          <span>⚠️ {addiReturnNotice}</span>
+        </div>
+      )}
 
       <div className={styles.checkoutGrid}>
         {/* Columna Izquierda: Formulario y Pago */}
@@ -385,6 +511,39 @@ export default function Checkout () {
                   onChange={(e) => handleFieldChange('notes', e.target.value)}
                 />
               </div>
+
+              {paymentMethod === 'addi' && (
+                <div className={styles.twoCols}>
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      Cédula de Ciudadanía (CC) <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type='text'
+                      inputMode='numeric'
+                      placeholder='Ej: 1020304050'
+                      className={`${styles.input} ${errors.documentId ? styles.inputError : ''}`}
+                      value={contact.documentId}
+                      onChange={(e) => handleFieldChange('documentId', e.target.value.replace(/\D/g, ''))}
+                    />
+                    {errors.documentId && <p className={styles.errorMsg}>{errors.documentId}</p>}
+                  </div>
+
+                  <div className={styles.formGroup}>
+                    <label className={styles.label}>
+                      Correo Electrónico <span className={styles.required}>*</span>
+                    </label>
+                    <input
+                      type='email'
+                      placeholder='Ej: cliente@correo.com'
+                      className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+                      value={contact.email}
+                      onChange={(e) => handleFieldChange('email', e.target.value)}
+                    />
+                    {errors.email && <p className={styles.errorMsg}>{errors.email}</p>}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -420,8 +579,59 @@ export default function Checkout () {
                 </div>
               </div>
 
-              <div>
-                <button id='addi-pay-btn' className='addi-pay-btn-md addi-pay-btn-dark' />
+              {/* Opción 2: Addi (BNPL - Compra ahora y paga después) */}
+              <div
+                className={`${styles.paymentOption} ${
+                  paymentMethod === 'addi' ? styles.paymentSelected : ''
+                } ${!isAddiAllowed ? styles.paymentOptionDisabled : ''}`}
+                aria-disabled={!isAddiAllowed}
+                onClick={() => {
+                  if (isAddiAllowed) setPaymentMethod('addi')
+                }}
+              >
+                <div className={styles.paymentHeader}>
+                  <input
+                    type='radio'
+                    name='payment'
+                    className={styles.radio}
+                    disabled={!isAddiAllowed}
+                    checked={paymentMethod === 'addi'}
+                    onChange={() => {
+                      if (isAddiAllowed) setPaymentMethod('addi')
+                    }}
+                  />
+                  <div className={styles.addiContentWrap}>
+                    <div className={styles.addiTitleRow}>
+                      <img src='/addi.png' alt='Addi' className={styles.addiOptionLogo} />
+                      <span className={styles.paymentTitle}>
+                        PAGA A CUOTAS CON ADDI
+                      </span>
+                      <span className={styles.addiZeroBadge}>0% INTERÉS</span>
+                      {addiConfig.isDiscountVisible && addiConfig.discount > 0 && (
+                        <span className={styles.addiDiscountBadge}>
+                          -{Math.round(addiConfig.discount * 100)}% DTO ADDI
+                        </span>
+                      )}
+                    </div>
+                    <div className={styles.paymentDesc}>
+                      Financia tu compra en cuotas solo con tu Cédula de Ciudadanía (CC) y WhatsApp. Sin tarjeta de crédito.
+                    </div>
+
+                    {/* Manejo de topes según docs/addi.md Sección 1: no ocultar, deshabilitar y mostrar disclaimer */}
+                    {!isAddiAllowed && (
+                      <div className={styles.addiDisclaimer}>
+                        Aplica solo para compras entre {formatPrice(addiConfig.minAmount)} y {formatPrice(addiConfig.maxAmount)} COP. Agrega más productos a tu bolsa para activar Addi.
+                      </div>
+                    )}
+
+                    {/* Descuento puramente visual según docs/addi.md Sección 1 */}
+                    {isAddiAllowed && addiConfig.isDiscountVisible && addiConfig.discount > 0 && (
+                      <div className={styles.addiPolicyNote}>
+                        ✨ Tienes un {Math.round(addiConfig.discount * 100)}% de descuento aplicable directamente en la pasarela de Addi sobre el total de {formatPrice(total)}.
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
 
               {/* Opción 2: Transferencia */}
@@ -515,9 +725,11 @@ export default function Checkout () {
           >
             {isSubmitting
               ? 'PROCESANDO ORDEN...'
-              : paymentMethod === 'bold'
-                ? 'IR A PAGAR CON BOLD →'
-                : 'FINALIZAR PEDIDO POR WHATSAPP →'}
+              : paymentMethod === 'addi'
+                ? 'CONTINUAR A ADDI (PAGO A CUOTAS) →'
+                : paymentMethod === 'bold'
+                  ? 'IR A PAGAR CON BOLD →'
+                  : 'FINALIZAR PEDIDO POR WHATSAPP →'}
           </button>
           {submitError && (
             <p role='alert' style={{ color: '#ff453a', fontSize: '0.85rem', fontWeight: 700, margin: '0.75rem 0 0' }}>

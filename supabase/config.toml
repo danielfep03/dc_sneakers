@@ -160,3 +160,12 @@ s3_secret_key = "env(S3_SECRET_KEY)"
 
 [functions.create-order]
 verify_jwt = false
+
+[functions.addi-webhook]
+verify_jwt = false
+
+[functions.order-status]
+verify_jwt = false
+
+[functions.addi-cancel]
+verify_jwt = false

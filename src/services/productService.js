@@ -20,7 +20,7 @@
 import { supabase } from '@/lib/supabaseClient'
 
 const PRODUCT_SELECT = `
-  id, legacy_id, slug, name, description, price, sale_price, is_new, created_at,
+  id, legacy_id, slug, name, gender, description, price, sale_price, is_new, created_at,
   brands ( id, name ),
   categories ( id, name ),
   product_variants (
@@ -72,6 +72,7 @@ export function mapProduct (row) {
     image: images[0] ?? null,
     images,
     isNew: row.is_new,
+    gender: row.gender ? row.gender.toLowerCase() : null,
     createdAt: row.created_at,
     sizes,
     colors

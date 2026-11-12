@@ -7,10 +7,36 @@ export default function Footer () {
   const whatsappChannelUrl = storeConfig.whatsappChannelUrl ||
     `https://wa.me/${storeConfig.whatsappNumber}?text=${encodeURIComponent('¡Hola DC SNEAKERS! Quiero unirme al canal oficial de alertas de lanzamientos.')}`
 
+  const directWhatsappUrl = `https://wa.me/${storeConfig.whatsappNumber}?text=${encodeURIComponent('¡Hola DC SNEAKERS! Tengo una consulta sobre sus productos.')}`
+
+  const followSocials = [
+    {
+      name: 'Instagram',
+      url: storeConfig.socials?.instagram || 'https://instagram.com/dc.sneakers_',
+      icon: (
+        <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='1.8' strokeLinecap='round' strokeLinejoin='round' className={styles.followIcon}>
+          <rect x='2' y='2' width='20' height='20' rx='5' ry='5' />
+          <path d='M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z' />
+          <line x1='17.5' y1='6.5' x2='17.51' y2='6.5' />
+        </svg>
+      )
+    },
+    {
+      name: 'TikTok',
+      url: storeConfig.socials?.tiktok || 'https://tiktok.com/@dc.sneakers__',
+      icon: (
+        <svg viewBox='0 0 24 24' fill='currentColor' className={styles.followIcon}>
+          <path d='M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.29 0 .58.04.86.11V9.42a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.68a6.34 6.34 0 0 0 10.82 4.49 6.26 6.26 0 0 0 1.86-4.5V8.8a8.28 8.28 0 0 0 4.91 1.6V6.95c-.34-.05-.68-.14-1-.26z' />
+        </svg>
+      )
+    }
+  ]
+
   return (
     <footer className={styles.footerContainer}>
       <div className={styles.footerInner}>
         <div className={styles.topGrid}>
+          {/* 1. Marca */}
           <div className={styles.brandCol}>
             <div className={styles.footerBrandHeader}>
               <Link to='/' style={{ textDecoration: 'none' }}>
@@ -20,22 +46,70 @@ export default function Footer () {
             <p className={styles.brandTagline}>
               Los pares que buscas para marcar tu estilo están en DC SNEAKERS Tus marcas favoritas en un solo lugar.
               <br />
-              Envíos a toda Colombia 🇨🇴
-              <br /> Cali, Colombia
+              <br /> Cali, Colombia 🇨🇴
             </p>
           </div>
 
-          <div>
-            <h4 className={styles.colTitle}>COLECCIONES</h4>
-            <ul className={styles.linksList}>
-              <li><Link to='/categorias?category=basketball' className={styles.footerLink}>BASKETBALL</Link></li>
-              <li><Link to='/categorias?category=casual' className={styles.footerLink}>CASUAL & RETRO</Link></li>
-              <li><Link to='/categorias?category=running' className={styles.footerLink}>RUNNING</Link></li>
-              <li><Link to='/categorias?category=voleibol' className={styles.footerLink}>VOLEIBOL</Link></li>
-              <li><Link to='/categorias?tag=sale' className={styles.footerLink}>OFERTAS LIMITADAS</Link></li>
-            </ul>
+          {/* 2. Información & Contacto */}
+          <div className={styles.contactCol}>
+            <div className={styles.contactList}>
+              {/* Cobertura */}
+              <div className={styles.contactItem}>
+                <div className={styles.contactIconWrap}>
+                  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' className={styles.contactIcon}>
+                    <path d='M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z' />
+                    <circle cx='12' cy='10' r='3' />
+                  </svg>
+                </div>
+                <div className={styles.contactContent}>
+                  <span className={styles.contactLabel}>COBERTURA</span>
+                  <span className={styles.contactValue}>
+                    {storeConfig.coverageText || 'Colombia — Envíos a nivel nacional'}
+                  </span>
+                </div>
+              </div>
+
+              {/* WhatsApp */}
+              <div className={styles.contactItem}>
+                <div className={styles.contactIconWrap}>
+                  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' className={styles.contactIcon}>
+                    <path d='M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z' />
+                  </svg>
+                </div>
+                <div className={styles.contactContent}>
+                  <span className={styles.contactLabel}>WHATSAPP</span>
+                  <a
+                    href={directWhatsappUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className={`${styles.contactValue} ${styles.contactValueLink}`}
+                  >
+                    {storeConfig.contactPhone || '+57 324 410 6826'}
+                  </a>
+                </div>
+              </div>
+
+              {/* Horario */}
+              <div className={styles.contactItem}>
+                <div className={styles.contactIconWrap}>
+                  <svg viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth='2' strokeLinecap='round' strokeLinejoin='round' className={styles.contactIcon}>
+                    <circle cx='12' cy='12' r='10' />
+                    <line x1='12' y1='16' x2='12' y2='12' />
+                    <line x1='12' y1='8' x2='12.01' y2='8' />
+                  </svg>
+                </div>
+                <div className={styles.contactContent}>
+                  <span className={styles.contactLabel}>HORARIO</span>
+                  <span className={styles.contactValue}>
+                    {storeConfig.scheduleText || 'Lun – Sáb: 8am – 8pm'}
+                  </span>
+                </div>
+              </div>
+            </div>
+
           </div>
 
+          {/* 3. Soporte */}
           <div>
             <h4 className={styles.colTitle}>SOPORTE</h4>
             <ul className={styles.linksList}>
@@ -46,6 +120,7 @@ export default function Footer () {
             </ul>
           </div>
 
+          {/* 4. Canal de Alertas */}
           <div>
             <h4 className={styles.colTitle}>CANAL DE ALERTAS</h4>
             <p className={styles.newsletterDesc}>
@@ -75,6 +150,24 @@ export default function Footer () {
 
         <div className={styles.bottomRow}>
           <span>© {new Date().getFullYear()} DC SNEAKERS COLOMBIA. TODOS LOS DERECHOS RESERVADOS.</span>
+
+          {/* Síguenos */}
+          <div className={styles.followBlock}>
+            <div className={styles.followIcons}>
+              {followSocials.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.url}
+                  target='_blank'
+                  rel='noopener noreferrer'
+                  className={styles.followBtn}
+                  aria-label={`Síguenos en ${social.name}`}
+                >
+                  {social.icon}
+                </a>
+              ))}
+            </div>
+          </div>
           <span>CULTURA URBANA Y ARCHIVO DE SNEAKERS // [01]</span>
         </div>
       </div>

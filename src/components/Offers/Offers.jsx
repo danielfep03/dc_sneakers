@@ -34,42 +34,55 @@ export default function Offers () {
       </div>
 
       <div className={styles.productsGrid}>
-        {offerProducts.map((product) => (
-          <Link
-            key={product.id}
-            to={`/product/${product.id}`}
-            className={styles.card}
-          >
-            <div className={styles.imageWrapper}>
-              <img
-                src={product.image}
-                alt={product.name}
-                className={styles.productImg}
-                loading='lazy'
-              />
-              <span className={styles.discountBadge}>
-                -{product.discountPercent}% DTO
-              </span>
-              <button
-                type='button'
-                className={styles.quickAddBtn}
-                onClick={(e) => handleQuickAdd(product, e)}
-                title='Añadir rápido'
-                aria-label={`Añadir ${product.name} al carrito`}
-              >
-                +
-              </button>
-            </div>
+        {offerProducts.map((product) => {
+          const firstImage = product.images?.[0] || product.image
+          const secondImage = product.images?.[1]
 
-            <div className={styles.cardFooter}>
-              <h3 className={styles.productTitle}>{product.name}</h3>
-              <div className={styles.priceRow}>
-                <span className={styles.priceCurrent}>{formatPrice(product.price)}</span>
-                <span className={styles.priceOriginal}>{formatPrice(product.originalPrice)}</span>
+          return (
+            <Link
+              key={product.id}
+              to={`/product/${product.id}`}
+              className={styles.card}
+            >
+              <div className={styles.imageWrapper}>
+                <img
+                  src={firstImage}
+                  alt={product.name}
+                  className={`${styles.productImg} ${secondImage ? styles.productImgPrimary : ''}`}
+                  loading='lazy'
+                />
+                {secondImage && (
+                  <img
+                    src={secondImage}
+                    alt={`${product.name} alternate view`}
+                    className={styles.productImgHover}
+                    loading='lazy'
+                  />
+                )}
+                <span className={styles.discountBadge}>
+                  -{product.discountPercent}% DTO
+                </span>
+                <button
+                  type='button'
+                  className={styles.quickAddBtn}
+                  onClick={(e) => handleQuickAdd(product, e)}
+                  title='Añadir rápido'
+                  aria-label={`Añadir ${product.name} al carrito`}
+                >
+                  +
+                </button>
               </div>
-            </div>
-          </Link>
-        ))}
+
+              <div className={styles.cardFooter}>
+                <h3 className={styles.productTitle}>{product.name}</h3>
+                <div className={styles.priceRow}>
+                  <span className={styles.priceCurrent}>{formatPrice(product.price)}</span>
+                  <span className={styles.priceOriginal}>{formatPrice(product.originalPrice)}</span>
+                </div>
+              </div>
+            </Link>
+          )
+        })}
       </div>
     </section>
   )

@@ -27,21 +27,46 @@ export default function SizeGuideModal () {
       </p>
 
       <div className={styles.tableWrap}>
+        <div className={styles.sectionTitle}>TALLAS PARA CABALLEROS</div>
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>COL / EU</th>
-              <th>US HOMBRE</th>
-              <th>US MUJER</th>
+              <th>CO 🇨🇴</th>
+              <th>US 🇺🇸</th>
+              <th>EUR 🇪🇸</th>
               <th>CM</th>
             </tr>
           </thead>
           <tbody>
-            {sizeGuideData.map((row) => (
-              <tr key={row.col}>
-                <td><strong>{row.col}</strong></td>
-                <td>{row.usMen}</td>
-                <td>{row.usWomen}</td>
+            {sizeGuideData.men.map((row) => (
+              <tr key={`men-${row.co}`}>
+                <td><strong>{row.co}</strong></td>
+                <td>{row.us}</td>
+                <td>{row.eur}</td>
+                <td>{row.cm} cm</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className={styles.tableWrap}>
+        <div className={styles.sectionTitle}>TALLAS PARA DAMAS</div>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>CO 🇨🇴</th>
+              <th>US 🇺🇸</th>
+              <th>EUR 🇪🇸</th>
+              <th>CM</th>
+            </tr>
+          </thead>
+          <tbody>
+            {sizeGuideData.women.map((row) => (
+              <tr key={`women-${row.co}`}>
+                <td><strong>{row.co}</strong></td>
+                <td>{row.us}</td>
+                <td>{row.eur}</td>
                 <td>{row.cm} cm</td>
               </tr>
             ))}

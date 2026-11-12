@@ -18,10 +18,13 @@ export class OrderError extends Error {
 
 const ERROR_MESSAGES = {
   out_of_stock: 'Una de las tallas que elegiste se agotó mientras comprabas. Revisa tu bolsa e intenta de nuevo.',
-  invalid_contact: 'Revisa tus datos de contacto e intenta de nuevo.',
+  invalid_contact: 'Revisa tus datos de contacto (incluyendo Cédula y correo si pagas con Addi) e intenta de nuevo.',
   invalid_items: 'Hay un problema con los productos de tu bolsa. Vuelve a agregarlos e intenta de nuevo.',
   variant_not_found: 'Uno de los productos de tu bolsa ya no está disponible. Vuelve a agregarlo desde el catálogo.',
-  invalid_payment_method: 'Selecciona un método de pago válido.'
+  invalid_payment_method: 'Selecciona un método de pago válido.',
+  addi_auth_failed: 'No fue posible autenticar con Addi en este momento. Por favor intenta nuevamente o elige otro método de pago.',
+  addi_application_failed: 'Addi no pudo iniciar tu solicitud de crédito. Verifica tus datos o intenta con otro método de pago.',
+  addi_missing_credentials: 'La pasarela de Addi aún no tiene credenciales configuradas en el servidor.'
 }
 
 const GENERIC_MESSAGE = 'Hubo un inconveniente al generar tu orden. Por favor intenta nuevamente.'
@@ -80,6 +83,23 @@ export async function confirmBoldPayment ({ orderId, boldStatus = 'approved', tx
     return data
   } catch (err) {
     console.warn('Aviso: no se pudo confirmar la orden con confirm-bold-payment:', err)
+    return null
+  }
+}
+
+/**
+ * Consulta el estado actual de una orden (usado al retornar desde Addi)
+ * @param {string} orderId
+ */
+export async function checkOrderStatus (orderId) {
+  try {
+    const { data, error } = await supabase.functions.invoke('order-status', {
+      body: { orderId }
+    })
+    if (error) throw error
+    return data?.order || null
+  } catch (err) {
+    console.warn('Aviso: no se pudo consultar el estado de la orden:', err)
     return null
   }
 }

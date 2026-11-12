@@ -1,214 +1,141 @@
 .heroSection {
   position: relative;
   width: 100%;
-  min-height: clamp(560px, 82vh, 760px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   background-color: #08080a;
-  background-image:
-    linear-gradient(to right, #08080a 0%, rgba(8, 8, 10, 0.95) 35%, rgba(8, 8, 10, 0.45) 55%, transparent 75%),
-    url('/hero_bg.jpg');
-  background-size: contain;
-  background-position: right center;
-  background-repeat: no-repeat;
   overflow: hidden;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
 }
 
-.heroContent {
-  max-width: 1440px;
-  width: 100%;
-  margin: 0 auto;
-  padding: 4.5rem 2.5rem 2rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.carouselContainer {
   position: relative;
-  z-index: 2;
-  box-sizing: border-box;
-  flex: 1;
-}
-
-.leftColumn {
-  max-width: 620px;
-}
-
-.scriptBadge {
-  font-family: var(--font-script, 'Road Rage', 'Permanent Marker', cursive, sans-serif);
-  color: #e2b842;
-  font-size: clamp(1.4rem, 2.8vw, 1.95rem);
-  letter-spacing: 0.1em;
-  margin: 0 0 0.8rem 0;
-  text-transform: uppercase;
-  transform: rotate(-1.5deg);
-  display: inline-block;
-}
-
-.heroTitle {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(4.5rem, 9.5vw, 8rem);
-  line-height: 0.88;
-  color: #ffffff;
-  letter-spacing: 0.02em;
-  margin: 0 0 1.5rem 0;
-  text-transform: uppercase;
-}
-
-.voltDot {
-  color: #304FFE;
-  display: inline-block;
-  margin-left: 4px;
-  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  font-size: 0.7em;
-  line-height: 1;
-}
-
-.heroSubtitle {
-  font-family: 'Space Grotesk', sans-serif;
-  color: #c4c4c9;
-  font-size: 1.05rem;
-  line-height: 1.5;
-  letter-spacing: 0.02em;
-  max-width: 440px;
-  margin: 0 0 2rem 0;
-}
-
-.ctaRow {
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  flex-wrap: wrap;
-  margin: 0 0 1.5rem 0;
-}
-
-.ctaBtn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.8rem;
-  background-color: #304FFE;
-  color: #ffffff;
-  font-family: 'Space Grotesk', sans-serif;
-  font-weight: 800;
-  font-size: 0.88rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 0.95rem 1.8rem;
-  text-decoration: none;
-  border: none;
-  border-radius: 2px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 0 25px rgba(48, 79, 254, 0.25);
-  flex-shrink: 0;
-}
-
-.ctaBtn:hover {
-  background-color: #536DFE;
-  color: #ffffff;
-  transform: translateY(-2px);
-  box-shadow: 0 0 35px rgba(48, 79, 254, 0.45);
-}
-
-.ctaArrow {
-  font-size: 1.1rem;
-  font-weight: 900;
-  transition: transform 0.2s ease;
-}
-
-.ctaBtn:hover .ctaArrow {
-  transform: translateX(4px);
-}
-
-.dropCard {
-  background: rgba(18, 18, 22, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding: 0.5rem 0.85rem 0.5rem 0.6rem;
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  max-width: 280px;
-  border-radius: 4px;
-  transition: border-color 0.2s ease, transform 0.2s ease;
-}
-
-.dropCard:hover {
-  border-color: #304FFE;
-  transform: translateY(-1px);
-}
-
-.dropThumb {
-  width: 44px;
-  height: 44px;
-  object-fit: cover;
-  border-radius: 3px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.dropInfo {
-  flex: 1;
-  min-width: 0;
-}
-
-.dropTag {
-  font-size: 0.62rem;
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  color: #304FFE;
-  text-transform: uppercase;
-  display: block;
-}
-
-.dropTitle {
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.78rem;
-  font-weight: 700;
-  color: #ffffff;
-  margin: 2px 0 0 0;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  white-space: nowrap;
+  width: 100%;
   overflow: hidden;
-  text-overflow: ellipsis;
+  touch-action: pan-y;
+  background-color: #0d0d10;
 }
 
-.dropAddBtn {
-  width: 30px;
-  height: 30px;
-  background: #304FFE;
-  border: none;
-  border-radius: 3px;
+.slidesTrack {
+  display: flex;
+  width: 100%;
+  transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: transform;
+}
+
+.slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  max-width: 100%;
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  outline: none;
+}
+
+.pictureWrapper {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.bannerImage {
+  display: block;
+  width: 100%;
+  height: clamp(480px, 68vh, 760px);
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.5s ease;
+}
+
+.slide:hover .bannerImage {
+  transform: scale(1.015);
+}
+
+/* Botones de navegación */
+.navBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: rgba(13, 13, 16, 0.65);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   color: #ffffff;
-  font-weight: 900;
-  font-size: 1.1rem;
+  font-size: 1.8rem;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  flex-shrink: 0;
+  z-index: 10;
+  transition: all 0.25s ease;
+  user-select: none;
+  opacity: 0;
 }
 
-.dropAddBtn:hover {
-  background: #536DFE;
-  transform: scale(1.05);
+.carouselContainer:hover .navBtn {
+  opacity: 1;
 }
 
-.scrollIndicator {
-  display: inline-flex;
+.prevBtn {
+  left: 1.5rem;
+  padding-bottom: 3px;
+}
+
+.nextBtn {
+  right: 1.5rem;
+  padding-bottom: 3px;
+}
+
+.navBtn:hover {
+  background: #304FFE;
+  border-color: #304FFE;
+  box-shadow: 0 0 20px rgba(48, 79, 254, 0.4);
+  transform: translateY(-50%) scale(1.08);
+}
+
+/* Indicadores / Dots */
+.dotsContainer {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-family: 'Space Grotesk', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: #8e8e93;
-  text-transform: uppercase;
-  margin-top: 1rem;
+  gap: 0.65rem;
+  z-index: 10;
+  padding: 0.4rem 0.8rem;
+  background: rgba(8, 8, 10, 0.5);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.activeDot {
+  width: 26px;
+  border-radius: 10px;
+  background: #304FFE;
+  box-shadow: 0 0 10px rgba(48, 79, 254, 0.6);
+}
+
+/* Marquee Ticker inferior */
 .bottomTicker {
   width: 100%;
   background: #000000;
@@ -226,6 +153,7 @@
 }
 
 .tickerItem {
+  font-family: 'Space Grotesk', -apple-system, sans-serif;
   font-size: 0.75rem;
   font-weight: 800;
   letter-spacing: 0.14em;
@@ -247,42 +175,38 @@
   100% { transform: translateX(-50%); }
 }
 
-@media (max-width: 900px) {
-  .heroSection {
-    min-height: auto;
-    background-size: cover;
-    background-position: 78% center;
-    background-image:
-      linear-gradient(to bottom, rgba(8, 8, 10, 0.92) 0%, rgba(8, 8, 10, 0.72) 45%, #08080a 100%),
-      url('/hero_bg.jpg');
-    padding-bottom: 1.5rem;
+@media (max-width: 768px) {
+  .bannerImage {
+    height: clamp(380px, 80vw, 520px);
+    aspect-ratio: 4 / 5;
+    object-position: center;
   }
 
-  .heroContent {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 3rem 1.25rem 1.5rem;
-    gap: 2rem;
+  .navBtn {
+    display: none;
   }
 
-  .ctaRow {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    width: 100%;
+  .dotsContainer {
+    bottom: 1rem;
+    padding: 0.35rem 0.65rem;
+    gap: 0.5rem;
   }
 
-  .ctaBtn {
-    width: 100%;
-    justify-content: center;
+  .dot {
+    width: 7px;
+    height: 7px;
   }
 
-  .dropCard {
-    width: 100%;
-    max-width: 100%;
+  .activeDot {
+    width: 20px;
   }
 
-  .scrollIndicator {
-    margin-top: 1rem;
+  .tickerItem {
+    font-size: 0.7rem;
+    gap: 1.4rem;
+  }
+
+  .tickerTrack {
+    gap: 1.8rem;
   }
 }

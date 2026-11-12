@@ -23,8 +23,13 @@ export const storeConfig = {
     accountHolder: 'DC SNEAKERS S.A.S.',
     nit: '901.XXX.XXX-X'
   },
+  coverageText: 'Colombia — Envíos a nivel nacional',
+  scheduleText: 'Lun – Sáb: 8am – 8pm',
+  contactPhone: '+57 300 862 5143',
   socials: {
-    instagram: 'https://instagram.com/dc_sneakers',
-    tiktok: 'https://tiktok.com/@dc_sneakers'
+    instagram: 'https://instagram.com/dc.sneakers_',
+    tiktok: 'https://tiktok.com/@dc.sneakers__',
+    facebook: 'https://facebook.com',
+    x: 'https://x.com'
   }
 }

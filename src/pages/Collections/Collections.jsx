@@ -81,7 +81,7 @@ export default function Collections () {
     if (cat) setSelectedCategory(normalizeCategory(cat))
     if (brand) setSelectedBrands([brand])
     if (tag === 'sale') setOnlyOffers(true)
-    if (gender) setSelectedGender(gender.toLowerCase())
+    setSelectedGender(gender ? gender.toLowerCase() : null)
     setSearchTerm(q || '')
   }, [searchParams])
 
@@ -109,10 +109,15 @@ export default function Collections () {
     }
 
     // 4. Filtro por Género
-    if (selectedGender === 'hombre') {
-      list = list.filter((p) => p.sizes.some((s) => s >= 39))
-    } else if (selectedGender === 'mujer') {
-      list = list.filter((p) => p.sizes.some((s) => s <= 40))
+    if (selectedGender) {
+      list = list.filter((p) => {
+        if (p.gender) {
+          return p.gender === selectedGender || p.gender === 'unisex'
+        }
+        if (selectedGender === 'hombre') return p.sizes.some((s) => s >= 39)
+        if (selectedGender === 'mujer') return p.sizes.some((s) => s <= 40)
+        return true
+      })
     }
 
     // 5. Filtro por Ofertas (productos con precio de oferta real)
@@ -175,6 +180,17 @@ export default function Collections () {
     setSearchParams(nextParams)
   }
 
+  const handleGenderChange = (gender) => {
+    setSelectedGender(gender)
+    const nextParams = new URLSearchParams(searchParams)
+    if (gender) {
+      nextParams.set('gender', gender)
+    } else {
+      nextParams.delete('gender')
+    }
+    setSearchParams(nextParams)
+  }
+
   const handleQuickAdd = (product, e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -207,6 +223,27 @@ export default function Collections () {
           checked={onlyOffers}
           onChange={(e) => setOnlyOffers(e.target.checked)}
         />
+      </div>
+
+      {/* Género */}
+      <div className={styles.filterGroup}>
+        <h4 className={styles.groupTitle}>Género</h4>
+        {[
+          { id: null, label: 'TODOS' },
+          { id: 'hombre', label: 'HOMBRE' },
+          { id: 'mujer', label: 'MUJER' }
+        ].map((item) => (
+          <label key={item.label} className={styles.checkboxItem}>
+            <input
+              type='radio'
+              name='gender-radio'
+              className={styles.checkbox}
+              checked={item.id === null ? selectedGender === null : selectedGender === item.id}
+              onChange={() => handleGenderChange(item.id)}
+            />
+            <span>{item.label}</span>
+          </label>
+        ))}
       </div>
 
       {/* Marcas */}
@@ -278,7 +315,11 @@ export default function Collections () {
       <header className={styles.pageHeader}>
         <div>
           <h1 className={styles.pageTitle}>
-            {searchTerm.trim() ? `BÚSQUEDA: "${searchTerm.trim().toUpperCase()}"` : 'CATÁLOGO DE SNEAKERS'}
+            {searchTerm.trim()
+              ? `BÚSQUEDA: "${searchTerm.trim().toUpperCase()}"`
+              : selectedGender
+                ? `SNEAKERS PARA ${selectedGender.toUpperCase()}`
+                : 'CATÁLOGO DE SNEAKERS'}
           </h1>
         </div>
         {/* <span className={styles.resultsCount}>
@@ -311,7 +352,7 @@ export default function Collections () {
               <button
                 type='button'
                 className={styles.chipRemoveBtn}
-                onClick={() => setSelectedGender(null)}
+                onClick={() => handleGenderChange(null)}
               >
                 ✕
               </button>
@@ -464,36 +505,49 @@ export default function Collections () {
                   )
                 : (
                   <div className={styles.grid}>
-                    {filteredProducts.map((product) => (
-                      <Link
-                        key={product.id}
-                        to={`/product/${product.id}`}
-                        className={styles.card}
-                      >
-                        <div className={styles.imageWrap}>
-                          <img
-                            src={product.image}
-                            alt={product.name}
-                            className={styles.productImg}
-                            loading='lazy'
-                          />
-                          <span className={styles.brandBadge}>{product.brand}</span>
-                          <button
-                            type='button'
-                            className={styles.quickAddBtn}
-                            onClick={(e) => handleQuickAdd(product, e)}
-                            title='Añadir al carrito'
-                            aria-label={`Añadir ${product.name}`}
-                          >
-                            +
-                          </button>
-                        </div>
-                        <div className={styles.cardInfo}>
-                          <h3 className={styles.productName}>{product.name}</h3>
-                          <span className={styles.price}>{formatPrice(product.price)}</span>
-                        </div>
-                      </Link>
-                    ))}
+                    {filteredProducts.map((product) => {
+                      const firstImage = product.images?.[0] || product.image
+                      const secondImage = product.images?.[1]
+
+                      return (
+                        <Link
+                          key={product.id}
+                          to={`/product/${product.id}`}
+                          className={styles.card}
+                        >
+                          <div className={styles.imageWrap}>
+                            <img
+                              src={firstImage}
+                              alt={product.name}
+                              className={`${styles.productImg} ${secondImage ? styles.productImgPrimary : ''}`}
+                              loading='lazy'
+                            />
+                            {secondImage && (
+                              <img
+                                src={secondImage}
+                                alt={`${product.name} vista alternativa`}
+                                className={styles.productImgHover}
+                                loading='lazy'
+                              />
+                            )}
+                            <span className={styles.brandBadge}>{product.brand}</span>
+                            <button
+                              type='button'
+                              className={styles.quickAddBtn}
+                              onClick={(e) => handleQuickAdd(product, e)}
+                              title='Añadir al carrito'
+                              aria-label={`Añadir ${product.name}`}
+                            >
+                              +
+                            </button>
+                          </div>
+                          <div className={styles.cardInfo}>
+                            <h3 className={styles.productName}>{product.name}</h3>
+                            <span className={styles.price}>{formatPrice(product.price)}</span>
+                          </div>
+                        </Link>
+                      )
+                    })}
                   </div>
                   )}
         </div>

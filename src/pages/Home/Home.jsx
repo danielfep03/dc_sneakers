@@ -6,6 +6,7 @@ import Hero from '@/components/Hero/Hero'
 import Offers from '@/components/Offers/Offers'
 import OutfitLookbook from '@/components/OutfitLookbook/OutfitLookbook'
 import StoreBanner from '@/components/StoreBanner/StoreBanner'
+import TrustBadges from '@/components/TrustBadges/TrustBadges'
 import styles from './Home.module.css'
 
 export default function Home () {
@@ -26,6 +27,7 @@ export default function Home () {
     <div className={styles.homeContainer}>
       <Hero />
       <GenderCategories />
+      <TrustBadges />
       <Offers />
       <CultureBanner />
       <StoreBanner />
