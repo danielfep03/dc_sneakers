@@ -169,3 +169,6 @@ verify_jwt = false
 
 [functions.addi-cancel]
 verify_jwt = false
+
+[functions.kapso-whatsapp]
+verify_jwt = false

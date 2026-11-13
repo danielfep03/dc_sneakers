@@ -344,6 +344,16 @@ Deno.serve(async (req) => {
         p_order_id: data.orderId,
         p_payment_status: 'failed'
       })
+      await fetch(`${supabaseUrl}/functions/v1/kapso-whatsapp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'notify_gateway_failure',
+          orderId: data.orderId,
+          provider: 'addi',
+          status: `http_${appRes.status}`
+        })
+      }).catch(() => {})
       return json({ code: 'addi_application_failed', status: appRes.status, details: errBody }, 502)
     } catch (reqErr) {
       console.error('Error invocando /v1/online-applications de Addi:', reqErr)
@@ -354,6 +364,17 @@ Deno.serve(async (req) => {
       return json({ code: 'addi_application_failed' }, 502)
     }
   }
+
+  // Si es contraentrega o transferencia, marcar cualquier borrador de checkout como convertido
+  await fetch(`${supabaseUrl}/functions/v1/kapso-whatsapp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'mark_converted',
+      orderId: data.orderId,
+      phone: contact.phone
+    })
+  }).catch(() => {})
 
   return json(data, 201)
 })

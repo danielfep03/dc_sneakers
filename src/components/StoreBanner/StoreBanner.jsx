@@ -28,9 +28,8 @@ export default function StoreBanner () {
         </div>
 
         <div className={styles.textSide}>
-          <span className={styles.tagline}>Nuestro punto Física</span>
           <h2 className={styles.storeTitle}>
-            NUESTRO SHOWROOM & SEDE PRINCIPAL
+            NUESTRO PUNTO FÍSICO
           </h2>
 
           <p className={styles.storeDescription}>

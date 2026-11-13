@@ -1,11 +1,13 @@
 import { storeConfig } from '@/config/storeConfig'
+import { useUIStore } from '@/stores/uiStore'
 import { Link } from 'react-router-dom'
 import DcLogo from '../common/DcLogo'
 import styles from './Footer.module.css'
 
 export default function Footer () {
+  const openSizeGuide = useUIStore((state) => state.openSizeGuide)
   const whatsappChannelUrl = storeConfig.whatsappChannelUrl ||
-    `https://wa.me/${storeConfig.whatsappNumber}?text=${encodeURIComponent('¡Hola DC SNEAKERS! Quiero unirme al canal oficial de alertas de lanzamientos.')}`
+    `https://wa.me/${storeConfig.whatsappNumber}?text=${encodeURIComponent('¡Hola DC SNEAKERS! Vengo de su Pagina Web y quiero atencion personalizada.')}`
 
   const directWhatsappUrl = `https://wa.me/${storeConfig.whatsappNumber}?text=${encodeURIComponent('¡Hola DC SNEAKERS! Tengo una consulta sobre sus productos.')}`
 
@@ -115,7 +117,15 @@ export default function Footer () {
             <ul className={styles.linksList}>
               <li><Link to='/checkout' className={styles.footerLink}>Estado del Pedido</Link></li>
               <li><span className={styles.footerLink}>Envíos Contraentrega</span></li>
-              <li><span className={styles.footerLink}>Guía de Tallas EU</span></li>
+              <li>
+                <button
+                  type='button'
+                  className={styles.footerLink}
+                  onClick={openSizeGuide}
+                >
+                  Guía de Tallas EU
+                </button>
+              </li>
               <li><span className={styles.footerLink}>Garantía de 30 Días</span></li>
             </ul>
           </div>
@@ -141,8 +151,7 @@ export default function Footer () {
                   fill='currentColor'
                 />
               </svg>
-              <span>UNIRME AL CANAL</span>
-              <span className={styles.btnArrow}>→</span>
+              <span className={styles.btnArrow}>Escríbenos</span>
             </a>
             <span className={styles.channelBadge}>DROPS EXCLUSIVOS & RESTOCKS</span>
           </div>

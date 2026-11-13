@@ -1,9 +1,11 @@
+import { Analytics } from '@vercel/analytics/react'
 import { Outlet } from 'react-router-dom'
 
 import CartDrawer from '@/components/CartDrawer/CartDrawer'
 import DiscountPopup from '@/components/DiscountPopup/DiscountPopup'
 import Footer from '@/components/Footer/Footer'
 import Header from '@/components/Header/Header'
+import SizeGuideModal from '@/components/product/SizeGuideModal'
 import SalesNotificationToast from '@/components/SalesNotificationToast/SalesNotificationToast'
 import WhatsAppButton from '@/components/WhatsAppButton/WhatsAppButton'
 
@@ -23,6 +25,8 @@ export default function Layout () {
       </div>
       <WhatsAppButton />
       <DiscountPopup />
+      <SizeGuideModal />
+      <Analytics />
     </>
   )
 }

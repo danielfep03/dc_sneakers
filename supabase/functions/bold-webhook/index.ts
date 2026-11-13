@@ -116,5 +116,31 @@ Deno.serve(async (req) => {
       }
     ])
 
+  // 3. Si Bold fue rechazado o falló, restaurar stock y enviar mensaje de asesoría por WhatsApp (Kapso)
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+  if (paymentStatus === 'paid') {
+    await fetch(`${supabaseUrl}/functions/v1/kapso-whatsapp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'mark_converted', orderId })
+    }).catch(() => {})
+  } else if (status === 'REJECTED' || status === 'FAILED' || status === 'VOIDED') {
+    await supabase.rpc('restore_order_stock_if_cancelled', {
+      p_order_id: orderId,
+      p_payment_status: 'failed'
+    })
+
+    await fetch(`${supabaseUrl}/functions/v1/kapso-whatsapp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'notify_gateway_failure',
+        orderId,
+        provider: 'bold',
+        status: status.toLowerCase()
+      })
+    }).catch((err) => console.warn('Aviso al invocar kapso-whatsapp desde bold-webhook:', err))
+  }
+
   return json({ code: 'webhook_processed', orderId, status: paymentStatus }, 200)
 })

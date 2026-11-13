@@ -100,6 +100,13 @@ Deno.serve(async (req) => {
           note: `Crédito aprobado en Addi (applicationId: ${applicationId || 'N/A'})`
         }
       ])
+
+    // Marcar posible carrito abandonado como convertido
+    await fetch(`${Deno.env.get('SUPABASE_URL')!}/functions/v1/kapso-whatsapp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'mark_converted', orderId })
+    }).catch(() => {})
   } else if (rawStatus === 'rejected' || rawStatus === 'declined' || rawStatus === 'abandoned') {
     // Restaurar stock de forma atómica e idempotente y marcar orden como cancelada/fallida
     const { error: restoreErr } = await supabase.rpc('restore_order_stock_if_cancelled', {
@@ -111,6 +118,18 @@ Deno.serve(async (req) => {
       console.error('Error restaurando stock desde Addi Webhook:', restoreErr)
       return json({ code: 'db_restore_error' }, 500)
     }
+
+    // Disparar mensaje de asesoría por WhatsApp vía Kapso cuando Addi rechaza o se abandona
+    await fetch(`${Deno.env.get('SUPABASE_URL')!}/functions/v1/kapso-whatsapp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'notify_gateway_failure',
+        orderId,
+        provider: 'addi',
+        status: rawStatus
+      })
+    }).catch((err) => console.warn('Aviso al invocar kapso-whatsapp desde addi-webhook:', err))
   }
 
   // Registrar el resultado en la tabla payments

@@ -11,6 +11,7 @@
 
 import { storeConfig } from '@/config/storeConfig'
 import { getAddiConfig, isAmountValidForAddi } from '@/services/addiService'
+import { markCheckoutConverted, saveCheckoutDraft } from '@/services/checkoutRecoveryService'
 import { validateCoupon } from '@/services/couponService'
 import { checkOrderStatus, confirmBoldPayment, createOrder, OrderError } from '@/services/orderService'
 import { useCartStore } from '@/stores/cartStore'
@@ -73,7 +74,20 @@ export default function Checkout () {
     const txId = searchParams.get('txId') || searchParams.get('bold-tx-id') || null
 
     if (boldReturn && orderId) {
+      const normalizedBoldStatus = String(boldStatus || 'approved').toLowerCase().trim()
+      const isBoldRejected = ['rejected', 'failed', 'voided', 'declined'].includes(normalizedBoldStatus)
+
+      if (isBoldRejected) {
+        setPaymentMethod('bold')
+        setAddiReturnNotice(
+          `Tu pago en línea con Bold (Orden #${orderId}) no pudo completarse (${normalizedBoldStatus.toUpperCase()}). Tu bolsa sigue intacta para que intentes nuevamente o elijas otro método de pago.`
+        )
+        confirmBoldPayment({ orderId, boldStatus, txId })
+        return
+      }
+
       clearCart()
+      markCheckoutConverted({ orderId })
       setCompletedOrder({
         orderId,
         name: 'Cliente',
@@ -124,6 +138,7 @@ export default function Checkout () {
 
         if (finalStatus === 'approved' || finalStatus === 'paid') {
           clearCart()
+          markCheckoutConverted({ orderId })
           setCompletedOrder({
             orderId,
             name: orderData?.customer_name || 'Cliente',
@@ -177,6 +192,31 @@ export default function Checkout () {
       setPaymentMethod('cash-on-delivery')
     }
   }, [paymentMethod, isAddiAllowed])
+
+  // Guardar borrador de checkout (con debounce de 2s) para asesoría por WhatsApp vía Kapso si abandona
+  useEffect(() => {
+    if (completedOrder || cart.length === 0) return
+    const nameClean = (contact.name || '').trim()
+    const phoneDigits = (contact.phone || '').replace(/\D/g, '')
+    if (nameClean.length < 3 || phoneDigits.length < 10) return
+
+    const timer = setTimeout(() => {
+      saveCheckoutDraft({
+        contact,
+        cart,
+        paymentMethod,
+        total
+      })
+    }, 2000)
+
+    return () => clearTimeout(timer)
+  }, [
+    contact,
+    cart,
+    paymentMethod,
+    total,
+    completedOrder
+  ])
 
   const handleApplyCoupon = async (e) => {
     e.preventDefault()
@@ -324,6 +364,7 @@ export default function Checkout () {
       if (waWindow) waWindow.location.href = whatsappUrl
 
       // 4. Guardar estado completado y vaciar carrito
+      markCheckoutConverted({ orderId: order.orderId, phone: contact.phone })
       setCompletedOrder({
         orderId: order.orderId,
         name: contact.name,

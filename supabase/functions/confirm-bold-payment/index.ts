@@ -73,6 +73,31 @@ Deno.serve(async (req) => {
       }
     ])
 
+  const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+  if (isApproved) {
+    await fetch(`${supabaseUrl}/functions/v1/kapso-whatsapp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'mark_converted', orderId, phone: updatedOrder.customer_phone })
+    }).catch(() => {})
+  } else {
+    await supabase.rpc('restore_order_stock_if_cancelled', {
+      p_order_id: orderId,
+      p_payment_status: 'failed'
+    })
+
+    await fetch(`${supabaseUrl}/functions/v1/kapso-whatsapp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'notify_gateway_failure',
+        orderId,
+        provider: 'bold',
+        status
+      })
+    }).catch((err) => console.warn('Aviso al invocar kapso-whatsapp desde confirm-bold-payment:', err))
+  }
+
   return json({
     code: 'order_confirmed',
     order: updatedOrder

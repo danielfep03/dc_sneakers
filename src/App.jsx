@@ -1,5 +1,6 @@
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { lazy, Suspense } from 'react'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import Layout from './components/Layout/Layout'
 
 const Home = lazy(() => import('./pages/Home/Home'))
@@ -58,7 +59,10 @@ function App () {
   ])
 
   return (
-    <RouterProvider router={router} />
+    <>
+      <Analytics />
+      <RouterProvider router={router} />
+    </>
   )
 }
 

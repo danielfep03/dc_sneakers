@@ -10,7 +10,6 @@
  * - Copys 100% en español.
  */
 
-import SizeGuideModal from '@/components/product/SizeGuideModal'
 import { getProductBySlug } from '@/services/productService'
 import { useCartStore } from '@/stores/cartStore'
 import { useUIStore } from '@/stores/uiStore'
@@ -68,19 +67,10 @@ export default function Product () {
     setSelectedImage(selectedColor.image ?? product?.image ?? null)
   }, [selectedColor, product])
 
-  // Imágenes de galería: las de la variante seleccionada
-  // (si solo tiene una, se completan con imágenes secundarias de prueba)
+  // Imágenes de galería: únicamente las propias de la variante o del producto
   const galleryImages = useMemo(() => {
     const own = selectedColor?.images?.length ? selectedColor.images : [product?.image]
-    return [
-      ...own,
-      ...(own.length < 2
-        ? [
-            'https://images.unsplash.com/photo-1552346154-21d32810aba3?auto=format&fit=crop&w=600&q=80',
-            'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=600&q=80'
-          ]
-        : [])
-    ].filter(Boolean)
+    return own.filter(Boolean)
   }, [selectedColor, product])
 
   // Efecto de espectadores en vivo dinámicos (cambia cada 4s)
@@ -290,9 +280,6 @@ export default function Product () {
           </div>
         </div>
       </div>
-
-      {/* Modal Oficial de Guía de Tallas */}
-      <SizeGuideModal />
     </div>
   )
 }
