@@ -609,6 +609,235 @@
   margin: 0;
 }
 
+/* Pantallas estructuradas de Verificación de Estado de Transacción (Bold / Addi / Checkout) */
+.statusCard {
+  text-align: center;
+  padding: 3.2rem 2.2rem;
+  background: #111114;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 4px;
+  max-width: 640px;
+  margin: 1rem auto 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.15rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.55);
+}
+
+.statusCardApproved {
+  border-color: rgba(37, 211, 102, 0.45);
+  background: linear-gradient(180deg, rgba(37, 211, 102, 0.06) 0%, #111114 45%);
+}
+
+.statusCardRejected {
+  border-color: rgba(255, 69, 58, 0.5);
+  background: linear-gradient(180deg, rgba(255, 69, 58, 0.07) 0%, #111114 45%);
+}
+
+.statusCardPending {
+  border-color: rgba(255, 179, 0, 0.45);
+  background: linear-gradient(180deg, rgba(255, 179, 0, 0.06) 0%, #111114 45%);
+}
+
+.statusCardVerifying {
+  border-color: rgba(48, 79, 254, 0.45);
+  background: linear-gradient(180deg, rgba(48, 79, 254, 0.08) 0%, #111114 45%);
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 0.35rem 0.85rem;
+  border-radius: 2px;
+}
+
+.badgeApproved {
+  background: rgba(37, 211, 102, 0.14);
+  color: #25D366;
+  border: 1px solid rgba(37, 211, 102, 0.4);
+}
+
+.badgeRejected {
+  background: rgba(255, 69, 58, 0.14);
+  color: #ff453a;
+  border: 1px solid rgba(255, 69, 58, 0.45);
+}
+
+.badgePending {
+  background: rgba(255, 179, 0, 0.14);
+  color: #ffca28;
+  border: 1px solid rgba(255, 179, 0, 0.4);
+}
+
+.badgeVerifying {
+  background: rgba(48, 79, 254, 0.16);
+  color: #829bff;
+  border: 1px solid rgba(48, 79, 254, 0.45);
+}
+
+.statusSpinner {
+  width: 52px;
+  height: 52px;
+  border: 3px solid rgba(48, 79, 254, 0.2);
+  border-top-color: #304FFE;
+  border-radius: 50%;
+  animation: statusSpin 0.85s linear infinite;
+  margin: 0.4rem 0;
+}
+
+@keyframes statusSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.statusIconCircle {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.iconApproved {
+  background: rgba(37, 211, 102, 0.15);
+  color: #25D366;
+  border: 2px solid rgba(37, 211, 102, 0.5);
+}
+
+.iconRejected {
+  background: rgba(255, 69, 58, 0.15);
+  color: #ff453a;
+  border: 2px solid rgba(255, 69, 58, 0.5);
+}
+
+.iconPending {
+  background: rgba(255, 179, 0, 0.15);
+  color: #ffca28;
+  border: 2px solid rgba(255, 179, 0, 0.5);
+}
+
+.statusTitle {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.1rem, 4.5vw, 2.8rem);
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  margin: 0;
+  line-height: 1.05;
+}
+
+.statusDesc {
+  color: #b0b0b8;
+  font-size: 0.92rem;
+  line-height: 1.6;
+  max-width: 500px;
+  margin: 0;
+}
+
+.statusMetaBox {
+  width: 100%;
+  max-width: 460px;
+  background: #0b0b0d;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 3px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  text-align: left;
+}
+
+.statusMetaRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.82rem;
+  color: #8e8e93;
+}
+
+.statusMetaRow strong {
+  color: #ffffff;
+  font-weight: 800;
+}
+
+.statusNoticeBox {
+  width: 100%;
+  max-width: 460px;
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 3px solid #304FFE;
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+  color: #d0d0d7;
+  text-align: left;
+  line-height: 1.5;
+}
+
+.statusActions {
+  width: 100%;
+  max-width: 460px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.4rem;
+}
+
+.secondaryBtn {
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.25rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.secondaryBtn:hover {
+  border-color: #ffffff;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.whatsappSupportBtn {
+  background: rgba(37, 211, 102, 0.12);
+  color: #25D366;
+  border: 1px solid rgba(37, 211, 102, 0.4);
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 800;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.95rem 1.25rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.whatsappSupportBtn:hover {
+  background: rgba(37, 211, 102, 0.22);
+  border-color: #25D366;
+}
+
 @media (max-width: 850px) {
   .checkoutGrid {
     grid-template-columns: 1fr;

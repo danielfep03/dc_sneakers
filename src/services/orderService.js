@@ -33,7 +33,7 @@ const GENERIC_MESSAGE = 'Hubo un inconveniente al generar tu orden. Por favor in
  * @param {Object} params
  * @param {Object} params.contact - { name, phone, city, address, notes }
  * @param {Array}  params.cart - items del carrito: [{ product, size, color: { variantId }, quantity }]
- * @param {string} params.paymentMethod - "transfer" | "cash-on-delivery" | "bold-demo"
+ * @param {string} params.paymentMethod - "transfer" | "cash-on-delivery" | "bold-demo" | "bold" | "addi"
  * @returns {Promise<{ orderId: string, total: number, createdAt: string }>}
  * @throws {OrderError}
  */
@@ -45,7 +45,6 @@ export async function createOrder ({ contact, cart, paymentMethod, originUrl, co
   }))
 
   if (items.some((i) => !i.variantId)) {
-    // Carrito creado antes de la integración con la BD (sin variante).
     throw new OrderError('invalid_items', ERROR_MESSAGES.invalid_items)
   }
 
@@ -68,13 +67,13 @@ export async function createOrder ({ contact, cart, paymentMethod, originUrl, co
 }
 
 /**
- * Confirma el pago de una orden que retornó de Bold Checkout
+ * Verifica y sincroniza el estado del pago de una orden que retornó de Bold Checkout.
  * @param {Object} params
  * @param {string} params.orderId
- * @param {string} params.boldStatus
+ * @param {string} [params.boldStatus]
  * @param {string} [params.txId]
  */
-export async function confirmBoldPayment ({ orderId, boldStatus = 'approved', txId = null }) {
+export async function confirmBoldPayment ({ orderId, boldStatus = '', txId = null }) {
   try {
     const { data, error } = await supabase.functions.invoke('confirm-bold-payment', {
       body: { orderId, boldStatus, txId }
@@ -88,13 +87,15 @@ export async function confirmBoldPayment ({ orderId, boldStatus = 'approved', tx
 }
 
 /**
- * Consulta el estado actual de una orden (usado al retornar desde Addi)
+ * Consulta el estado actual de una orden (usado al retornar desde Addi o re-verificar Bold).
  * @param {string} orderId
+ * @param {string} [urlStatus]
+ * @param {string} [provider]
  */
-export async function checkOrderStatus (orderId) {
+export async function checkOrderStatus (orderId, urlStatus = '', provider = '') {
   try {
     const { data, error } = await supabase.functions.invoke('order-status', {
-      body: { orderId }
+      body: { orderId, urlStatus, provider }
     })
     if (error) throw error
     return data?.order || null

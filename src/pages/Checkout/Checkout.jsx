@@ -2,10 +2,9 @@
  * Checkout.jsx
  * Vista de Checkout V2 en 2 columnas con estética streetwear:
  * - Conectado con useCartStore (cart, getSubtotal, clearCart).
- * - Formulario de contacto con validación colombiana.
- * - Métodos de pago: Contraentrega, Transferencia (con botón copiar cuenta) y Bold Demo.
- * - Resumen con lista de sneakers, medias de regalo y envío gratis.
- * - Finalización con generación de mensaje codificado para WhatsApp (wa.me).
+ * - Formulario de contacto con validación colombiana y persistencia en sessionStorage.
+ * - Métodos de pago: Contraentrega, Transferencia, Addi (BNPL) y Bold Pagos en Línea.
+ * - Pantallas dedicadas de Verificación de Estado de Transacción (redirecting, verifying, approved, rejected, abandoned, pending).
  * Copys 100% en español.
  */
 
@@ -17,9 +16,66 @@ import { checkOrderStatus, confirmBoldPayment, createOrder, OrderError } from '@
 import { useCartStore } from '@/stores/cartStore'
 import { buildWhatsappMessage } from '@/utils/buildWhatsappMessage'
 import { formatPrice } from '@/utils/formatPrice'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import styles from './Checkout.module.css'
+
+const CONTACT_STORAGE_KEY = 'dc_checkout_contact_draft'
+
+const INITIAL_CONTACT = {
+  name: '',
+  phone: '',
+  city: '',
+  address: '',
+  notes: '',
+  email: '',
+  documentId: ''
+}
+
+function loadSavedContact () {
+  try {
+    const raw = window.sessionStorage.getItem(CONTACT_STORAGE_KEY)
+    if (!raw) return INITIAL_CONTACT
+    const parsed = JSON.parse(raw)
+    return { ...INITIAL_CONTACT, ...parsed }
+  } catch {
+    return INITIAL_CONTACT
+  }
+}
+
+function saveContactDraftStorage (contact) {
+  try {
+    window.sessionStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(contact))
+  } catch {
+    // Ignorar errores de sessionStorage restringido
+  }
+}
+
+function clearContactDraftStorage () {
+  try {
+    window.sessionStorage.removeItem(CONTACT_STORAGE_KEY)
+  } catch {
+    // Ignorar errores de sessionStorage restringido
+  }
+}
+
+function normalizeGatewayStatus (raw) {
+  const s = typeof raw === 'string' ? raw.toLowerCase().trim() : ''
+  if (!s) return ''
+  if (['approved', 'paid', 'successful', 'succeeded', 'confirmed', 'completed'].includes(s)) {
+    return 'approved'
+  }
+  if (s === 'abandoned') {
+    return 'abandoned'
+  }
+  if (['rejected', 'failed', 'voided', 'declined', 'cancelled', 'canceled', 'error', 'expired', 'refunded'].includes(s)) {
+    return 'rejected'
+  }
+  if (['pending', 'processing', 'in_process', 'created', 'active'].includes(s)) {
+    return 'pending'
+  }
+  return ''
+}
 
 export default function Checkout () {
   const navigate = useNavigate()
@@ -35,21 +91,11 @@ export default function Checkout () {
     getTotal
   } = useCartStore()
 
-  const [contact, setContact] = useState({
-    name: '',
-    phone: '',
-    city: '',
-    address: '',
-    notes: '',
-    email: '',
-    documentId: ''
-  })
-
+  const [contact, setContact] = useState(loadSavedContact)
   const [paymentMethod, setPaymentMethod] = useState('cash-on-delivery')
   const [errors, setErrors] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [copiedBank, setCopiedBank] = useState(false)
-  const [completedOrder, setCompletedOrder] = useState(null)
   const [submitError, setSubmitError] = useState(null)
   const [couponCodeInput, setCouponCodeInput] = useState('')
   const [couponMessage, setCouponMessage] = useState({ text: '', type: '' })
@@ -62,115 +108,160 @@ export default function Checkout () {
     discount: 0,
     isDiscountVisible: false
   })
-  const [addiReturnNotice, setAddiReturnNotice] = useState(null)
-  const [isCheckingAddiOrder, setIsCheckingAddiOrder] = useState(false)
 
-  // Detectar si el usuario regresa de la pasarela Bold o Addi
-  useEffect(() => {
-    const boldReturn = searchParams.get('bold')
-    const addiReturn = searchParams.get('addi')
-    const orderId = searchParams.get('orderId')
-    const boldStatus = searchParams.get('bold-status') || searchParams.get('status') || 'approved'
-    const txId = searchParams.get('txId') || searchParams.get('bold-tx-id') || null
-
-    if (boldReturn && orderId) {
-      const normalizedBoldStatus = String(boldStatus || 'approved').toLowerCase().trim()
-      const isBoldRejected = ['rejected', 'failed', 'voided', 'declined'].includes(normalizedBoldStatus)
-
-      if (isBoldRejected) {
-        setPaymentMethod('bold')
-        setAddiReturnNotice(
-          `Tu pago en línea con Bold (Orden #${orderId}) no pudo completarse (${normalizedBoldStatus.toUpperCase()}). Tu bolsa sigue intacta para que intentes nuevamente o elijas otro método de pago.`
-        )
-        confirmBoldPayment({ orderId, boldStatus, txId })
-        return
-      }
-
-      clearCart()
-      markCheckoutConverted({ orderId })
-      setCompletedOrder({
-        orderId,
-        name: 'Cliente',
-        total: 0,
-        isBoldPayment: true
-      })
-
-      confirmBoldPayment({ orderId, boldStatus, txId }).then((res) => {
-        if (res?.order) {
-          setCompletedOrder((prev) => ({
-            ...prev,
-            name: res.order.customer_name || 'Cliente',
-            total: res.order.total || 0
-          }))
-        }
-      })
-      return
-    }
-
-    if (addiReturn && orderId) {
-      let cancelled = false
-      const urlStatus = (searchParams.get('status') || '').toLowerCase().trim()
-
-      const verifyAddiOrder = async () => {
-        setIsCheckingAddiOrder(true)
-        setAddiReturnNotice(null)
-
-        // Consultar estado en BD (con breves reintentos si sigue pending mientras llega el callback de Addi)
-        let orderData = null
-        for (let attempt = 0; attempt < 5; attempt++) {
-          if (cancelled) return
-          orderData = await checkOrderStatus(orderId)
-          const pStatus = (orderData?.latest_payment_status || orderData?.payment_status || '').toLowerCase()
-          if (pStatus && pStatus !== 'pending') break
-          if (urlStatus && urlStatus !== 'pending') break
-          await new Promise((resolve) => setTimeout(resolve, 2500))
-        }
-
-        if (cancelled) return
-        setIsCheckingAddiOrder(false)
-
-        const finalStatus = (
-          orderData?.latest_payment_status ||
-          orderData?.payment_status ||
-          urlStatus ||
-          'pending'
-        ).toLowerCase()
-
-        if (finalStatus === 'approved' || finalStatus === 'paid') {
-          clearCart()
-          markCheckoutConverted({ orderId })
-          setCompletedOrder({
-            orderId,
-            name: orderData?.customer_name || 'Cliente',
-            total: orderData?.total || 0,
-            isAddiPayment: true
-          })
-        } else if (finalStatus === 'rejected' || finalStatus === 'declined' || finalStatus === 'abandoned' || finalStatus === 'failed') {
-          // Regla docs/addi.md Sección 4: Para cualquier estado distinto a approved,
-          // mantener al cliente en el carrito/checkout para permitir un nuevo intento con Addi u otro medio.
-          setPaymentMethod('addi')
-          setAddiReturnNotice(
-            finalStatus === 'abandoned'
-              ? `Tu solicitud en Addi (Orden #${orderId}) no fue finalizada. Tu bolsa sigue intacta por si deseas intentar de nuevo con Addi o elegir otro método de pago.`
-              : `Tu solicitud de crédito con Addi (Orden #${orderId}) no fue aprobada (${finalStatus.toUpperCase()}). Puedes intentar nuevamente o elegir otro método de pago.`
-          )
-        } else {
-          setAddiReturnNotice(
-            `Estamos recibiendo la confirmación de Addi para tu orden #${orderId}. Si tu crédito fue aprobado, te notificaremos en breve.`
-          )
-        }
-      }
-
-      verifyAddiOrder()
-      return () => {
-        cancelled = true
-      }
-    }
-  }, [searchParams, clearCart])
+  // Estado unificado para las pantallas de transición y verificación de transacciones:
+  // null | { status: 'redirecting' | 'verifying' | 'approved' | 'rejected' | 'abandoned' | 'pending', provider: 'bold' | 'addi' | 'manual', orderId, name, total, rawStatus, whatsappUrl, whatsappOpened }
+  const [transactionView, setTransactionView] = useState(null)
 
   const subtotal = getSubtotal()
   const discountAmount = getDiscountAmount()
   const total = getTotal()
+
+  // Persistir borrador local de contacto para no perderlo al ir y volver de pasarelas externas
+  useEffect(() => {
+    saveContactDraftStorage(contact)
+  }, [contact])
+
+  // Función reutilizable para verificar estado de orden en Bold o Addi
+  const verifyGatewayTransaction = useCallback(async ({ provider, orderId, rawStatus, txId }) => {
+    const urlNorm = normalizeGatewayStatus(rawStatus)
+
+    setTransactionView((prev) => ({
+      status: 'verifying',
+      provider,
+      orderId,
+      rawStatus,
+      name: prev?.name || 'Cliente',
+      total: prev?.total || 0
+    }))
+
+    if (provider === 'bold') {
+      const res = await confirmBoldPayment({
+        orderId,
+        boldStatus: rawStatus,
+        txId
+      })
+
+      const backendNorm = normalizeGatewayStatus(
+        res?.finalStatus || res?.order?.final_status || res?.order?.latest_payment_status || res?.order?.payment_status
+      )
+
+      // Si la URL indica explícitamente rechazo/abandono, respetarlo siempre
+      let resolved = 'pending'
+      if (urlNorm === 'rejected' || urlNorm === 'abandoned') {
+        resolved = urlNorm
+      } else if (backendNorm) {
+        resolved = backendNorm
+      } else if (urlNorm === 'approved') {
+        resolved = 'approved'
+      }
+
+      const customerName = res?.order?.customer_name || 'Cliente'
+      const orderTotal = Number(res?.order?.total || 0)
+
+      if (resolved === 'approved') {
+        clearCart()
+        clearContactDraftStorage()
+        markCheckoutConverted({ orderId })
+      }
+
+      setTransactionView({
+        status: resolved,
+        provider: 'bold',
+        orderId,
+        rawStatus: rawStatus || resolved,
+        name: customerName,
+        total: orderTotal
+      })
+      return
+    }
+
+    // Proveedor: Addi
+    let orderData = null
+    const maxAttempts = (urlNorm === 'rejected' || urlNorm === 'abandoned') ? 1 : 4
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      orderData = await checkOrderStatus(orderId, rawStatus, 'addi')
+      const dbNorm = normalizeGatewayStatus(
+        orderData?.final_status || orderData?.latest_payment_status || orderData?.payment_status
+      )
+      if (dbNorm && dbNorm !== 'pending') break
+      if (urlNorm && urlNorm !== 'pending') break
+      if (attempt < maxAttempts - 1) {
+        await new Promise((resolve) => setTimeout(resolve, 2200))
+      }
+    }
+
+    const dbNorm = normalizeGatewayStatus(
+      orderData?.final_status || orderData?.latest_payment_status || orderData?.payment_status
+    )
+
+    let resolved = 'pending'
+    if (urlNorm === 'rejected' || urlNorm === 'abandoned') {
+      resolved = urlNorm
+    } else if (dbNorm && dbNorm !== 'pending') {
+      resolved = dbNorm
+    } else if (urlNorm === 'approved') {
+      resolved = 'approved'
+    }
+
+    const customerName = orderData?.customer_name || 'Cliente'
+    const orderTotal = Number(orderData?.total || 0)
+
+    if (resolved === 'approved') {
+      clearCart()
+      clearContactDraftStorage()
+      markCheckoutConverted({ orderId })
+    }
+
+    setTransactionView({
+      status: resolved,
+      provider: 'addi',
+      orderId,
+      rawStatus: rawStatus || resolved,
+      name: customerName,
+      total: orderTotal
+    })
+  }, [clearCart])
+
+  // Detectar si el usuario regresa de la pasarela Bold o Addi mediante parámetros de URL
+  useEffect(() => {
+    const boldFlag = searchParams.get('bold')
+    const addiFlag = searchParams.get('addi')
+    const boldOrderIdParam = searchParams.get('bold-order-id')
+    const boldTxStatusParam = searchParams.get('bold-tx-status')
+
+    const orderId = (
+      searchParams.get('orderId') ||
+      boldOrderIdParam ||
+      searchParams.get('reference') ||
+      ''
+    ).trim()
+
+    const rawStatus = (
+      boldTxStatusParam ||
+      searchParams.get('bold-status') ||
+      searchParams.get('status') ||
+      searchParams.get('payment_status') ||
+      searchParams.get('tx_status') ||
+      ''
+    ).toLowerCase().trim()
+
+    const txId = (
+      searchParams.get('bold-tx-id') ||
+      searchParams.get('txId') ||
+      searchParams.get('transaction_id') ||
+      ''
+    ).trim() || null
+
+    const isBoldReturn = Boolean(boldFlag || boldOrderIdParam || boldTxStatusParam)
+    const isAddiReturn = Boolean(addiFlag)
+
+    if (!orderId || (!isBoldReturn && !isAddiReturn)) return
+
+    const provider = isAddiReturn ? 'addi' : 'bold'
+    verifyGatewayTransaction({ provider, orderId, rawStatus, txId })
+  }, [searchParams, verifyGatewayTransaction])
 
   // Consultar el endpoint de configuración de Addi cuando cambia el total del carrito (docs/addi.md Sección 1)
   useEffect(() => {
@@ -195,7 +286,7 @@ export default function Checkout () {
 
   // Guardar borrador de checkout (con debounce de 2s) para asesoría por WhatsApp vía Kapso si abandona
   useEffect(() => {
-    if (completedOrder || cart.length === 0) return
+    if (transactionView || cart.length === 0) return
     const nameClean = (contact.name || '').trim()
     const phoneDigits = (contact.phone || '').replace(/\D/g, '')
     if (nameClean.length < 3 || phoneDigits.length < 10) return
@@ -215,7 +306,7 @@ export default function Checkout () {
     cart,
     paymentMethod,
     total,
-    completedOrder
+    transactionView
   ])
 
   const handleApplyCoupon = async (e) => {
@@ -287,6 +378,16 @@ export default function Checkout () {
     setTimeout(() => setCopiedBank(false), 2500)
   }
 
+  const handleReturnToCheckoutForm = (preferredMethod = null) => {
+    if (preferredMethod) {
+      setPaymentMethod(preferredMethod)
+    }
+    setIsSubmitting(false)
+    setSubmitError(null)
+    setTransactionView(null)
+    navigate('/checkout', { replace: true })
+  }
+
   const handleFinalizeOrder = async () => {
     if (isSubmitting) return
     if (!validate()) {
@@ -296,6 +397,7 @@ export default function Checkout () {
 
     setSubmitError(null)
     setIsSubmitting(true)
+    saveContactDraftStorage(contact)
 
     // Si es pasarela en línea (Bold o Addi), no abrimos WhatsApp popup
     const isBoldReal = paymentMethod === 'bold'
@@ -313,16 +415,30 @@ export default function Checkout () {
         couponCode: appliedCoupon?.code
       })
 
-      // 2A. Si el método es Addi, redirigir manualmente a la URL obtenida del header Location (301)
-      // No vaciamos el carrito antes de ir a Addi para permitir reintentos si el cliente abandona o es rechazado.
+      // 2A. Si el método es Addi, mostrar pantalla de redirección y enviar a Addi
+      // NO vaciamos el carrito antes de confirmar el pago para permitir reintentos si es rechazado o abandonado.
       if (isAddiReal && order.addiRedirectUrl) {
+        setTransactionView({
+          status: 'redirecting',
+          provider: 'addi',
+          orderId: order.orderId,
+          name: contact.name,
+          total: order.total || total
+        })
         window.location.href = order.addiRedirectUrl
         return
       }
 
-      // 2B. Si el método es Bold (Pagos en línea), abrir la pasarela oficial de Bold
+      // 2B. Si el método es Bold (Pagos en línea), mostrar pantalla de conexión con Bold SIN vaciar el carrito
       if (isBoldReal && (order.boldCheckout || order.boldCheckoutUrl)) {
-        clearCart()
+        setTransactionView({
+          status: 'redirecting',
+          provider: 'bold',
+          orderId: order.orderId,
+          name: contact.name,
+          total: order.total || total
+        })
+
         if (order.boldCheckout) {
           if (!window.BoldCheckout) {
             await new Promise((resolve, reject) => {
@@ -349,7 +465,7 @@ export default function Checkout () {
         }
       }
 
-      // 3. Generar el mensaje de WhatsApp con el total calculado y descuento
+      // 3. Contraentrega o Transferencia: generar mensaje de WhatsApp y confirmar pedido
       const finalAmount = order.total ? Math.max(0, order.total - discountAmount) : total
       const whatsappUrl = buildWhatsappMessage({
         orderId: order.orderId,
@@ -363,9 +479,12 @@ export default function Checkout () {
 
       if (waWindow) waWindow.location.href = whatsappUrl
 
-      // 4. Guardar estado completado y vaciar carrito
+      // 4. Marcar como convertido, mostrar pantalla de éxito y vaciar carrito
       markCheckoutConverted({ orderId: order.orderId, phone: contact.phone })
-      setCompletedOrder({
+      clearContactDraftStorage()
+      setTransactionView({
+        status: 'approved',
+        provider: 'manual',
         orderId: order.orderId,
         name: contact.name,
         total: finalAmount,
@@ -374,8 +493,8 @@ export default function Checkout () {
       })
       clearCart()
     } catch (err) {
-      // Si falla, NO se vacía el carrito ni se abre WhatsApp
       if (waWindow) waWindow.close()
+      setTransactionView(null)
       console.error('Error al crear la orden:', err)
       setSubmitError(
         err instanceof OrderError
@@ -388,51 +507,292 @@ export default function Checkout () {
     }
   }
 
-  // 1. Vista de Éxito
-  if (completedOrder) {
+  // ============================================================================
+  // 1. PANTALLAS DE VERIFICACIÓN DE ESTADO DE TRANSACCIÓN (Prioridad Máxima)
+  // ============================================================================
+  if (transactionView) {
+    const {
+      status,
+      provider,
+      orderId,
+      name,
+      total: txTotal,
+      rawStatus,
+      whatsappUrl,
+      whatsappOpened
+    } = transactionView
+
+    const gatewayLabel = provider === 'addi' ? 'Addi' : provider === 'bold' ? 'Bold' : 'WhatsApp'
+    const supportWaText = encodeURIComponent(
+      `Hola DC SNEAKERS, necesito ayuda con mi orden #${orderId} (intento de pago con ${gatewayLabel}).`
+    )
+    const supportWaUrl = `https://wa.me/${storeConfig.whatsappNumber}?text=${supportWaText}`
+
+    // 1A. Pantalla: Redirigiendo o Verificando Estado con el Servidor
+    if (status === 'redirecting' || status === 'verifying') {
+      return (
+        <div className={styles.checkoutPage}>
+          <div className={`${styles.statusCard} ${styles.statusCardVerifying}`} role='status' aria-live='polite'>
+            <span className={`${styles.statusBadge} ${styles.badgeVerifying}`}>
+              {status === 'redirecting' ? `CONECTANDO CON ${gatewayLabel.toUpperCase()}` : `VERIFICACIÓN ${gatewayLabel.toUpperCase()}`}
+            </span>
+            <div className={styles.statusSpinner} />
+            <h1 className={styles.statusTitle}>
+              {status === 'redirecting'
+                ? `PREPARANDO TU PAGO SEGURO CON ${gatewayLabel.toUpperCase()}...`
+                : 'VERIFICANDO EL ESTADO DE TU TRANSACCIÓN...'}
+            </h1>
+            <p className={styles.statusDesc}>
+              {status === 'redirecting'
+                ? `Te estamos redirigiendo a la pasarela oficial de ${gatewayLabel} para completar la orden #${orderId}. Tu bolsa de compras permanece guardada.`
+                : `Estamos consultando la confirmación de tu pago con ${gatewayLabel} para la orden #${orderId}. Por favor espera unos segundos.`}
+            </p>
+            <div className={styles.statusMetaBox}>
+              <div className={styles.statusMetaRow}>
+                <span>Referencia de orden:</span>
+                <strong>#{orderId}</strong>
+              </div>
+              <div className={styles.statusMetaRow}>
+                <span>Pasarela:</span>
+                <strong>{gatewayLabel}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // 1B. Pantalla: Pago Aprobado / Pedido Confirmado
+    if (status === 'approved') {
+      return (
+        <div className={styles.checkoutPage}>
+          <div className={`${styles.statusCard} ${styles.statusCardApproved}`}>
+            <span className={`${styles.statusBadge} ${styles.badgeApproved}`}>
+              ✓ TRANSACCIÓN APROBADA
+            </span>
+            <div className={`${styles.statusIconCircle} ${styles.iconApproved}`}>
+              ✓
+            </div>
+            <h1 className={styles.statusTitle}>¡PEDIDO CONFIRMADO CON ÉXITO!</h1>
+            <p className={styles.statusDesc}>
+              Gracias por tu compra, <strong>{name || 'Cliente'}</strong>.{' '}
+              {provider === 'addi'
+                ? 'Tu solicitud de crédito en cuotas con Addi fue aprobada exitosamente. Alistaremos y despacharemos tus sneakers de inmediato.'
+                : provider === 'bold'
+                  ? 'Hemos verificado y confirmado tu pago en línea con Bold. Alistaremos y despacharemos tu pedido de inmediato.'
+                  : whatsappOpened
+                    ? 'Se ha abierto una ventana de WhatsApp para coordinar la entrega directamente con nuestro equipo.'
+                    : 'Toca el botón de abajo para enviarnos tu pedido por WhatsApp y coordinar la entrega.'}
+            </p>
+
+            <div className={styles.statusMetaBox}>
+              <div className={styles.statusMetaRow}>
+                <span>Número de orden:</span>
+                <strong>#{orderId}</strong>
+              </div>
+              <div className={styles.statusMetaRow}>
+                <span>Estado del pago:</span>
+                <strong style={{ color: '#25D366' }}>APROBADO</strong>
+              </div>
+              <div className={styles.statusMetaRow}>
+                <span>Método de pago:</span>
+                <strong>
+                  {provider === 'addi'
+                    ? 'Addi (Pago a cuotas)'
+                    : provider === 'bold'
+                      ? 'Bold (Pago en línea)'
+                      : 'Coordinación directa'}
+                </strong>
+              </div>
+              {txTotal > 0 && (
+                <div className={styles.statusMetaRow}>
+                  <span>Total de la orden:</span>
+                  <strong>{formatPrice(txTotal)}</strong>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.statusActions}>
+              {whatsappUrl
+                ? (
+                  <a
+                    href={whatsappUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className={styles.submitBtn}
+                    style={{ textDecoration: 'none', textAlign: 'center', boxSizing: 'border-box' }}
+                  >
+                    ENVIAR PEDIDO POR WHATSAPP →
+                  </a>
+                  )
+                : (
+                  <a
+                    href={supportWaUrl}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className={styles.whatsappSupportBtn}
+                  >
+                    COORDINAR ENVÍO POR WHATSAPP →
+                  </a>
+                  )}
+              <button
+                type='button'
+                className={styles.secondaryBtn}
+                onClick={() => navigate('/')}
+              >
+                VOLVER AL INICIO →
+              </button>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // 1C. Pantalla: Pago Rechazado / Declinado / Abandonado
+    if (status === 'rejected' || status === 'abandoned') {
+      const isAbandoned = status === 'abandoned'
+      return (
+        <div className={styles.checkoutPage}>
+          <div className={`${styles.statusCard} ${styles.statusCardRejected}`} role='alert'>
+            <span className={`${styles.statusBadge} ${styles.badgeRejected}`}>
+              ✕ {isAbandoned ? 'PROCESO NO FINALIZADO' : 'TRANSACCIÓN RECHAZADA'}
+            </span>
+            <div className={`${styles.statusIconCircle} ${styles.iconRejected}`}>
+              ✕
+            </div>
+            <h1 className={styles.statusTitle}>
+              {isAbandoned
+                ? `TU SOLICITUD EN ${gatewayLabel.toUpperCase()} NO FUE COMPLETADA`
+                : `EL PAGO CON ${gatewayLabel.toUpperCase()} FUE RECHAZADO`}
+            </h1>
+            <p className={styles.statusDesc}>
+              {isAbandoned
+                ? `Saliste de ${gatewayLabel} antes de finalizar el proceso para la orden #${orderId}. No se ha realizado ningún cobro.`
+                : `La pasarela ${gatewayLabel} reportó que la transacción para la orden #${orderId} no fue aprobada (${String(rawStatus || 'REJECTED').toUpperCase()}). No se realizó ningún cobro a tu cuenta.`}
+            </p>
+
+            <div className={styles.statusMetaBox}>
+              <div className={styles.statusMetaRow}>
+                <span>Referencia de orden:</span>
+                <strong>#{orderId}</strong>
+              </div>
+              <div className={styles.statusMetaRow}>
+                <span>Pasarela utilizada:</span>
+                <strong>{gatewayLabel}</strong>
+              </div>
+              <div className={styles.statusMetaRow}>
+                <span>Estado reportado:</span>
+                <strong style={{ color: '#ff453a' }}>
+                  {isAbandoned ? 'ABANDONADO / CANCELADO' : 'RECHAZADO'}
+                </strong>
+              </div>
+              {txTotal > 0 && (
+                <div className={styles.statusMetaRow}>
+                  <span>Valor del pedido:</span>
+                  <strong>{formatPrice(txTotal)}</strong>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.statusNoticeBox}>
+              <strong>Tu carrito y tus datos siguen guardados.</strong> Puedes regresar al checkout para intentar con otro medio de pago (como <strong>Pago Contraentrega en efectivo</strong> o <strong>Transferencia</strong>) sin volver a llenar el formulario.
+            </div>
+
+            <div className={styles.statusActions}>
+              <button
+                type='button'
+                className={styles.submitBtn}
+                onClick={() => handleReturnToCheckoutForm('cash-on-delivery')}
+              >
+                CAMBIAR A PAGO CONTRAENTREGA (EFECTIVO) →
+              </button>
+              <button
+                type='button'
+                className={styles.secondaryBtn}
+                onClick={() => handleReturnToCheckoutForm(provider)}
+              >
+                VOLVER AL CHECKOUT Y ELEGIR OTRO MÉTODO →
+              </button>
+              <a
+                href={supportWaUrl}
+                target='_blank'
+                rel='noopener noreferrer'
+                className={styles.whatsappSupportBtn}
+              >
+                HABLAR CON UN ASESOR POR WHATSAPP →
+              </a>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // 1D. Pantalla: Pago en Proceso de Validación (Pending)
     return (
       <div className={styles.checkoutPage}>
-        <div className={styles.successCard}>
-          <span style={{ fontSize: '3.5rem' }}>🔥</span>
-          <h1 className={styles.successTitle}>¡PEDIDO CONFIRMADO CON ÉXITO!</h1>
-          <p style={{ fontSize: '1.1rem', margin: 0 }}>
-            Orden <strong>#{completedOrder.orderId}</strong>
+        <div className={`${styles.statusCard} ${styles.statusCardPending}`}>
+          <span className={`${styles.statusBadge} ${styles.badgePending}`}>
+            ⏳ PAGO EN VALIDACIÓN
+          </span>
+          <div className={`${styles.statusIconCircle} ${styles.iconPending}`}>
+            ⏳
+          </div>
+          <h1 className={styles.statusTitle}>
+            ESTAMOS VALIDANDO TU TRANSACCIÓN CON {gatewayLabel.toUpperCase()}
+          </h1>
+          <p className={styles.statusDesc}>
+            La pasarela {gatewayLabel} aún está procesando la confirmación de tu orden <strong>#{orderId}</strong>. Puedes actualizar el estado aquí mismo o elegir otro método de pago si no lograste finalizarla.
           </p>
-          <p style={{ color: '#a0a0a5', lineHeight: '1.6', maxWidth: '480px' }}>
-            Gracias por tu compra, <strong>{completedOrder.name}</strong>.{' '}
-            {completedOrder.isAddiPayment
-              ? 'Tu crédito con Addi fue aprobado exitosamente. Procesaremos el envío de tus sneakers de inmediato.'
-              : completedOrder.isBoldPayment
-                ? 'Hemos recibido la confirmación de tu pago en línea con Bold. Procesaremos tu envío de inmediato.'
-                : completedOrder.whatsappOpened
-                  ? 'Se ha abierto una ventana de WhatsApp para coordinar la entrega directamente con nuestro equipo.'
-                  : 'Toca el botón de abajo para enviarnos tu pedido por WhatsApp y coordinar la entrega.'}
-          </p>
-          {completedOrder.whatsappUrl && (
+
+          <div className={styles.statusMetaBox}>
+            <div className={styles.statusMetaRow}>
+              <span>Referencia de orden:</span>
+              <strong>#{orderId}</strong>
+            </div>
+            <div className={styles.statusMetaRow}>
+              <span>Estado actual:</span>
+              <strong style={{ color: '#ffca28' }}>EN VALIDACIÓN (PENDIENTE)</strong>
+            </div>
+            {txTotal > 0 && (
+              <div className={styles.statusMetaRow}>
+                <span>Total de la orden:</span>
+                <strong>{formatPrice(txTotal)}</strong>
+              </div>
+            )}
+          </div>
+
+          <div className={styles.statusActions}>
+            <button
+              type='button'
+              className={styles.submitBtn}
+              onClick={() => verifyGatewayTransaction({ provider, orderId, rawStatus: '', txId: null })}
+            >
+              VOLVER A VERIFICAR ESTADO ↻
+            </button>
+            <button
+              type='button'
+              className={styles.secondaryBtn}
+              onClick={() => handleReturnToCheckoutForm('cash-on-delivery')}
+            >
+              VOLVER AL CHECKOUT / CAMBIAR MÉTODO DE PAGO →
+            </button>
             <a
-              href={completedOrder.whatsappUrl}
+              href={supportWaUrl}
               target='_blank'
               rel='noopener noreferrer'
-              className={styles.submitBtn}
-              style={{ width: 'auto', padding: '0.9rem 2rem', textDecoration: 'none', textAlign: 'center' }}
+              className={styles.whatsappSupportBtn}
             >
-              ABRIR WHATSAPP →
+              CONSULTAR ESTADO POR WHATSAPP →
             </a>
-          )}
-          <button
-            type='button'
-            className={styles.submitBtn}
-            style={{ width: 'auto', padding: '0.9rem 2rem' }}
-            onClick={() => navigate('/')}
-          >
-            VOLVER AL INICIO →
-          </button>
+          </div>
         </div>
       </div>
     )
   }
 
-  // 2. Vista de Carrito Vacío
+  // ============================================================================
+  // 2. VISTA DE CARRITO VACÍO (Solo cuando no hay una transacción en curso)
+  // ============================================================================
   if (cart.length === 0) {
     return (
       <div className={styles.checkoutPage}>
@@ -456,22 +816,12 @@ export default function Checkout () {
     )
   }
 
-  // 3. Vista Principal del Checkout
+  // ============================================================================
+  // 3. VISTA PRINCIPAL DEL FORMULARIO DE CHECKOUT
+  // ============================================================================
   return (
     <div className={styles.checkoutPage}>
       <h1 className={styles.title}>FINALIZAR PEDIDO</h1>
-
-      {isCheckingAddiOrder && (
-        <div className={styles.addiStatusBanner} role='status'>
-          <span>⏳ Verificando el estado de tu solicitud con Addi...</span>
-        </div>
-      )}
-
-      {addiReturnNotice && (
-        <div className={styles.addiAlertBanner} role='alert'>
-          <span>⚠️ {addiReturnNotice}</span>
-        </div>
-      )}
 
       <div className={styles.checkoutGrid}>
         {/* Columna Izquierda: Formulario y Pago */}
@@ -658,14 +1008,12 @@ export default function Checkout () {
                       Financia tu compra en cuotas solo con tu Cédula de Ciudadanía (CC) y WhatsApp. Sin tarjeta de crédito.
                     </div>
 
-                    {/* Manejo de topes según docs/addi.md Sección 1: no ocultar, deshabilitar y mostrar disclaimer */}
                     {!isAddiAllowed && (
                       <div className={styles.addiDisclaimer}>
                         Aplica solo para compras entre {formatPrice(addiConfig.minAmount)} y {formatPrice(addiConfig.maxAmount)} COP. Agrega más productos a tu bolsa para activar Addi.
                       </div>
                     )}
 
-                    {/* Descuento puramente visual según docs/addi.md Sección 1 */}
                     {isAddiAllowed && addiConfig.isDiscountVisible && addiConfig.discount > 0 && (
                       <div className={styles.addiPolicyNote}>
                         ✨ Tienes un {Math.round(addiConfig.discount * 100)}% de descuento aplicable directamente en la pasarela de Addi sobre el total de {formatPrice(total)}.
@@ -675,7 +1023,7 @@ export default function Checkout () {
                 </div>
               </div>
 
-              {/* Opción 2: Transferencia */}
+              {/* Opción 3: Transferencia */}
               <div
                 className={`${styles.paymentOption} ${
                   paymentMethod === 'transfer' ? styles.paymentSelected : ''
@@ -729,7 +1077,7 @@ export default function Checkout () {
                 )}
               </div>
 
-              {/* Opción 3: Bold Pasarela en línea */}
+              {/* Opción 4: Bold Pasarela en línea */}
               <div
                 className={`${styles.paymentOption} ${
                   paymentMethod === 'bold' ? styles.paymentSelected : ''
