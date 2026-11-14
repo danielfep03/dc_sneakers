@@ -24,14 +24,14 @@ const CUSTOM_WIDGET_STYLES = JSON.stringify({
     whiteLogo: 'true'
   },
   modal: {
-    backgroundColor: '#111114',
-    fontColor: '#ffffff',
+    backgroundColor: '#f4f4f6',
+    fontColor: '#111114',
     fontFamily: "'Space Grotesk', sans-serif",
-    priceColor: '#536DFE',
+    priceColor: '#304FFE',
     badgeBorderRadius: '4px',
     badgeBackgroundColor: '#304FFE',
     badgeFontColor: '#ffffff',
-    cardColor: '#18181d',
+    cardColor: '#ffffff',
     buttonBorderColor: '#304FFE',
     buttonBorderRadius: '4px',
     buttonBackgroundColor: '#304FFE',
