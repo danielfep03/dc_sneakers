@@ -103,7 +103,7 @@ async function sendKapsoMessage (params: {
   orderId?: string | null
 }): Promise<{ ok: boolean; status: number; data: any }> {
   const apiKey = Deno.env.get('KAPSO_API_KEY')?.trim() || ''
-  const phoneNumberId = Deno.env.get('KAPSO_PHONE_NUMBER_ID')?.trim() || ''
+  const phoneNumberId = Deno.env.get('KAPSO_PHONE_NUMBER_ID')?.trim() || '1126724263862621'
   const apiVersion = Deno.env.get('KAPSO_API_VERSION')?.trim() || 'v24.0'
   const baseUrl = (Deno.env.get('KAPSO_BASE_URL')?.trim() || 'https://api.kapso.ai/meta/whatsapp').replace(/\/$/, '')
   const templateName = Deno.env.get('KAPSO_TEMPLATE_NAME')?.trim() || ''
@@ -111,13 +111,14 @@ async function sendKapsoMessage (params: {
 
   const textBody = buildAdvisoryText(params)
 
-  if (!apiKey || !phoneNumberId) {
-    console.warn('Credenciales de Kapso (KAPSO_API_KEY / KAPSO_PHONE_NUMBER_ID) aún no configuradas en Secrets.')
+  if (!apiKey) {
+    console.warn('Secreto KAPSO_API_KEY aún no configurado en Supabase Edge Functions.')
     return {
       ok: false,
       status: 503,
       data: {
         code: 'kapso_missing_credentials',
+        phoneNumberId,
         previewMessage: textBody,
         to: params.toPhone
       }
@@ -126,12 +127,11 @@ async function sendKapsoMessage (params: {
 
   const endpoint = `${baseUrl}/${apiVersion}/${encodeURIComponent(phoneNumberId)}/messages`
 
-  // Por defecto enviamos mensaje de texto directo ('text'), tal como se definió.
-  // Si en el futuro se configura KAPSO_TEMPLATE_NAME, soporta plantilla automáticamente.
+  // Por defecto enviamos mensaje de texto directo ('text') según la especificación de Kapso Meta Proxy.
+  // Si en el futuro se configura KAPSO_TEMPLATE_NAME, soporta plantilla con parámetros NAMED.
   const messagePayload = templateName
     ? {
         messaging_product: 'whatsapp',
-        recipient_type: 'individual',
         to: params.toPhone,
         type: 'template',
         template: {
@@ -141,9 +141,9 @@ async function sendKapsoMessage (params: {
             {
               type: 'body',
               parameters: [
-                { type: 'text', text: params.customerName.split(/\s+/)[0] || params.customerName },
-                { type: 'text', text: buildItemsSummary(params.items) },
-                { type: 'text', text: formatCop(params.total) }
+                { type: 'text', parameter_name: 'customer_name', text: params.customerName.split(/\s+/)[0] || params.customerName },
+                { type: 'text', parameter_name: 'items', text: buildItemsSummary(params.items) },
+                { type: 'text', parameter_name: 'total', text: formatCop(params.total) }
               ]
             }
           ]
@@ -151,7 +151,6 @@ async function sendKapsoMessage (params: {
       }
     : {
         messaging_product: 'whatsapp',
-        recipient_type: 'individual',
         to: params.toPhone,
         type: 'text',
         text: {
@@ -165,7 +164,6 @@ async function sendKapsoMessage (params: {
       method: 'POST',
       headers: {
         'X-API-Key': apiKey,
-        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
         Accept: 'application/json'
       },
@@ -352,6 +350,7 @@ Deno.serve(async (req) => {
     })
 
     const nowIso = new Date().toISOString()
+    const nextStatus = kapsoRes.ok ? 'notified' : 'dismissed'
 
     // Actualizar cualquier borrador existente de este teléfono o insertar registro de auditoría
     const { data: existingDraft } = await supabase
@@ -368,10 +367,10 @@ Deno.serve(async (req) => {
         .from('abandoned_checkouts')
         .update({
           order_id: orderId,
-          status: 'notified',
+          status: nextStatus,
           failure_reason: `${provider}_${gatewayStatus || 'failed'}`,
           kapso_response: kapsoRes.data,
-          notified_at: nowIso,
+          notified_at: kapsoRes.ok ? nowIso : null,
           updated_at: nowIso
         })
         .eq('id', existingDraft.id)
@@ -390,10 +389,10 @@ Deno.serve(async (req) => {
             cart_items: items,
             cart_total: Number(order.total || 0),
             order_id: orderId,
-            status: 'notified',
+            status: nextStatus,
             failure_reason: `${provider}_${gatewayStatus || 'failed'}`,
             kapso_response: kapsoRes.data,
-            notified_at: nowIso,
+            notified_at: kapsoRes.ok ? nowIso : null,
             updated_at: nowIso
           },
           { onConflict: 'session_id' }
@@ -497,15 +496,15 @@ Deno.serve(async (req) => {
       await supabase
         .from('abandoned_checkouts')
         .update({
-          status: 'notified',
+          status: kapsoRes.ok ? 'notified' : 'dismissed',
           failure_reason: 'checkout_abandoned_5m',
           kapso_response: kapsoRes.data,
-          notified_at: nowIso,
+          notified_at: kapsoRes.ok ? nowIso : null,
           updated_at: nowIso
         })
         .eq('id', draft.id)
 
-      sentCount++
+      if (kapsoRes.ok) sentCount++
     }
 
     return json({

@@ -10,6 +10,7 @@
  * - Copys 100% en español.
  */
 
+import AddiWidget from '@/components/product/AddiWidget'
 import { getProductBySlug } from '@/services/productService'
 import { useCartStore } from '@/stores/cartStore'
 import { useUIStore } from '@/stores/uiStore'
@@ -242,14 +243,8 @@ export default function Product () {
             </div>
           </div>
 
-          {/* Badge Informativo de Addi */}
-          <div className={styles.addiBox}>
-            <span className={styles.addiLogo}>addi</span>
-            <div className={styles.addiText}>
-              <span className={styles.addiMain}>Compra ahora y paga a cuotas con 0% de interés</span>
-              <span className={styles.addiSub}>Sin tarjeta de crédito. Aprobación inmediata en minutos.</span>
-            </div>
-          </div>
+          {/* Widget Oficial de Addi (cuotas dinámicas según precio del producto) */}
+          <AddiWidget price={product.price} className={styles.addiWidgetWrap} />
 
           {/* Botón Principal de Compra */}
           <button

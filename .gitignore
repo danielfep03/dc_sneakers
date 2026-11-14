@@ -47,5 +47,6 @@ Thumbs.db
 
 # Antigravity generated files (except .gemini)
 .antigravity*
+.agents/
 !.gemini/
 !.gemini/**
