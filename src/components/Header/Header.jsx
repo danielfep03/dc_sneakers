@@ -519,6 +519,23 @@ export default function Header () {
                 </div>
               )}
             </div>
+
+            {/* Dirección y enlace a Google Maps al final del sidebar mobile */}
+            <div className={styles.drawerLocationBox}>
+              <div className={styles.drawerLocationInfo}>
+                <span className={styles.drawerLocationLabel}>TIENDA FÍSICA</span>
+                <span className={styles.drawerLocationAddress}>📍 DG 26M # 80-32</span>
+              </div>
+              <a
+                href='https://maps.app.goo.gl/7bPTyZupfBowXRG59?g_st=ic'
+                target='_blank'
+                rel='noopener noreferrer'
+                className={styles.drawerMapsBtn}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                VER EN GOOGLE MAPS →
+              </a>
+            </div>
           </div>
         </div>
       )}

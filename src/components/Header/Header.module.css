@@ -834,5 +834,64 @@
     background: rgba(48, 79, 254, 0.08);
     padding-left: 2.75rem;
   }
+
+  /* Bloque de dirección y Google Maps al final del drawer mobile */
+  .drawerLocationBox {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 1.25rem 1.5rem 1.5rem;
+    background: #09090c;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .drawerLocationInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .drawerLocationLabel {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: #8e8e93;
+    text-transform: uppercase;
+  }
+
+  .drawerLocationAddress {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.03em;
+  }
+
+  .drawerMapsBtn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    padding: 0.42rem 0.8rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    color: #c4c4c9;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 3px;
+    box-sizing: border-box;
+    transition: border-color 0.2s ease, color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .drawerMapsBtn:hover {
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.04);
+  }
 }
 
