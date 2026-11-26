@@ -543,7 +543,14 @@ export default function Collections () {
                           </div>
                           <div className={styles.cardInfo}>
                             <h3 className={styles.productName}>{product.name}</h3>
-                            <span className={styles.price}>{formatPrice(product.price)}</span>
+                            <div className={styles.priceRow}>
+                              <span className={styles.price}>{formatPrice(product.price)}</span>
+                              {product.originalPrice && product.originalPrice > product.price && (
+                                <span className={styles.originalPrice}>
+                                  {formatPrice(product.originalPrice)}
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </Link>
                       )

@@ -11,12 +11,12 @@
  */
 
 import AddiWidget from '@/components/product/AddiWidget'
-import { getProductBySlug } from '@/services/productService'
+import { getProductBySlug, getRelatedColorsBySilhouette } from '@/services/productService'
 import { useCartStore } from '@/stores/cartStore'
 import { useUIStore } from '@/stores/uiStore'
 import { formatPrice } from '@/utils/formatPrice'
 import { useEffect, useMemo, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import styles from './Product.module.css'
 
 export default function Product () {
@@ -31,6 +31,7 @@ export default function Product () {
   const [selectedSize, setSelectedSize] = useState(null)
   const [selectedImage, setSelectedImage] = useState(null)
   const [viewers, setViewers] = useState(7)
+  const [otherColors, setOtherColors] = useState([])
 
   // Cargar producto desde Supabase (slug o id numérico antiguo)
   useEffect(() => {
@@ -53,11 +54,27 @@ export default function Product () {
 
   const selectedColor = product?.colors?.[selectedColorIdx] ?? null
 
-  // Al cambiar de producto: color con stock por defecto
+  // Al cambiar de producto: color con stock por defecto y otros colores de la misma silueta
   useEffect(() => {
     if (!product) return
     const firstAvailable = product.colors.findIndex((c) => c.sizes.some((s) => s.stock > 0))
     setSelectedColorIdx(firstAvailable >= 0 ? firstAvailable : 0)
+
+    let active = true
+    if (product.silhouetteSlug) {
+      getRelatedColorsBySilhouette(product.silhouetteSlug)
+        .then((items) => {
+          if (active) setOtherColors(items)
+        })
+        .catch(() => {
+          if (active) setOtherColors([])
+        })
+    } else {
+      setOtherColors([])
+    }
+    return () => {
+      active = false
+    }
   }, [product])
 
   // Al cambiar de color: primera talla con stock y foto de esa variante
@@ -154,6 +171,36 @@ export default function Product () {
 
         {/* Columna de Detalles y Compra */}
         <div className={styles.detailsCol}>
+          {otherColors.length > 1 && (
+            <div className={styles.otherColorsSection}>
+              <span className={styles.otherColorsLabel}>
+                OTROS COLORES <strong className={styles.otherColorsCount}>{otherColors.length}</strong>
+              </span>
+              <div className={styles.otherColorsGrid}>
+                {otherColors.map((item) => {
+                  const isCurrent = item.id === product.id
+                  return (
+                    <Link
+                      key={item.id}
+                      to={`/producto/${item.id}`}
+                      className={`${styles.otherColorThumb} ${isCurrent ? styles.otherColorThumbActive : ''}`}
+                      title={item.colorName}
+                      aria-label={`Ver ${item.name} (${item.colorName})`}
+                      aria-current={isCurrent ? 'page' : undefined}
+                    >
+                      <img
+                        src={item.image}
+                        alt={item.colorName}
+                        className={styles.otherColorImg}
+                        loading='lazy'
+                      />
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+
           <span className={styles.brandLabel}>{product.brand} {'/'}{'/'} COLECCIÓN OFICIAL</span>
           <h1 className={styles.productTitle}>{product.name}</h1>
 

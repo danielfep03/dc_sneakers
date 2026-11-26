@@ -20,7 +20,7 @@
 import { supabase } from '@/lib/supabaseClient'
 
 const PRODUCT_SELECT = `
-  id, legacy_id, slug, name, gender, description, price, sale_price, is_new, created_at,
+  id, legacy_id, slug, name, gender, silhouette, silhouette_slug, description, price, sale_price, is_new, created_at,
   brands ( id, name ),
   categories ( id, name ),
   product_variants (
@@ -73,6 +73,8 @@ export function mapProduct (row) {
     images,
     isNew: row.is_new,
     gender: row.gender ? row.gender.toLowerCase() : null,
+    silhouette: row.silhouette ?? null,
+    silhouetteSlug: row.silhouette_slug ?? null,
     createdAt: row.created_at,
     sizes,
     colors
@@ -116,6 +118,23 @@ export async function getProductBySlug (slugOrLegacyId) {
   return (
     products.find((p) => (isLegacy ? p.legacyId === Number(key) : p.id === key)) || null
   )
+}
+
+/**
+ * Devuelve todos los productos activos que comparten el mismo silhouette_slug
+ * para mostrarlos como "Otros colores" en la vista de producto.
+ */
+export async function getRelatedColorsBySilhouette (silhouetteSlug) {
+  if (!silhouetteSlug) return []
+  const products = await getAllProducts()
+  return products
+    .filter((p) => p.silhouetteSlug === silhouetteSlug && p.image)
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      colorName: p.colors?.[0]?.name || p.name,
+      image: p.image
+    }))
 }
 
 /** Productos con precio de oferta real (sale_price definido). */
