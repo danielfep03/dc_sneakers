@@ -2,27 +2,25 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import styles from './Hero.module.css'
 
+const Desktop1 = '/WEB_1.webp'
+const Desktop2 = '/WEB_2.webp'
+const Mobile1 = '/MOBILE_1.webp'
+const Mobile2 = '/MOBILE_2.webp'
+
 const HERO_SLIDES = [
   {
     id: 1,
     title: 'Drop Especial Streetwear',
     link: '/categorias',
-    desktopImage: 'https://cdn.shopify.com/s/files/1/0687/7691/9313/files/buce-bn26-b01-desktop.webp?v=1793696233',
-    mobileImage: 'https://cdn.shopify.com/s/files/1/0687/7691/9313/files/buce-bn26-b01-mobile.webp?v=1793696255'
+    desktopImage: Desktop1,
+    mobileImage: Mobile1
   },
   {
     id: 2,
     title: 'Colección Urbana & Retro',
     link: '/categorias?category=casual',
-    desktopImage: 'https://colombiashoes.com.co/cdn/shop/files/Oferta_Black_Days_de_Colombia_Shoes.png?v=1794195007&width=3000',
-    mobileImage: 'https://images.unsplash.com/photo-1512374382149-233c42b661ac?auto=format&fit=crop&w=900&q=85'
-  },
-  {
-    id: 3,
-    title: 'Novedades & Siluetas Exclusivas',
-    link: '/categorias?tag=sale',
-    desktopImage: 'https://images.unsplash.com/photo-1597045566677-8cf032ed6634?auto=format&fit=crop&w=1920&q=85',
-    mobileImage: 'https://images.unsplash.com/photo-1597045566677-8cf032ed6634?auto=format&fit=crop&w=900&q=85'
+    desktopImage: Desktop2,
+    mobileImage: Mobile2
   }
 ]
 
